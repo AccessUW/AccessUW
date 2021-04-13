@@ -33,4 +33,11 @@
 * Find a good Android emulator for our group to use
 ## Turner's Report
 ## Sunny's Report
+### Last Week
+### Progress and Issues
+* Wrote a use case for AccessUW
+* Came up with requirements/policies
+### Plans and Goals
+* Familiarize with java backend structure and UI/UX tools
+* Data collection
 ## Kevin's Report
