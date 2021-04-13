@@ -14,6 +14,14 @@
 * Define git architecture for out project
 ## Jack's Report
 ## Judas' Report
+### Last Week
+### Progress and Issues
+* Wrote a use case for AccessUW
+* Helped come up with schedule/roles for group
+### Plans and Goals
+* Download and familiarize myself with Android Studio
+* Research into/practice interactions programming with Android Studio
+* Find a good Android emulator for our group to use
 ## Turner's Report
 ## Sunny's Report
 ## Kevin's Report
