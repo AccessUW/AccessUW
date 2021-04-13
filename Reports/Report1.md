@@ -13,6 +13,15 @@
 * Download and familiarize ourselves with Android Studio
 * Define git architecture for out project
 ## Jack's Report
+### Last Week
+### Progress
+* Worked as a team to describe requirements and policies
+* Designed a multi-stop use case for the app
+### Plans and Goals
+* Download Android Studio & familiarize ourselves with it
+* Familiarize myself with Git, more specifically branching/merging
+* Research common ways projects are organized into different folders on Git
+* Help collect data of the UW Campus (currently in talks with ADA)
 ## Judas' Report
 ### Last Week
 ### Progress and Issues
