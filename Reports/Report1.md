@@ -45,3 +45,12 @@
 * Familiarize with java backend structure and UI/UX tools
 * Data collection
 ## Kevin's Report
+### Progress and Issues
+* Wrote location tracking use case
+* Came up with requirements/policies
+* Helped describe risks associated with the project
+* Helped form schedules & describe the tasks associated with them
+### Plans and Goals
+* Become more familiar with Android Studio
+* Have some initial UI/UX ideas, wireframey ideas for app
+* Collect accessibility data
