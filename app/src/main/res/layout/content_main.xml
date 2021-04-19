@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <views.VScroll
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent" android:id="@+id/vScroll">
+        <views.HScroll
+            android:id="@+id/hScroll"
+            android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:src="@drawable/hw_campuspaths_public_campus_map"
+                android:contentDescription="@string/main_campus_map_desc" />
+        </views.HScroll>
+    </views.VScroll>
+
+</LinearLayout>
