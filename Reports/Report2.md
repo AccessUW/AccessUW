@@ -50,7 +50,11 @@
 * If time, work on search bar for front-end part of app
 ## Sunny's Report
 ### Progress and Issues
+* Researched UI/UX of Mobile Map applications
+* Started Figma and mockup design
 ### Plans and Goals
+* Draw mock-ups for UI proposal before the meeting on Thursday
+* Create mock-up of UI in Figma by next Tuesday
 ## Kevin's Report
 ### Progress and Issues
 ### Plans and Goals
