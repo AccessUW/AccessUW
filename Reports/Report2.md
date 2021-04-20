@@ -2,7 +2,7 @@
 ## Team Report
 ### Last Week
 * Get UW accessibility data
-* Download and familiarize ourselves with Android Studio
+* Download and familiarize ourselves with Android Studios
 * Define git architecture for out project
 ### Progress and Issues
 * Set up GitHub
@@ -10,6 +10,7 @@
 * Working basic app (no functionality yet)
 * Started data collection for map
 * Updated requirements doc based on feedback
+* Everyone got Android Studios
 ### Plans and Goals
 * Create mockups of UI and design
 *   Make Figma version
@@ -41,6 +42,9 @@
 * Draw mock-ups for UI proposal before the meeting on Thursday
 * Create mock-up of UI in Figma by next Tuesday
 ## Turner's Report
+### Last Week
+* Set up a rough front-end structure that gets a basic blank app working on an Android phone emulator
+* Populate the Milo backlog system with primary objectives for the coming week
 ### Progress and Issues
 * Created working app with map movement functionality
 * Started data collection and reached out to the ADA at UW
@@ -56,5 +60,6 @@
 * Draw mock-ups for UI proposal before the meeting on Thursday
 * Create mock-up of UI in Figma by next Tuesday
 ## Kevin's Report
+### Last Week
 ### Progress and Issues
 ### Plans and Goals
