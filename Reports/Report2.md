@@ -30,8 +30,16 @@
 * Complete back-end architecture and design
 * If there is time, begin graph respresentation of UW Campus
 ## Judas' Report
+### Last Week
+* Download and familiarize myself with Android Studio
+* Research into/practice interactions programming with Android Studio
+* Find a good Android emulator for our group to use
 ### Progress and Issues
+* Downloaded Android Studio and set up Emulator
+* Completed Android Studio tutorial and made first app
 ### Plans and Goals
+* Draw mock-ups for UI proposal before the meeting on Thursday
+* Create mock-up of UI in Figma by next Tuesday
 ## Turner's Report
 ### Progress and Issues
 * Created working app with map movement functionality
