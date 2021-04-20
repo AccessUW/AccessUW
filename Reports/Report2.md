@@ -1,6 +1,9 @@
 # Weekly Progress Report
 ## Team Report
 ### Last Week
+* Get UW accessibility data
+* Download and familiarize ourselves with Android Studio
+* Define git architecture for out project
 ### Progress and Issues
 * Set up GitHub
 * Set up front-end architecture
@@ -13,8 +16,19 @@
 * Have finalized collected data in CSV's
 * Put back-end architecture in GitHub
 ## Jack's Report
+### Last Week
+* Download Android Studio & familiarize ourselves with it
+* Familiarize myself with Git, more specifically branching/merging
+* Research common ways projects are organized into different folders on Git
+* Help collect data of the UW Campus (currently in talks with ADA)
 ### Progress and Issues
+* Downloaded Android Studio and set up emulator
+* Completed Android Studio tutorial and made first app
+* Created rough data model for local database
 ### Plans and Goals
+* Finalize data model
+* Complete back-end architecture and design
+* If there is time, begin graph respresentation of UW Campus
 ## Judas' Report
 ### Progress and Issues
 ### Plans and Goals
