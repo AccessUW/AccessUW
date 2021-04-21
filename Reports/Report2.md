@@ -61,5 +61,15 @@
 * Create mock-up of UI in Figma by next Tuesday
 ## Kevin's Report
 ### Last Week
+* Become more familiar with Android Studio
+* Have some initial UI/UX ideas, wireframey ideas for app
+* Collect accessibility data
 ### Progress and Issues
+* Extracted the JSON route/building data for the existing UW accessibility map
+* Android Studio downloaded
+* Issue: underestimated time I could work with
 ### Plans and Goals
+* Become more familiar with Android Studio
+* Have some initial UI/UX ideas, wireframey ideas for app
+* Continue extracting data
+* Contribute to Figma application design
