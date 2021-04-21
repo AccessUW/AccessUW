@@ -12,7 +12,7 @@
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:src="@drawable/hw_campuspaths_public_campus_map"
+                android:src="@drawable/uw_campus_map"
                 android:contentDescription="@string/main_campus_map_desc" />
         </views.HScroll>
     </views.VScroll>
