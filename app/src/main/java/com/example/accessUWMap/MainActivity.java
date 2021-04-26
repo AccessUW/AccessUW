@@ -1,5 +1,8 @@
 package com.example.accessUWMap;
 
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -8,13 +11,20 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
+import android.widget.SearchView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
 
+    // Search bar variables
+    SearchView searchStartView;
+    String startLocation;
+    String endLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +48,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Define params for scrollable map view
-        vScroll = (ScrollView) findViewById(R.id.vScroll);
-        hScroll = (HorizontalScrollView) findViewById(R.id.hScroll);
+        vScroll = findViewById(R.id.vScroll);
+        hScroll = findViewById(R.id.hScroll);
 
+        // Set click listener for lower-right button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,33 +60,69 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        // Set up search start menu for determining start location of route
+        searchStartView = findViewById(R.id.searchStart);
+        SearchManager searchManager = (SearchManager)
+                getSystemService(Context.SEARCH_SERVICE);
+        searchStartView.setSearchableInfo(searchManager.
+                getSearchableInfo(getComponentName()));
+        searchStartView.setSubmitButtonEnabled(true);
+
+        // Set up search query listeners
+        searchStartView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("THIS TRIGGERS WHEN YOU OPEN SEARCH BAR (maybe this could toggle visibility of suggested results)");
+            }
+        });
+        searchStartView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                System.out.println("SUBMIT: " + s);
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String updatedText) {
+                System.out.println("NEW TEXT: " + updatedText);
+
+                // FROM HERE, reference SearchListSuggestions' getTopResults
+                // Make list underneath in Scrollable/LinearView of those suggestions as they type
+                // Also add Hint text to search bar
+                // SetSearchableInfo above????
+                // Look into SearchManager and searchManager.triggerSearch()
+
+                // These following lines may be useful above outside of the QueryTextListener:
+                // - Anything with searchStartMenuItem (searchStartMenuItem = menu.findItem(R.id.searchStart);)
+                //    - searchStartView = (SearchView) searchStartMenuItem.getActionView();
+//                MenuInflater inflater = getMenuInflater();
+//                inflater.inflate(R.menu.search_menu, menu);
+
+                // Do you need to check state? Like have State.VIEWING or State.MAPPING or something?
+                // Check menu or maybe color picker assignments?
+
+                return true;
+            }
+        });
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        int id = item.getItemId();
+        System.out.println("ID SELECTED: " + id);
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // Current x,y position on map that the user is looking at
         float curX, curY;
 
         switch (event.getAction()) {
