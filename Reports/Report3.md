@@ -1,0 +1,60 @@
+# Weekly Progress Report
+## Team Report
+### Last Week
+* Create mockups of UI and design
+*   Make Figma version
+* Have finalized collected data in CSV's
+* Put back-end architecture in GitHub
+### Progress and Issues
+* Finalized mockups of UI and design
+* Structured back-end/front-end interaction and pushed to GitHub
+* Had an issue finalizing the data due to inconsistencies in it
+### Plans and Goals
+* Finish collecting data
+* Set up UW campus map representation for back-end
+* Finish search bar and navigation of app
+## Jack's Report
+### Last Week
+* Finalize data model
+* Complete back-end architecture and design
+* If there is time, begin graph representation of UW Campus
+### Progress and Issues
+* 
+### Plans and Goals
+* 
+## Judas' Report
+### Last Week
+* Draw mock-ups for UI proposal before the meeting on Thursday
+* Create mock-up of UI in Figma by next Tuesday
+### Progress and Issues
+*
+### Plans and Goals
+* 
+## Turner's Report
+### Last Week
+* Collect final data set
+* If time, work on search bar for front-end part of app
+### Progress and Issues
+* Was unable to totally finish data set due to inconsistencies
+* Definitely started work on search bar and set up front-end structure
+### Plans and Goals
+* Finalize the data set
+* Finish the search bar
+## Sunny's Report
+### Last Week
+* Draw mock-ups for UI proposal before the meeting on Thursday
+* Create mock-up of UI in Figma by next Tuesday
+### Progress and Issues
+* 
+### Plans and Goals
+* 
+## Kevin's Report
+### Last Week
+* Become more familiar with Android Studio
+* Have some initial UI/UX ideas, wireframey ideas for app
+* Continue extracting data
+* Contribute to Figma application design
+### Progress and Issues
+* 
+### Plans and Goals
+* 
