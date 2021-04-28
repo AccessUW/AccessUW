@@ -64,6 +64,9 @@
 * Continue extracting data
 * Contribute to Figma application design
 ### Progress and Issues
-* 
+* Created UI mockups
+* Created & discussed Figma prototype, alongside Sunny & Judas
+* Assisted in Turner's map/data alignment by trying to figure out a universal transformation to apply, but that failed apparently, probably due to the disconnect between maps and data
 ### Plans and Goals
-* 
+* Start coding testing
+* Get some external feedback on the design
