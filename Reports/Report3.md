@@ -45,9 +45,11 @@
 * Draw mock-ups for UI proposal before the meeting on Thursday
 * Create mock-up of UI in Figma by next Tuesday
 ### Progress and Issues
-* 
+* Created mock-up of UI in Figma
+* Got some feedback and edited after
 ### Plans and Goals
-* 
+* Progress on possible revision of mock-up
+* research on different software testings 
 ## Kevin's Report
 ### Last Week
 * Become more familiar with Android Studio
