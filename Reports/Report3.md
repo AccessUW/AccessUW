@@ -27,9 +27,12 @@
 * Draw mock-ups for UI proposal before the meeting on Thursday
 * Create mock-up of UI in Figma by next Tuesday
 ### Progress and Issues
-*
+* Drew UI mock-up
+* Helped build final Figma UI mock-up
+* Created Component Diagram for View component
 ### Plans and Goals
-* 
+* Get a significant start on route drawing UI feature
+* Make any final changes to UI mock-up
 ## Turner's Report
 ### Last Week
 * Collect final data set
