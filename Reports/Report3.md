@@ -19,9 +19,13 @@
 * Complete back-end architecture and design
 * If there is time, begin graph representation of UW Campus
 ### Progress and Issues
-* 
+* Database was changed for csv files, so data model was scrapped
+* Completed back-end architecture with MVP design
 ### Plans and Goals
-* 
+* Start creating backend files
+* Write tests for graph and search component
+* Code the graph representation of the UW campus
+* Finish the search component
 ## Judas' Report
 ### Last Week
 * Draw mock-ups for UI proposal before the meeting on Thursday
