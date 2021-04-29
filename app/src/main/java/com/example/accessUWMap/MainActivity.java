@@ -15,11 +15,13 @@ import android.view.MotionEvent;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
@@ -37,8 +39,14 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
     // Search bar view and layout variables
-    SearchView searchStartView;
-    LinearLayout searchResultsLayout;
+    private SearchView searchStartView; // Search view for start location of route
+    private LinearLayout searchResultsLayout; // Linear layout of search result buttons
+
+    // Location choices by user
+    private String startLocation;
+    private String endLocation;
+
+    private String[] locations = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,16 @@ public class MainActivity extends AppCompatActivity {
         // Get search results vertical linear layout
         searchResultsLayout = findViewById(R.id.searchResultsLayout);
         searchResultsLayout.setBackgroundColor(Color.WHITE);
+
+
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, locations);
+//        AutoCompleteTextView actv = (AutoCompleteTextView) findViewById(R.id.startSearchBar);
+//        actv.setThreshold(1);
+//        actv.setAdapter(adapter);
+//        actv.setTextColor(Color.RED);
+
+
+
 
         // Set click listener for lower-right button
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -73,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
         searchStartView.setSubmitButtonEnabled(true);
 
         // Set up search query listeners
-        searchStartView.setOnSearchClickListener(view ->
-                System.out.println("THIS TRIGGERS WHEN YOU OPEN SEARCH BAR (maybe this could toggle visibility of suggested results)"));
         searchStartView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             // Updates whenever the user submits their typed text
             @Override
@@ -86,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             // Updates whenever the user changes what's in the search text box
             @Override
             public boolean onQueryTextChange(String updatedText) {
-                updateSearchResults(updatedText);
+                updateStartSearchResults(updatedText);
                 return true;
             }
         });
@@ -138,33 +154,36 @@ public class MainActivity extends AppCompatActivity {
      * Given the new text the user has entered, add the most relevant search results to
      * searchResultsLayout and display them to the user.
      *
-     * @param newText is the text the user has typed into the search bar
+     * @param newStartText is the text the user has typed into the start search bar
      */
-    private void updateSearchResults(String newText) {
+    private void updateStartSearchResults(String newStartText) {
         // Clear old results
         searchResultsLayout.removeAllViews();
 
         // Only display results if user has typed something
-        if (newText.length() >= 1) {
+        if (newStartText.length() >= 1) {
             //TODO: Get top search results here instead of default list here
-            System.out.println("NEW TEXT: " + newText);
+            System.out.println("NEW TEXT: " + newStartText);
             String[] sampleSearchResults = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
 
             // Add search results to searchResultsLayout
             for (String currResult : sampleSearchResults) {
-                // Create new SearchResultTextView
-                TextView result = new TextView(this);
+                // Create new button for the given result
+                Button result = new Button(this);
                 result.setText(currResult);
                 result.setTextColor(getResources().getColor(R.color.purple_700, null));
                 result.setTextSize(18);
 
-                // Create layout params for result text view
+                // Create layout params for result button
                 LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 resultLayoutParams.setMargins(SEARCH_RESULT_TEXT_MARGIN,SEARCH_RESULT_TEXT_MARGIN,SEARCH_RESULT_TEXT_MARGIN,SEARCH_RESULT_TEXT_MARGIN);
                 result.setLayoutParams(resultLayoutParams);
 
-                // Add result text view to linear layout search results
+                // Make click listener to set that button's result as start location
+                result.setOnClickListener(v -> updateStartLocation(currResult));
+
+                // Add result button to linear layout search results
                 searchResultsLayout.addView(result);
             }
         }
@@ -178,6 +197,18 @@ public class MainActivity extends AppCompatActivity {
         //    - searchStartView = (SearchView) searchStartMenuItem.getActionView();
         //                MenuInflater inflater = getMenuInflater();
         //                inflater.inflate(R.menu.search_menu, menu);
+    }
 
+    /**
+     * Updater method that controls the current start location of the user's selected route
+     * @param newStart is the new start location for the user's route
+     */
+    public void updateStartLocation(String newStart) {
+        System.out.println("NEW START: " + newStart);
+        // Update start location
+        startLocation = newStart;
+
+        // Close any search results
+        searchResultsLayout.removeAllViews();
     }
 }
