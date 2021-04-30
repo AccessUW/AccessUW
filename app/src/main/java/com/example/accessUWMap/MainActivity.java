@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -23,7 +25,15 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    ////////////////////////////////////////////////////////////
+    ///     Constants
+    ////////////////////////////////////////////////////////////
+    private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
+
     ////////////////////////////////////////////////////////////
     ///     Fields
     ////////////////////////////////////////////////////////////
@@ -34,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
 
-    private String[] locations = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
+    private List<LocationSearchResult> locations;
 
 
     ////////////////////////////////////////////////////////////
@@ -45,24 +55,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         // Get scroll views that control 2-D scrollability (i.e. user can move freely around map)
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
 
-        // Get auto-complete start search view
-        ArrayAdapter<String> startAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, locations);
-        AutoCompleteTextView startACTV = findViewById(R.id.searchStartView);
-        startACTV.setThreshold(1);
-        startACTV.setAdapter(startAdapter);
+        // Init full list of possible search results for start and end search bars
+        initSearchResults();
+        // Set up search bars for start and end locations
+        AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(this, android.R.layout.select_dialog_item, locations);
+        AutoCompleteTextView startSearchBar = findViewById(R.id.searchStartView);
+        startSearchBar.setAdapter(adapter);
+        startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
+        AutoCompleteTextView endSearchBar = findViewById(R.id.searchEndView);
+        endSearchBar.setAdapter(adapter);
+        endSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
 
-        // Get auto-complete end search view
-        ArrayAdapter<String> endAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, locations);
-        AutoCompleteTextView endACTV = findViewById(R.id.searchEndView);
-        endACTV.setThreshold(1);
-        endACTV.setAdapter(endAdapter);
+        // Set up start and end search bar listeners for when user selects an option
+        startSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
+                updateStartLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
+                        .getLocationResultName()));
+        endSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
+                updateEndLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
+                        .getLocationResultName()));
 
         // Set click listener for lower-right button
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -109,16 +124,36 @@ public class MainActivity extends AppCompatActivity {
      */
     public void updateStartLocation(String newStart) {
         System.out.println("NEW START: " + newStart);
+    }
 
-        //TODO: REMOVE LOCAL startLocation and switch to Presenter version of it
+    /**
+     * Updater method that controls the current end location of the user's selected route
+     * @param newEnd is the new end location for the user's route
+     */
+    public void updateEndLocation(String newEnd) {
+        System.out.println("NEW END: " + newEnd);
+    }
+
+    /**
+     * Search for the best route between the entered start and end locations. If either start or
+     * end is not selected, user will be notified to choose a valid start/end location.
+     */
+    public void startRouteSearch() {
         //TODO: Add catch here in updateStartLocation to tell user to give a valid input in case it's wrong
+    }
 
-        //TODO: Make it so user can't hit enter to go down and hiddenly stretch text view
-        //TODO: Maybe make it so if user hits enter it counts as hitting "Search"
-        //TODO: Make search bars have room on the left side for clear button and switch button?
+    /**
+     * Initialize the search results to populate the AutoCompleteTextView start and end location
+     * search bars.
+     */
+    private void initSearchResults() {
+         locations = new ArrayList<>();
 
-        //TODO: Can use getListSelection() to get what user selected
-        //TODO: Can use isPopupShowing() to see if popup menu is showing
+         // Acquire list of locations
+         String[] tempLocations = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
 
+         for (String currLocation : tempLocations) {
+             locations.add(new LocationSearchResult(currLocation));
+         }
     }
 }

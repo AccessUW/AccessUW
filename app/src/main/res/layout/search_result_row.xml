@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/search_bar_height"
+    android:paddingStart="@dimen/search_bar_text_padding_side"
+    android:paddingEnd="@dimen/search_bar_text_padding_side"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/search_result_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search_bar_height"
+        android:textColor="@color/purple_700"
+        android:textSize="@dimen/search_bar_text_size"
+        android:gravity="center_vertical"
+        tools:text="Maple Hall" />
+</LinearLayout>

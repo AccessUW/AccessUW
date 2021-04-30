@@ -12,28 +12,23 @@
         android:layout_height="wrap_content"
         android:theme="@style/Theme.AccessUW.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.AccessUW.PopupOverlay" />
-
         <AutoCompleteTextView
             android:id="@+id/searchStartView"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/search_bar_height"
             android:layout_below="@+id/sampleTextView"
-            android:backgroundTint="@color/white"
-            android:hint="@string/search_start_hint"
-            android:textColor="@color/purple_700"
-            android:textIsSelectable="true"
             android:layout_margin="@dimen/search_bar_margin"
+            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:gravity="center_vertical"
+            android:hint="@string/search_start_hint"
             android:paddingStart="@dimen/search_bar_text_padding_side"
             android:paddingEnd="@dimen/search_bar_text_padding_side"
-            android:paddingTop="@dimen/search_bar_text_padding_top"
-            android:background="@color/white"
-            android:popupTheme="@style/Theme.AccessUW.AutocompleteTextView">
+            android:textColor="@color/purple_700"
+            android:textIsSelectable="true"
+            android:maxLines="1"
+            android:lines="1"
+            android:singleLine="true">
 
             <requestFocus />
         </AutoCompleteTextView>
@@ -41,17 +36,21 @@
         <AutoCompleteTextView
             android:id="@+id/searchEndView"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/search_bar_height"
             android:layout_below="@+id/sampleTextView"
-            android:backgroundTint="@color/white"
-            android:hint="@string/search_start_hint"
-            android:textColor="@color/purple_700"
-            android:textIsSelectable="true"
             android:layout_margin="@dimen/search_bar_margin"
+            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:gravity="center_vertical"
+            android:hint="@string/search_end_hint"
             android:paddingStart="@dimen/search_bar_text_padding_side"
             android:paddingEnd="@dimen/search_bar_text_padding_side"
-            android:paddingTop="@dimen/search_bar_text_padding_top"
-            android:background="@color/white">
+            android:textColor="@color/purple_700"
+            android:textIsSelectable="true"
+            android:maxLines="1"
+            android:lines="1"
+            android:singleLine="true">
+
             <requestFocus />
         </AutoCompleteTextView>
 
@@ -65,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email"
-        android:contentDescription="@string/email" />
+        android:contentDescription="@string/email"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
