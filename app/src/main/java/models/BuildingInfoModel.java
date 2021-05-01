@@ -26,6 +26,20 @@ public class BuildingInfoModel {
     }
 
     /**
+     * Gets the building corresponding to the given short name identifier
+     * @param shortName short name identifier of the building
+     * @return building corresponding to the given short name
+     * @throws IllegalArgumentException if the short name doesn't have a corresponding building
+     */
+    public Building getBuilding(String shortName) throws IllegalArgumentException {
+        if (!shortNameToBuilding.containsKey(shortName)) {
+            throw new IllegalArgumentException("getBuilding - given name isn't a building on the" +
+                    " UW campus");
+        }
+        return null;
+    }
+
+    /**
      * Gets the description of the given building
      * @param shortName short name id of the building you want the description of
      * @return description of the given building

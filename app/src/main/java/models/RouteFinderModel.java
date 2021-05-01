@@ -10,14 +10,28 @@ public class RouteFinderModel {
     /**
      * Returns the shortest path between start and any of the places in ends
      * @param start Place we start the path from
-     * @param ends Places we want to end the path at
+     * @param end Building we want to end the path at
      * @param wheelchair True if the path needs to be wheelchair accessible
      * @param stairs True if the path can have stairs
      * @return A list of places that we will visit on this path, or an empty list if a valid path
-     * doesn't exist
+     * doesn't exist.
      */
-    public List<Place> shortestPath(Place start, Set<Place> ends, boolean wheelchair,
+    public List<Place> shortestPath(Place start, Building end, boolean wheelchair,
                                     boolean stairs) {
+        return null;
+    }
+
+    /**
+     * Returns the shortest path between the start building and the end building
+     * @param start building we start at
+     * @param end building we end at
+     * @param wheelchair true if the path needs to be wheelchair accessible
+     * @param stairs true if the path can have stairs
+     * @return A list of places that we will visit on this path, or an empty list if a valid path
+     * doesn't exist.
+     */
+    public List<Place> shortestPathBetweenBuildings(Building start, Building end,
+                                                    boolean wheelchair, boolean stairs) {
         return null;
     }
 
