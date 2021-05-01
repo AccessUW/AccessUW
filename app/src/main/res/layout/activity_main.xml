@@ -19,6 +19,22 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.AccessUW.PopupOverlay" />
 
+<!--        <TextView-->
+<!--            android:id="@+id/sampleTextView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Start location:" />-->
+
+<!--        <AutoCompleteTextView-->
+<!--            android:id="@+id/startSearchBar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@+id/sampleTextView"-->
+<!--            android:text="">-->
+
+<!--            <requestFocus />-->
+<!--        </AutoCompleteTextView>-->
+
         <SearchView
             android:id="@+id/searchStart"
             android:name="android.app.searchable"
@@ -32,7 +48,7 @@
             android:id="@+id/searchResultsLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
