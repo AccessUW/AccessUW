@@ -1,7 +1,13 @@
+package com.example.accessUWMap;
+
 import android.graphics.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import models.CampusModel;
+import models.Place;
 
 /**
  * This class represents the presenter component of the Model-Presenter-View framework.
@@ -11,16 +17,21 @@ import java.util.List;
 public class CampusPresenter {
 
     ////////////////////////////////////////////////////////////////////////////
-    ///     Fields                                                           ///
+    ///     Fields
     ////////////////////////////////////////////////////////////////////////////
-    private static Place currentStart; // Start location of route
-    private static Place currentEnd; // End location of route
+    private static String currentStart; // Start location of route
+    private static String currentEnd; // End location of route
     private static List<Place> currentRoute; // Route as list of places in order
     private static boolean wheelchair; // Toggle whether route needs to be wheelchair-accessible
     private static boolean noStairs; // Toggle whether route can have stairs
     private static boolean assistedEntrance; // Toggle whether an assisted entrance is required
     private static List<String> recentLocations; // Recently searched locations
     private static List<String> buildingNames;
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    ///     Methods
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Takes a short building name and updates currentStart.
@@ -60,12 +71,14 @@ public class CampusPresenter {
      * currentEnd is not set, this function returns null.
      *
      * @return list of places in order representing route from start to finish
+     *              (if start or end is not filled in, returns null)
+     *              (if route does not exist between the two places, returns empty list)
      */
     public static List<Place> getRoute() {
         if (currentStart == null || currentEnd == null) {
-            return null;
+            throw new IllegalArgumentException();
         } else {
-            return new ArrayList<>();
+            return new ArrayList<>(); //CampusModel.getShortestPath(currentStart, currentEnd, wheelchair, noStairs);
         }
     }
 
@@ -151,9 +164,11 @@ public class CampusPresenter {
         return "";
     }
 
-    private class Place {
-        public Place() {
-
-        }
+    /**
+     * Gets the long names of all buildings on the UW campus
+     * @return all long names of UW campus buildings
+     */
+    public static Set<String> getAllBuildingNames() {
+        return CampusModel.getAllBuildingNames();
     }
 }

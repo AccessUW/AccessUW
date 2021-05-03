@@ -9,11 +9,14 @@ import android.view.MotionEvent;
 import android.widget.AutoCompleteTextView;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import models.Place;
 
 public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
@@ -32,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private HorizontalScrollView hScroll;
 
     // List of buildings on campus
-    private List<LocationSearchResult> searchableLocations;
+    private Set<String> allBuildingNames; // Names of buildings
+    private List<LocationSearchResult> searchableLocations; // Set of search result objects
 
 
     ////////////////////////////////////////////////////////////
@@ -106,9 +110,10 @@ public class MainActivity extends AppCompatActivity {
      * @param newStart is the new start location for the user's route
      */
     public void updateStartLocation(String newStart) {
-
-
-        System.out.println("NEW START: " + newStart);
+        // Ensure valid start input to send to presenter
+        if (allBuildingNames.contains(newStart)) {
+            CampusPresenter.updateStart(newStart);
+        }
     }
 
     /**
@@ -116,7 +121,10 @@ public class MainActivity extends AppCompatActivity {
      * @param newEnd is the new end location for the user's route
      */
     public void updateEndLocation(String newEnd) {
-        System.out.println("NEW END: " + newEnd);
+        // Ensure valid end input to send to presenter
+        if (allBuildingNames.contains(newEnd)) {
+            CampusPresenter.updateEnd(newEnd);
+        }
     }
 
     /**
@@ -124,7 +132,22 @@ public class MainActivity extends AppCompatActivity {
      * end is not selected, user will be notified to choose a valid start/end location.
      */
     public void startRouteSearch() {
-        //TODO: Add catch here in updateStartLocation to tell user to give a valid input in case it's wrong
+        // Get the route between inputted start and end locations
+        try {
+            List<Place> route = CampusPresenter.getRoute();
+
+            if (route == null) {
+                Toast.makeText(this,
+                        "Sorry, no route exists between those 2 places with the given filters.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                // Process successful route built between inputted start and end locations
+                System.out.println(route.toString());
+            }
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(this, "Please enter valid start/end locations.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -132,19 +155,13 @@ public class MainActivity extends AppCompatActivity {
      * search bars.
      */
     private void initSearchResults() {
+        allBuildingNames = new HashSet<>();
         searchableLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
-        Set<String> allLocations = new HashSet<>(); //CampusModel.getAllBuildingNames();
+        allBuildingNames = CampusPresenter.getAllBuildingNames();
 
-        allLocations.add("Terry Hall");
-        allLocations.add("Suzallo Library");
-        allLocations.add("Madrona Hall");
-        allLocations.add("Hocus Pocus");
-        allLocations.add("Paccar Hall");
-        allLocations.add("Condon Hall");
-
-        for (String currLocation : allLocations) {
+        for (String currLocation : allBuildingNames) {
             searchableLocations.add(new LocationSearchResult(currLocation));
         }
     }
