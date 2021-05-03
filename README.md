@@ -25,8 +25,10 @@ features, etc.)
 - Autocomplete when searching for buildings/on-campus locations
 
 ## General repository layout:
-- /app/src/main/java/.../accessUWMap contains the main app front-end functionality (e.g. viewing the
-map, setting destinations, etc.)
-- /app/src/main/java contains the main back-end functionality (e.g. shortest-path-finding)
+- Model-View-Presenter:
+    - /app/src/main/java/models contains the Model of our MVP framework (with the back-end functionality)
+    - /app/src/main/java/.../accessUWMap contains the View of our MVP framework (with the main app front-end functionality (e.g. viewing the
+        map, setting destinations, etc.))
+    - /app/src/main/java/CampusPresenter.java contains the Presenter of our MVP framework
 - /app/src/main/res contains most of the app's resources (e.g. the map image and string names)
 - /Reports contains our team's weekly progress reports
