@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -71,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
         endSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
                 updateEndLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
                         .getLocationResultName()));
+
+        // Set up toggle button filter listeners for when user filters their route for accessibility
+        ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
+        ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
     }
 
     @Override
