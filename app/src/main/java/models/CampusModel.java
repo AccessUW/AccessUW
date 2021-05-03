@@ -9,6 +9,9 @@ import java.util.Set;
  * the closest building or place to a given x, y position.
  */
 public class CampusModel {
+    private static CampusTreeModel campusTreeModel;
+    private static RouteFinderModel routeFinderModel;
+    private static BuildingInfoModel buildingInfoModel;
 
     /**
      * This method initializes a CampusModel program
@@ -139,29 +142,30 @@ public class CampusModel {
 
     /**
      * Returns the shortest path between start and any of the places in ends
-     * @param start Place we start the path from
-     * @param end Building we want to end the path at
+     * @param startx x location the route starts from
+     * @param starty y location the route starts from
+     * @param end shortName identifier of the building we want to end the path at
      * @param wheelchair True if the path needs to be wheelchair accessible
      * @param stairs True if the path can have stairs
      * @return A list of places that we will visit on this path, or an empty list if a valid path
      * doesn't exist
      */
-    public static List<Place> getShortestPath(Place start, Building end, boolean wheelchair,
-                                       boolean stairs) {
+    public static List<Place> getShortestPath(float startx, float starty, String end,
+                                              boolean wheelchair, boolean stairs) {
         return null;
     }
 
     /**
      * Returns the shortest path between the start building and the end building
-     * @param start building we start at
-     * @param end building we end at
+     * @param start shortName identifer of the building we start at
+     * @param end shortName identifier of the building we end at
      * @param wheelchair true if the path needs to be wheelchair accessible
      * @param stairs true if the path can have stairs
      * @return A list of places that we will visit on this path, or an empty list if a valid path
      * doesn't exist.
      */
-    public static List<Place> shortestPathBetweenBuildings(Building start, Building end,
-                                                    boolean wheelchair, boolean stairs) {
+    public static List<Place> shortestPathBetweenBuildings(String start, String end,
+                                                           boolean wheelchair, boolean stairs) {
         return null;
     }
 }
