@@ -8,6 +8,7 @@ import java.util.Set;
  */
 public class BuildingInfoModel {
     private Map<String, String> longToShortName;
+    private Map<String, String> shortToLongName;
     private Map<String, Building> shortNameToBuilding;
     private Map<String, String> shortNameToAddress;
 
@@ -20,6 +21,20 @@ public class BuildingInfoModel {
     public String getShortName(String longName) throws IllegalArgumentException {
         if (!longToShortName.containsKey(longName)) {
             throw new IllegalArgumentException("getShortName - given name isn't a building on the" +
+                    " UW campus");
+        }
+        return "";
+    }
+
+    /**
+     * Gets the short name identifier of a building on campus
+     * @param shortName short name identifier of the building on UW campus
+     * @return long name corresponding to the given short name id
+     * @throws IllegalArgumentException if shortName is not a building on the UW campus
+     */
+    public String getLongName(String shortName) throws IllegalArgumentException {
+        if (!shortToLongName.containsKey(shortName)) {
+            throw new IllegalArgumentException("getLongName - given name isn't a building on the" +
                     " UW campus");
         }
         return "";

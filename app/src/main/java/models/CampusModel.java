@@ -9,17 +9,33 @@ import java.util.Set;
  * the closest building or place to a given x, y position.
  */
 public class CampusModel {
-    private BuildingInfoModel buildingInfo;
-    private CampusTreeModel campusTree;
-    private RouteFinderModel routeFinder;
+
+    /**
+     * This method initializes a CampusModel program
+     * @param filepath filepath to the UW Campus data
+     * @throws IllegalArgumentException if the filepath does not exist
+     */
+    public static void init(String filepath) throws IllegalArgumentException {
+
+    }
 
     /**
      * Gets the short name identifier of a building on campus
      * @param longName long name of the building on UW campus
      * @return short name id corresponding to the given long name
      */
-    public String getShortName(String longName) {
-        return buildingInfo.getShortName(longName);
+    public static String getShortName(String longName) {
+        return "";
+    }
+
+    /**
+     * Gets the short name identifier of a building on campus
+     * @param shortName short name identifier of the building on UW campus
+     * @return long name corresponding to the given short name id
+     * @throws IllegalArgumentException if shortName is not a building on the UW campus
+     */
+    public static String getLongName(String shortName) throws IllegalArgumentException {
+        return "";
     }
 
     /**
@@ -28,7 +44,7 @@ public class CampusModel {
      * @return building corresponding to the given short name
      * @throws IllegalArgumentException if the short name doesn't have a corresponding building
      */
-    public Building getBuilding(String shortName) {
+    public static Building getBuilding(String shortName) {
         return null;
     }
 
@@ -37,8 +53,8 @@ public class CampusModel {
      * @param shortName short name id of the building you want the description of
      * @return description of the given building
      */
-    public String getBuildingDescription(String shortName) {
-        return buildingInfo.getBuildingDescription(shortName);
+    public static String getBuildingDescription(String shortName) {
+        return "";
     }
 
     /**
@@ -47,7 +63,7 @@ public class CampusModel {
      * @param assisted true if you only want assited entrances, false otherwise
      * @return Places that represent entrances of the given building
      */
-    public Set<Place> getEntrances(String shortName, boolean assisted) {
+    public static Set<Place> getEntrances(String shortName, boolean assisted) {
         return null;
     }
 
@@ -59,7 +75,7 @@ public class CampusModel {
      * @param assisted true if the entrance must be assited, false otherwise
      * @return closest entrance of the given building to the given x, y
      */
-    public Place getClosestEntrance(float x, float y, String shortName, boolean assisted) {
+    public static Place getClosestEntrance(float x, float y, String shortName, boolean assisted) {
         return null;
     }
 
@@ -68,7 +84,7 @@ public class CampusModel {
      * @param shortName short name identifier of the building you want the address of
      * @return address of the given building
      */
-    public String getAddress(String shortName) {
+    public static String getAddress(String shortName) {
         return "";
     }
 
@@ -77,7 +93,7 @@ public class CampusModel {
      * @param shortName short name identifier of the building
      * @return true if the building has elevator access, otherwise false
      */
-    public boolean hasElevatorAccess(String shortName) {
+    public static boolean hasElevatorAccess(String shortName) {
         return false;
     }
 
@@ -86,7 +102,7 @@ public class CampusModel {
      * @param shortName short name identifier of the building
      * @return true if the building has a gender neutral restroom, otherwise false
      */
-    public boolean hasGenderNeutralRestroom(String shortName) {
+    public static boolean hasGenderNeutralRestroom(String shortName) {
         return false;
     }
 
@@ -94,7 +110,7 @@ public class CampusModel {
      * Gets the long names of all buildings on the UW campus
      * @return all long names of UW campus buildings
      */
-    public Set<String> getAllBuildingNames() {
+    public static Set<String> getAllBuildingNames() {
         return null;
     }
 
@@ -106,7 +122,7 @@ public class CampusModel {
      * @param elevator True if the building must have an elevator
      * @return The long name of the building closest to the given x, y
      */
-    public String findClosestBuilding(float x, float y, boolean genderNeutralRestroom,
+    public static String findClosestBuilding(float x, float y, boolean genderNeutralRestroom,
                                       boolean elevator) {
         return "";
     }
@@ -117,7 +133,7 @@ public class CampusModel {
      * @param y y value of the point we want the closest place to
      * @return the Place closest to the given x, y
      */
-    public Place findClosestPlace(float x, float y) {
+    public static Place findClosestPlace(float x, float y) {
         return null;
     }
 
@@ -130,7 +146,7 @@ public class CampusModel {
      * @return A list of places that we will visit on this path, or an empty list if a valid path
      * doesn't exist
      */
-    public List<Place> getShortestPath(Place start, Building end, boolean wheelchair,
+    public static List<Place> getShortestPath(Place start, Building end, boolean wheelchair,
                                        boolean stairs) {
         return null;
     }
@@ -144,7 +160,7 @@ public class CampusModel {
      * @return A list of places that we will visit on this path, or an empty list if a valid path
      * doesn't exist.
      */
-    public List<Place> shortestPathBetweenBuildings(Building start, Building end,
+    public static List<Place> shortestPathBetweenBuildings(Building start, Building end,
                                                     boolean wheelchair, boolean stairs) {
         return null;
     }
