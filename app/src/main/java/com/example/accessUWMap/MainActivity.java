@@ -1,32 +1,19 @@
 package com.example.accessUWMap;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.view.MotionEvent;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.SearchView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
@@ -44,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
 
-    private List<LocationSearchResult> locations;
+    // List of buildings on campus
+    private List<LocationSearchResult> searchableLocations;
 
 
     ////////////////////////////////////////////////////////////
@@ -63,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         // Init full list of possible search results for start and end search bars
         initSearchResults();
         // Set up search bars for start and end locations
-        AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(this, android.R.layout.select_dialog_item, locations);
+        AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
+                this, android.R.layout.select_dialog_item, searchableLocations);
         AutoCompleteTextView startSearchBar = findViewById(R.id.searchStartView);
         startSearchBar.setAdapter(adapter);
         startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
@@ -78,12 +67,6 @@ public class MainActivity extends AppCompatActivity {
         endSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
                 updateEndLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
                         .getLocationResultName()));
-
-        // Set click listener for lower-right button
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
     }
 
     @Override
@@ -123,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
      * @param newStart is the new start location for the user's route
      */
     public void updateStartLocation(String newStart) {
+
+
         System.out.println("NEW START: " + newStart);
     }
 
@@ -147,13 +132,20 @@ public class MainActivity extends AppCompatActivity {
      * search bars.
      */
     private void initSearchResults() {
-         locations = new ArrayList<>();
+        searchableLocations = new ArrayList<>();
 
-         // Acquire list of locations
-         String[] tempLocations = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
+        // Acquire list of all buildings on campus
+        Set<String> allLocations = new HashSet<>(); //CampusModel.getAllBuildingNames();
 
-         for (String currLocation : tempLocations) {
-             locations.add(new LocationSearchResult(currLocation));
-         }
+        allLocations.add("Terry Hall");
+        allLocations.add("Suzallo Library");
+        allLocations.add("Madrona Hall");
+        allLocations.add("Hocus Pocus");
+        allLocations.add("Paccar Hall");
+        allLocations.add("Condon Hall");
+
+        for (String currLocation : allLocations) {
+            searchableLocations.add(new LocationSearchResult(currLocation));
+        }
     }
 }
