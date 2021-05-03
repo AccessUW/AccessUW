@@ -159,7 +159,13 @@ public class MainActivity extends AppCompatActivity {
         searchableLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
-        allBuildingNames = CampusPresenter.getAllBuildingNames();
+        allBuildingNames = new HashSet<>(); //CampusPresenter.getAllBuildingNames();
+
+        allBuildingNames.add("Terry Hall");
+        allBuildingNames.add("Odegaard Library");
+        allBuildingNames.add("The HUB");
+        allBuildingNames.add("Condon Hall");
+        allBuildingNames.add("The District Market");
 
         for (String currLocation : allBuildingNames) {
             searchableLocations.add(new LocationSearchResult(currLocation));
