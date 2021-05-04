@@ -34,9 +34,10 @@
 * Get a significant start on route drawing UI feature
 * Make any final changes to UI mock-up
 ### Progress and Issues
-*
+* Started modifying map to include new buildings
 ### Plans and Goals
-*
+* Finish route drawing feature for front-end
+* Finish updated map
 ## Turner's Report
 ### Last Week
 * Finalize the data set
