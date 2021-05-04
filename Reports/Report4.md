@@ -1,0 +1,61 @@
+# Weekly Progress Report
+## Team Report
+### Last Week
+* Finish collecting data
+* Set up UW campus map representation for back-end
+* Finish search bar and navigation of app
+### Progress and Issues
+* Finished search bar and route filter checkboxes
+* Nearly finished data collection
+* Completed model framework and map representation in back-end
+* Finished Figma visual displays for UI reference
+### Plans and Goals
+* Finish app for beta release
+* Complete build + run instructions for a user to use our app
+* Complete data
+* Full user flow is viable from start to navigating from one location to another
+* Set up automatic testing with tests
+## Jack's Report
+### Last Week
+* Start creating backend files
+* Write tests for graph and search component
+* Code the graph representation of the UW campus
+* Finish the search component
+### Progress and Issues
+*
+### Plans and Goals
+*
+## Judas' Report
+### Last Week
+* Get a significant start on route drawing UI feature
+* Make any final changes to UI mock-up
+### Progress and Issues
+*
+### Plans and Goals
+*
+## Turner's Report
+### Last Week
+* Finalize the data set
+* Finish the search bar
+### Progress and Issues
+* Finished search bar and filter checkboxes
+* Finished nearly all the data collection sans path labels (i.e. stairs, wheelchair-acc., etc.)
+### Plans and Goals
+* Finish all data and push to GitHub for back-end ASAP
+* Finish user flow from start to navigating route
+## Sunny's Report
+### Last Week
+* Progress on possible revision of mock-up
+* research on different software testings 
+### Progress and Issues
+*
+### Plans and Goals
+*
+## Kevin's Report
+### Last Week
+* Start coding testing
+* Get some external feedback on the design
+### Progress and Issues
+*
+### Plans and Goals
+*
