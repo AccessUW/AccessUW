@@ -42,6 +42,11 @@ public class RouteEdge {
         this.hasStairs = stairs;
     }
 
+    /**
+     * Checks the equality of this RouteEdge with another object
+     * @param o object you want to check the equality of
+     * @return true if this object is equal to o, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this) {
@@ -57,5 +62,18 @@ public class RouteEdge {
         RouteEdge re = (RouteEdge) o;
 
         return re.ends.equals(this.ends);
+    }
+
+    /**
+     * Get the hash code of this RouteEdge
+     * @return hashcode of this RouteEdge
+     */
+    @Override
+    public int hashCode() {
+        int code = 0;
+        for (Place end : this.ends) {
+            code += end.hashCode();
+        }
+        return (int) (this.distance + code);
     }
 }

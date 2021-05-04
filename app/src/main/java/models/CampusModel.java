@@ -152,7 +152,6 @@ public class CampusModel {
      */
     public static List<Place> getShortestPath(float startx, float starty, String end,
                                               boolean wheelchair, boolean stairs) {
-        // TODO: add exception handling
         Place start = campusTreeModel.findClosestPlace(startx, starty);
         Building endBuilding = buildingInfoModel.getBuilding(end);
         return routeFinderModel.shortestPath(start, endBuilding, wheelchair, stairs);
@@ -169,7 +168,6 @@ public class CampusModel {
      */
     public static List<Place> shortestPathBetweenBuildings(String start, String end,
                                                            boolean wheelchair, boolean stairs) {
-        // TODO: add exception handling after buildings are created
         Building startBuilding = buildingInfoModel.getBuilding(start);
         Building endBuilding = buildingInfoModel.getBuilding(end);
         return routeFinderModel.shortestPathBetweenBuildings(startBuilding, endBuilding, wheelchair,

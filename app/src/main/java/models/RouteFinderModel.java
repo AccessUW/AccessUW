@@ -16,14 +16,11 @@ import java.util.Set;
  * of a given Building's valid entrances.
  */
 public class RouteFinderModel {
-    private Set<Place> vertices;
 
     /**
      * Creates a new RouteFinderModel object
-     * @param vertices set of Place objects with neighboring edges that connect the UW campus
      */
-    public RouteFinderModel(Set<Place> vertices) {
-        this.vertices = vertices;
+    public RouteFinderModel() {
     }
 
     /**
@@ -64,6 +61,8 @@ public class RouteFinderModel {
         Set<Place> starts;
         Set<Place> ends;
 
+        // If the path requires wheelchair accessibility, only find accessible entrances to the
+        // building
         if (wheelchair) {
             ends = end.getAssistedEntrances();
             starts = start.getAssistedEntrances();
@@ -96,18 +95,21 @@ public class RouteFinderModel {
 
         PlacePriorityQueue fringe = new PlacePriorityQueue();
         for (Place entrance : starts) {
+
             fringe.add(entrance, heuristic(entrance, ends));
             distTo.put(entrance, 0f);
         }
 
         boolean foundSolution = false;
 
+        // A* Search Algorithm:
         while (!fringe.isEmpty()) {
             Place p = fringe.popMin();
 
             visited.add(p);
 
-            if (isGoal(p, end, wheelchair)) { // if we found a goal, stop searching
+            // If we found a goal, stop searching
+            if (isGoal(p, end, wheelchair)) {
                 solution.add(p);
                 foundSolution = true;
                 break;
@@ -118,6 +120,7 @@ public class RouteFinderModel {
                     continue; // skip paths that go against our filters
                 }
 
+                // Get the neighboring Place
                 Place q = null;
                 for (Place place : re.ends) {
                     if (!p.equals(q)) {
@@ -125,6 +128,7 @@ public class RouteFinderModel {
                     }
                 }
 
+                // Error -- edge doesn't have 2 ends
                 if (q == null) {
                     continue; // skip over bad edges
                 }
@@ -134,7 +138,6 @@ public class RouteFinderModel {
                         distTo.put(q, Float.MAX_VALUE);
                     }
 
-                    // TODO: find better solution to handle this potential error
                     Float currDistance = distTo.get(q);
                     Float thisDistance = distTo.get(p);
                     if (currDistance == null || thisDistance == null) {
@@ -142,10 +145,12 @@ public class RouteFinderModel {
                     }
                     thisDistance +=  + re.distance;
 
+                    // Update parent and distTo if the current edge give a shorter path to q
                     if (thisDistance < currDistance) {
                         parents.put(q, p);
                         distTo.put(q, thisDistance);
 
+                        // Change or add q to the fringe
                         if (fringe.contains(q)) {
                             fringe.updatePriority(q, thisDistance + heuristic(q, ends));
                         } else {
@@ -169,12 +174,11 @@ public class RouteFinderModel {
                 }
             }
 
-            //TODO: add handling for when disto.get(current) == null
-
             // Reverse the list to get the correct order of visits
             Collections.reverse(solution);
             return solution;
         } else {
+            // Return empty list if no solution was found
             return new LinkedList<>();
         }
 

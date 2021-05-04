@@ -12,8 +12,11 @@ import java.util.Map;
  * updated after creation.
  */
 public class PlacePriorityQueue {
+    // Internal heap
     private List<Place> items;
+    // Priorities of each item in the queue
     private Map<Place, Float> priorities;
+    // Indices of each item in the queue
     private Map<Place, Integer> indices;
 
     /**
@@ -80,6 +83,7 @@ public class PlacePriorityQueue {
         priorities.put(place, priority);
         Integer idx = indices.get(place);
 
+        // If priority was increased, sink lower down the heap. Otherwise, swim to better position
         if (oldPriority != null && idx != null) {
             if (oldPriority < priority) {
                 sink(idx);
@@ -129,7 +133,6 @@ public class PlacePriorityQueue {
         if (items.get(i) == null || items.get(j) == null) {
             throw new IllegalArgumentException("hasGreaterPriority - index has no associated Place");
         }
-        // TODO: handle warnings
         return priorities.get(items.get(i)) > priorities.get(items.get(j));
     }
 

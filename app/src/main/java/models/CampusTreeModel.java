@@ -28,6 +28,7 @@ public class CampusTreeModel {
      */
     public String findClosestBuilding(float x, float y, boolean genderNeutralRestroom,
                                       boolean elevator) {
+        // TODO: implement KD-tree search to find closest building
         return "";
     }
 
@@ -38,6 +39,7 @@ public class CampusTreeModel {
      * @return the Place closest to the given x, y
      */
     public Place findClosestPlace(float x, float y) {
+        // TODO: implement KD-tree search to find closest Place
         return null;
     }
 }

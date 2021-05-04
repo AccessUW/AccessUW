@@ -78,7 +78,31 @@ public class Place {
         this.neighbors.add(edge);
     }
 
-    // TODO: add equals method
+    /**
+     * Checks the equality of this Place with another object
+     * @param o object you want to check the equality of
+     * @return true if this object is equal to o, otherwise false
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
 
-    // TODO: add hash method
+        if (!(o instanceof Place)) {
+            return false;
+        }
+
+        Place p = (Place) o;
+        return this.getX() == p.getX() && this.getY() == p.getY() && this.entrance == p.entrance;
+    }
+
+    /**
+     * Get the hash code of this Place
+     * @return hashcode of this Place
+     */
+    @Override
+    public int hashCode() {
+        return (int) (this.xPos + this.yPos);
+    }
 }
