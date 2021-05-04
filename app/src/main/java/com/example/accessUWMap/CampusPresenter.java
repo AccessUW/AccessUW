@@ -55,6 +55,41 @@ public class CampusPresenter {
     }
 
     /**
+     * Getter method for current start building
+     */
+    public static String getCurrentStart() {
+        return currentStart;
+    }
+
+    /**
+     * Getter method for current end building
+     */
+    public static String getCurrentEnd() {
+        return currentEnd;
+    }
+
+    /**
+     * Getter method for whether wheelchair filter is applied
+     */
+    public static boolean getWheelchair() {
+        return wheelchair;
+    }
+
+    /**
+     * Getter method for whether no-stairs filter is applied
+     */
+    public static boolean getNoStairs() {
+        return noStairs;
+    }
+
+    /**
+     * Getter method for whether assisted entrance filter is applied
+     */
+    public static boolean getAssistedEntrance() {
+        return assistedEntrance;
+    }
+
+    /**
      * Takes a long building name and updates currentStart.
      *
      * @param startBuildingName is long building name for start location
