@@ -1,12 +1,31 @@
 package models;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 /**
- * This class defines a model for
+ * This class defines a model for finding a route between two Buildings, or from a Place to any
+ * of a given Building's valid entrances.
  */
 public class RouteFinderModel {
+    private Set<Place> vertices;
+
+    /**
+     * Creates a new RouteFinderModel object
+     * @param vertices set of Place objects with neighboring edges that connect the UW campus
+     */
+    public RouteFinderModel(Set<Place> vertices) {
+        this.vertices = vertices;
+    }
+
     /**
      * Returns the shortest path between start and any of the places in ends
      * @param start Place we start the path from
@@ -18,7 +37,17 @@ public class RouteFinderModel {
      */
     public List<Place> shortestPath(Place start, Building end, boolean wheelchair,
                                     boolean stairs) {
-        return null;
+        Set<Place> starts = new HashSet<>();
+        starts.add(start);
+
+        Set<Place> ends;
+        if (wheelchair) {
+            ends = end.getAssistedEntrances();
+        } else {
+            ends = end.getEntrances();
+        }
+
+        return getShortestPath(starts, ends, end, wheelchair, stairs);
     }
 
     /**
@@ -32,7 +61,138 @@ public class RouteFinderModel {
      */
     public List<Place> shortestPathBetweenBuildings(Building start, Building end,
                                                     boolean wheelchair, boolean stairs) {
-        return null;
+        Set<Place> starts;
+        Set<Place> ends;
+
+        if (wheelchair) {
+            ends = end.getAssistedEntrances();
+            starts = start.getAssistedEntrances();
+        } else {
+            ends = end.getEntrances();
+            starts = start.getEntrances();
+        }
+
+        return getShortestPath(starts, ends, end, wheelchair, stairs);
+    }
+
+    /**
+     * Internal helper function to find the shortest path from a set of start locations to a set of
+     * end locations
+     * @param starts locations we can start the path at
+     * @param ends locations we can end the path at
+     * @param end building we are ending the path at
+     * @param wheelchair true if the path should be wheelchair accessible
+     * @param stairs true if the path can have stairs
+     * @return ordered list of the places we will visit on this path, or an empty path if no result
+     * was found
+     */
+    private List<Place> getShortestPath(Set<Place> starts, Set<Place> ends, Building end,
+                                        boolean wheelchair, boolean stairs) {
+
+        List<Place> solution = new LinkedList<>();
+        Set<Place> visited = new HashSet<>();
+        Map<Place, Place> parents = new HashMap<>();
+        Map<Place, Float> distTo = new HashMap<>();
+
+        PlacePriorityQueue fringe = new PlacePriorityQueue();
+        for (Place entrance : starts) {
+            fringe.add(entrance, heuristic(entrance, ends));
+            distTo.put(entrance, 0f);
+        }
+
+        boolean foundSolution = false;
+
+        while (!fringe.isEmpty()) {
+            Place p = fringe.popMin();
+
+            visited.add(p);
+
+            if (isGoal(p, end, wheelchair)) { // if we found a goal, stop searching
+                solution.add(p);
+                foundSolution = true;
+                break;
+            }
+
+            for (RouteEdge re : p.getNeighbors()) {
+                if (wheelchair && !re.wheelChairAccess || !stairs && re.hasStairs) {
+                    continue; // skip paths that go against our filters
+                }
+
+                Place q = null;
+                for (Place place : re.ends) {
+                    if (!p.equals(q)) {
+                        q = place;
+                    }
+                }
+
+                if (q == null) {
+                    continue; // skip over bad edges
+                }
+
+                if (!visited.contains(q)) {
+                    if (!distTo.containsKey(q)) {
+                        distTo.put(q, Float.MAX_VALUE);
+                    }
+
+                    // TODO: find better solution to handle this potential error
+                    Float currDistance = distTo.get(q);
+                    Float thisDistance = distTo.get(p);
+                    if (currDistance == null || thisDistance == null) {
+                        throw new Error();
+                    }
+                    thisDistance +=  + re.distance;
+
+                    if (thisDistance < currDistance) {
+                        parents.put(q, p);
+                        distTo.put(q, thisDistance);
+
+                        if (fringe.contains(q)) {
+                            fringe.updatePriority(q, thisDistance + heuristic(q, ends));
+                        } else {
+                            fringe.add(q, thisDistance + heuristic(q, ends));
+                        }
+                    }
+                }
+            }
+        }
+
+        // If we found a solution return it, otherwise return an empty list
+        if (foundSolution) {
+            // follow parents from goal to one of the start states
+            Place current = solution.get(0);
+            while (distTo.get(current) != null && distTo.get(current) != 0f) {
+                Place from = parents.get(current);
+                solution.add(from);
+                current = from;
+                if (current == null) {
+                    break;
+                }
+            }
+
+            //TODO: add handling for when disto.get(current) == null
+
+            // Reverse the list to get the correct order of visits
+            Collections.reverse(solution);
+            return solution;
+        } else {
+            return new LinkedList<>();
+        }
+
+    }
+
+    /**
+     * Private helper to check if a place is an entrance at our destination
+     * @param place place we want to check
+     * @param b our goal building
+     * @param wheelchair true if the goal should be an accessible entrance
+     * @return true if the given place is a valid entrance of the given building, false otherwise
+     */
+    private boolean isGoal(Place place, Building b, boolean wheelchair) {
+        if (wheelchair) {
+            return b.getAssistedEntrances().contains(place);
+        } else {
+            return b.getEntrances().contains(place);
+        }
     }
 
     /**
@@ -42,6 +202,11 @@ public class RouteFinderModel {
      * @return estimated distance between currPlace and the closest end
      */
     private float heuristic(Place currPlace, Set<Place> ends) {
-        return 0;
+        float minDist = Float.MAX_VALUE;
+        for (Place end : ends) {
+            minDist = Math.min(minDist, Math.abs(currPlace.getX() - end.getX()) +
+                    Math.abs(currPlace.getY() - end.getY()));
+        }
+        return minDist;
     }
 }
