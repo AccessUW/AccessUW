@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             List<Place> route = CampusPresenter.getRoute();
 
-            if (route == null) {
+            if (route.isEmpty()) {
                 Toast.makeText(this,
                         "Sorry, no route exists between those 2 places with the given filters.",
                         Toast.LENGTH_LONG).show();
