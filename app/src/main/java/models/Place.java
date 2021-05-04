@@ -77,4 +77,8 @@ public class Place {
         RouteEdge edge = new RouteEdge(this, destination, distance, wheelChairAccess, hasStairs);
         this.neighbors.add(edge);
     }
+
+    // TODO: add equals method
+
+    // TODO: add hash method
 }

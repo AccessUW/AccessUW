@@ -96,4 +96,8 @@ public class Building {
     public String getDescription() {
         return description;
     }
+
+    //TODO: add equals method
+
+    //TODO: add hash method
 }

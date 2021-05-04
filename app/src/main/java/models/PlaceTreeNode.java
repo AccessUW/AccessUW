@@ -1,5 +1,7 @@
 package models;
 
+// TODO: implement class
+
 /**
  * This class defines a PlaceTreeNode, which represents a Place within a KD-Tree
  */
