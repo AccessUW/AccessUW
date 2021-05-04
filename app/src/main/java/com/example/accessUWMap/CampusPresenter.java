@@ -120,27 +120,6 @@ public class CampusPresenter {
     }
 
     /**
-     * Takes a short building name and returns (x,y) coordinate of that place as a Point.
-     * The (x,y) coordinates are in terms of pixels on the map image.
-     *
-     * @param buildingName is short building name for given location
-     * @requires buildingName has length of >= 1 and is a valid building name
-     * @throws IllegalArgumentException if buildingName requirements aren't met
-     *
-     * @return point representing (x,y) coordinates of the building in terms of pixels on the map.
-     */
-    public static Point getPlace(String buildingName) {
-        if (buildingName == null || buildingName.length() < 1 ||
-                !buildingNames.contains(buildingName)) {
-            throw new IllegalArgumentException();
-        }
-
-        //TODO: Connect with CampusModel and data to finish this
-
-        return null;
-    }
-
-    /**
      * Returns route from currentStart to currentEnd positions. If either currentStart or
      * currentEnd is not set, this function returns null.
      *
