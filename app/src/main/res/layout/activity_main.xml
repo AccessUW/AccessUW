@@ -7,52 +7,83 @@
     android:clickable="false"
     tools:context=".MainActivity">
 
+    <include layout="@layout/map_layout" />
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.AccessUW.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <AutoCompleteTextView
+            android:id="@+id/searchStartView"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.AccessUW.PopupOverlay" />
+            android:layout_height="@dimen/search_bar_height"
+            android:layout_below="@+id/sampleTextView"
+            android:layout_margin="@dimen/search_bar_margin"
+            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:gravity="center_vertical"
+            android:hint="@string/search_start_hint"
+            android:lines="1"
+            android:maxLines="1"
+            android:paddingStart="@dimen/search_bar_text_padding_side"
+            android:paddingEnd="@dimen/search_bar_text_padding_side"
+            android:singleLine="true"
+            android:textColor="@color/purple_700"
+            android:textIsSelectable="true">
 
-<!--        <TextView-->
-<!--            android:id="@+id/sampleTextView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Start location:" />-->
+            <requestFocus />
+        </AutoCompleteTextView>
 
-<!--        <AutoCompleteTextView-->
-<!--            android:id="@+id/startSearchBar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@+id/sampleTextView"-->
-<!--            android:text="">-->
-
-<!--            <requestFocus />-->
-<!--        </AutoCompleteTextView>-->
-
-        <SearchView
-            android:id="@+id/searchStart"
-            android:name="android.app.searchable"
+        <AutoCompleteTextView
+            android:id="@+id/searchEndView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:resource="@xml/searchable">
+            android:layout_height="@dimen/search_bar_height"
+            android:layout_below="@+id/sampleTextView"
+            android:layout_margin="@dimen/search_bar_margin"
+            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:gravity="center_vertical"
+            android:hint="@string/search_end_hint"
+            android:lines="1"
+            android:maxLines="1"
+            android:paddingStart="@dimen/search_bar_text_padding_side"
+            android:paddingEnd="@dimen/search_bar_text_padding_side"
+            android:singleLine="true"
+            android:textColor="@color/purple_700"
+            android:textIsSelectable="true">
 
-        </SearchView>
+            <requestFocus />
+        </AutoCompleteTextView>
 
         <LinearLayout
-            android:id="@+id/searchResultsLayout"
+            android:id="@+id/routeFilterButtonsLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:layout_height="@dimen/search_bar_height"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/filterWheelchair"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/purple_700"
+                android:textOff="@string/button_toggle_wheel_chair"
+                android:textOn="@string/button_toggle_wheel_chair"
+                android:textSize="@dimen/search_bar_text_size" />
+
+            <ToggleButton
+                android:id="@+id/filterNoStairs"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_weight="2"
+                android:textColor="@color/purple_700"
+                android:textOff="@string/button_toggle_no_stairs"
+                android:textOn="@string/button_toggle_no_stairs"
+                android:textSize="@dimen/search_bar_text_size" />
+        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <include layout="@layout/map_layout" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -60,6 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@string/email"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

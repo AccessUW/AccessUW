@@ -3,6 +3,9 @@
     <string name="action_settings">Settings</string>
     <string name="main_campus_map_desc">Main campus map</string>
     <string name="search_start_hint">Enter a start location…</string>
+    <string name="search_end_hint">Enter an end location…</string>
+    <string name="button_toggle_wheel_chair">Wheel-chair</string>
+    <string name="button_toggle_no_stairs">No stairs</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -11,4 +14,5 @@
     <string name="previous">Previous</string>
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="email">Email</string>
 </resources>

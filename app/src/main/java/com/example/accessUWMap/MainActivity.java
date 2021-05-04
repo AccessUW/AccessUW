@@ -1,33 +1,29 @@
 package com.example.accessUWMap;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.view.MotionEvent;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.SearchView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import models.Place;
 
 public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
-    private static final int SEARCH_RESULT_TEXT_MARGIN = 25;
+    private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
 
     ////////////////////////////////////////////////////////////
     ///     Fields
@@ -38,84 +34,50 @@ public class MainActivity extends AppCompatActivity {
     // Scroll views for moving on the map
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
-    // Search bar view and layout variables
-    private SearchView searchStartView; // Search view for start location of route
-    private LinearLayout searchResultsLayout; // Linear layout of search result buttons
 
-    // Location choices by user
-    private String startLocation;
-    private String endLocation;
+    // List of buildings on campus
+    private Set<String> allBuildingNames; // Names of buildings
+    private List<LocationSearchResult> searchableLocations; // Set of search result objects
 
-    private String[] locations = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
+
+    ////////////////////////////////////////////////////////////
+    ///     Methods
+    ////////////////////////////////////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         // Get scroll views that control 2-D scrollability (i.e. user can move freely around map)
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
 
-        // Get search results vertical linear layout
-        searchResultsLayout = findViewById(R.id.searchResultsLayout);
-        searchResultsLayout.setBackgroundColor(Color.WHITE);
+        // Init full list of possible search results for start and end search bars
+        initSearchResults();
+        // Set up search bars for start and end locations
+        AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
+                this, android.R.layout.select_dialog_item, searchableLocations);
+        AutoCompleteTextView startSearchBar = findViewById(R.id.searchStartView);
+        startSearchBar.setAdapter(adapter);
+        startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
+        AutoCompleteTextView endSearchBar = findViewById(R.id.searchEndView);
+        endSearchBar.setAdapter(adapter);
+        endSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
 
+        // Set up start and end search bar listeners for when user selects an option
+        startSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
+                updateStartLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
+                        .getLocationResultName()));
+        endSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
+                updateEndLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
+                        .getLocationResultName()));
 
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, locations);
-//        AutoCompleteTextView actv = (AutoCompleteTextView) findViewById(R.id.startSearchBar);
-//        actv.setThreshold(1);
-//        actv.setAdapter(adapter);
-//        actv.setTextColor(Color.RED);
-
-
-
-
-        // Set click listener for lower-right button
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Set up search start menu for determining start location of route
-        searchStartView = findViewById(R.id.searchStart);
-        SearchManager searchManager = (SearchManager)
-                getSystemService(Context.SEARCH_SERVICE);
-        searchStartView.setSearchableInfo(searchManager.
-                getSearchableInfo(getComponentName()));
-        searchStartView.setSubmitButtonEnabled(true);
-
-        // Set up search query listeners
-        searchStartView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // Updates whenever the user submits their typed text
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                System.out.println("SUBMIT: " + s);
-                return true;
-            }
-
-            // Updates whenever the user changes what's in the search text box
-            @Override
-            public boolean onQueryTextChange(String updatedText) {
-                updateStartSearchResults(updatedText);
-                return true;
-            }
-        });
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-        System.out.println("ID SELECTED: " + id);
-
-        return super.onOptionsItemSelected(item);
+        // Set up toggle button filter listeners for when user filters their route for accessibility
+        ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
+        ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
     }
 
     @Override
@@ -151,64 +113,69 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Given the new text the user has entered, add the most relevant search results to
-     * searchResultsLayout and display them to the user.
-     *
-     * @param newStartText is the text the user has typed into the start search bar
-     */
-    private void updateStartSearchResults(String newStartText) {
-        // Clear old results
-        searchResultsLayout.removeAllViews();
-
-        // Only display results if user has typed something
-        if (newStartText.length() >= 1) {
-            //TODO: Get top search results here instead of default list here
-            System.out.println("NEW TEXT: " + newStartText);
-            String[] sampleSearchResults = {"Terry Hall", "Kane Hall", "Odegaard Library", "The HUB", "Yahtzee!!", "Hocus pocus"};
-
-            // Add search results to searchResultsLayout
-            for (String currResult : sampleSearchResults) {
-                // Create new button for the given result
-                Button result = new Button(this);
-                result.setText(currResult);
-                result.setTextColor(getResources().getColor(R.color.purple_700, null));
-                result.setTextSize(18);
-
-                // Create layout params for result button
-                LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                resultLayoutParams.setMargins(SEARCH_RESULT_TEXT_MARGIN,SEARCH_RESULT_TEXT_MARGIN,SEARCH_RESULT_TEXT_MARGIN,SEARCH_RESULT_TEXT_MARGIN);
-                result.setLayoutParams(resultLayoutParams);
-
-                // Make click listener to set that button's result as start location
-                result.setOnClickListener(v -> updateStartLocation(currResult));
-
-                // Add result button to linear layout search results
-                searchResultsLayout.addView(result);
-            }
-        }
-        // Make list underneath in Scrollable/LinearView of those suggestions as they type
-        // Also add Hint text to search bar
-        // SetSearchableInfo above????
-        // Look into SearchManager and searchManager.triggerSearch()
-
-        // These following lines may be useful above outside of the QueryTextListener:
-        // - Anything with searchStartMenuItem (searchStartMenuItem = menu.findItem(R.id.searchStart);)
-        //    - searchStartView = (SearchView) searchStartMenuItem.getActionView();
-        //                MenuInflater inflater = getMenuInflater();
-        //                inflater.inflate(R.menu.search_menu, menu);
-    }
-
-    /**
      * Updater method that controls the current start location of the user's selected route
      * @param newStart is the new start location for the user's route
      */
     public void updateStartLocation(String newStart) {
-        System.out.println("NEW START: " + newStart);
-        // Update start location
-        startLocation = newStart;
+        // Ensure valid start input to send to presenter
+        if (allBuildingNames.contains(newStart)) {
+            CampusPresenter.updateStart(newStart);
+        }
+    }
 
-        // Close any search results
-        searchResultsLayout.removeAllViews();
+    /**
+     * Updater method that controls the current end location of the user's selected route
+     * @param newEnd is the new end location for the user's route
+     */
+    public void updateEndLocation(String newEnd) {
+        // Ensure valid end input to send to presenter
+        if (allBuildingNames.contains(newEnd)) {
+            CampusPresenter.updateEnd(newEnd);
+        }
+    }
+
+    /**
+     * Search for the best route between the entered start and end locations. If either start or
+     * end is not selected, user will be notified to choose a valid start/end location.
+     */
+    public void startRouteSearch() {
+        // Get the route between inputted start and end locations
+        try {
+            List<Place> route = CampusPresenter.getRoute();
+
+            if (route.isEmpty()) {
+                Toast.makeText(this,
+                        "Sorry, no route exists between those 2 places with the given filters.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                // Process successful route built between inputted start and end locations
+                System.out.println(route.toString());
+            }
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(this, "Please enter valid start/end locations.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Initialize the search results to populate the AutoCompleteTextView start and end location
+     * search bars.
+     */
+    private void initSearchResults() {
+        allBuildingNames = new HashSet<>();
+        searchableLocations = new ArrayList<>();
+
+        // Acquire list of all buildings on campus
+        allBuildingNames = new HashSet<>(); //CampusPresenter.getAllBuildingNames();
+
+        allBuildingNames.add("Terry Hall");
+        allBuildingNames.add("Odegaard Library");
+        allBuildingNames.add("The HUB");
+        allBuildingNames.add("Condon Hall");
+        allBuildingNames.add("The District Market");
+
+        for (String currLocation : allBuildingNames) {
+            searchableLocations.add(new LocationSearchResult(currLocation));
+        }
     }
 }
