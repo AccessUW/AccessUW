@@ -22,9 +22,13 @@
 * Code the graph representation of the UW campus
 * Finish the search component
 ### Progress and Issues
-*
+* Had troubles with testing, so delayed until Travis CI is set up
+* Finished RouteFinderModel component of back-end model
+* Finished A* algorithm for searching between two buildings
 ### Plans and Goals
-*
+* Create initialization methods to fill back-end data structures
+* Finish BuildingInfoModel for building information querying
+* Finish CampusTreeModel for closest building search
 ## Judas' Report
 ### Last Week
 * Get a significant start on route drawing UI feature
