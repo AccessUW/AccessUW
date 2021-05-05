@@ -1,5 +1,7 @@
 package models;
 
+// TODO: implement class
+
 /**
  * This class defines a BuildingTreeNode, which represents a building within a K-D Tree
  */

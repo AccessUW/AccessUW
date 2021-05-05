@@ -3,6 +3,8 @@ package models;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: implement class
+
 /**
  * This class defines a model for information of all buildings of the UW campus
  */

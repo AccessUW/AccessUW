@@ -1,5 +1,6 @@
 package models;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -18,7 +19,10 @@ public class Place {
      * @param entrance true if the place is an entrance to a building, false otherwise
      */
     public Place(float x, float y, boolean entrance) {
-
+        this.xPos = x;
+        this.yPos = y;
+        this.entrance = entrance;
+        this.neighbors = new HashSet<>();
     }
 
     /**
@@ -51,11 +55,11 @@ public class Place {
      * @return Set of edges that are connected to this place
      */
     public Set<RouteEdge> getNeighbors() {
-        return null;
+        return neighbors;
     }
 
     /**
-     * Adds a neighbor to this place
+     * Adds a neighbor to this place, ignoring if it is already added as a neighbor
      * @param destination neighboring place we want to connect to
      * @param distance distance between this place and destination
      * @param wheelChairAccess true if the path between the two places is wheelchair accessible
@@ -70,5 +74,35 @@ public class Place {
         } else if (distance < 0) {
             throw new IllegalArgumentException("addNeighbor - distance must be positive");
         }
+        RouteEdge edge = new RouteEdge(this, destination, distance, wheelChairAccess, hasStairs);
+        this.neighbors.add(edge);
+    }
+
+    /**
+     * Checks the equality of this Place with another object
+     * @param o object you want to check the equality of
+     * @return true if this object is equal to o, otherwise false
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof Place)) {
+            return false;
+        }
+
+        Place p = (Place) o;
+        return this.getX() == p.getX() && this.getY() == p.getY() && this.entrance == p.entrance;
+    }
+
+    /**
+     * Get the hash code of this Place
+     * @return hashcode of this Place
+     */
+    @Override
+    public int hashCode() {
+        return (int) (this.xPos + this.yPos);
     }
 }

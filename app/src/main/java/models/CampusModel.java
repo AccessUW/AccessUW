@@ -19,7 +19,7 @@ public class CampusModel {
      * @throws IllegalArgumentException if the filepath does not exist
      */
     public static void init(String filepath) throws IllegalArgumentException {
-
+        // TODO: add initialization of models from csv files
     }
 
     /**
@@ -28,7 +28,7 @@ public class CampusModel {
      * @return short name id corresponding to the given long name
      */
     public static String getShortName(String longName) {
-        return "";
+        return buildingInfoModel.getShortName(longName);
     }
 
     /**
@@ -38,7 +38,7 @@ public class CampusModel {
      * @throws IllegalArgumentException if shortName is not a building on the UW campus
      */
     public static String getLongName(String shortName) throws IllegalArgumentException {
-        return "";
+        return buildingInfoModel.getLongName(shortName);
     }
 
     /**
@@ -48,7 +48,7 @@ public class CampusModel {
      * @throws IllegalArgumentException if the short name doesn't have a corresponding building
      */
     public static Building getBuilding(String shortName) {
-        return null;
+        return buildingInfoModel.getBuilding(shortName);
     }
 
     /**
@@ -57,7 +57,7 @@ public class CampusModel {
      * @return description of the given building
      */
     public static String getBuildingDescription(String shortName) {
-        return "";
+        return buildingInfoModel.getBuildingDescription(shortName);
     }
 
     /**
@@ -67,7 +67,7 @@ public class CampusModel {
      * @return Places that represent entrances of the given building
      */
     public static Set<Place> getEntrances(String shortName, boolean assisted) {
-        return null;
+        return buildingInfoModel.getEntrances(shortName, assisted);
     }
 
     /**
@@ -79,7 +79,7 @@ public class CampusModel {
      * @return closest entrance of the given building to the given x, y
      */
     public static Place getClosestEntrance(float x, float y, String shortName, boolean assisted) {
-        return null;
+        return buildingInfoModel.getClosestEntrance(x, y, shortName, assisted);
     }
 
     /**
@@ -88,7 +88,7 @@ public class CampusModel {
      * @return address of the given building
      */
     public static String getAddress(String shortName) {
-        return "";
+        return buildingInfoModel.getAddress(shortName);
     }
 
     /**
@@ -97,7 +97,7 @@ public class CampusModel {
      * @return true if the building has elevator access, otherwise false
      */
     public static boolean hasElevatorAccess(String shortName) {
-        return false;
+        return buildingInfoModel.hasElevatorAccess(shortName);
     }
 
     /**
@@ -106,7 +106,7 @@ public class CampusModel {
      * @return true if the building has a gender neutral restroom, otherwise false
      */
     public static boolean hasGenderNeutralRestroom(String shortName) {
-        return false;
+        return buildingInfoModel.hasGenderNeutralRestroom(shortName);
     }
 
     /**
@@ -114,7 +114,7 @@ public class CampusModel {
      * @return all long names of UW campus buildings
      */
     public static Set<String> getAllBuildingNames() {
-        return null;
+        return buildingInfoModel.getAllBuildingNames();
     }
 
     /**
@@ -127,7 +127,7 @@ public class CampusModel {
      */
     public static String findClosestBuilding(float x, float y, boolean genderNeutralRestroom,
                                       boolean elevator) {
-        return "";
+        return campusTreeModel.findClosestBuilding(x, y, genderNeutralRestroom, elevator);
     }
 
     /**
@@ -137,7 +137,7 @@ public class CampusModel {
      * @return the Place closest to the given x, y
      */
     public static Place findClosestPlace(float x, float y) {
-        return null;
+        return campusTreeModel.findClosestPlace(x, y);
     }
 
     /**
@@ -152,7 +152,9 @@ public class CampusModel {
      */
     public static List<Place> getShortestPath(float startx, float starty, String end,
                                               boolean wheelchair, boolean stairs) {
-        return null;
+        Place start = campusTreeModel.findClosestPlace(startx, starty);
+        Building endBuilding = buildingInfoModel.getBuilding(end);
+        return routeFinderModel.shortestPath(start, endBuilding, wheelchair, stairs);
     }
 
     /**
@@ -166,6 +168,9 @@ public class CampusModel {
      */
     public static List<Place> shortestPathBetweenBuildings(String start, String end,
                                                            boolean wheelchair, boolean stairs) {
-        return null;
+        Building startBuilding = buildingInfoModel.getBuilding(start);
+        Building endBuilding = buildingInfoModel.getBuilding(end);
+        return routeFinderModel.shortestPathBetweenBuildings(startBuilding, endBuilding, wheelchair,
+                stairs);
     }
 }
