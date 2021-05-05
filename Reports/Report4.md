@@ -53,9 +53,11 @@
 * Progress on possible revision of mock-up
 * research on different software testings 
 ### Progress and Issues
-*
+* documentation of testing and CI services
+* progress on revision of mock-up
 ### Plans and Goals
-*
+* research about fragments
+* navigation of activities(frontend)
 ## Kevin's Report
 ### Last Week
 * Start coding testing
