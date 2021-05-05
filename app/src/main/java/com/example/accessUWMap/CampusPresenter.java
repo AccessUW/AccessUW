@@ -3,7 +3,10 @@ package com.example.accessUWMap;
 import android.graphics.Point;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import models.CampusModel;
@@ -15,6 +18,13 @@ import models.Place;
  * and what boxes are toggled.
  */
 public class CampusPresenter {
+    ////////////////////////////////////////////////////////////////////////////
+    ///     Constants
+    ////////////////////////////////////////////////////////////////////////////
+    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4613;
+    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 3112;
+
+    private static final int MAX_RECENT_LOCATIONS = 3;
 
     ////////////////////////////////////////////////////////////////////////////
     ///     Fields
@@ -26,7 +36,7 @@ public class CampusPresenter {
     private static boolean noStairs; // Toggle whether route can have stairs
     private static boolean assistedEntrance; // Toggle whether an assisted entrance is required
     private static List<String> recentLocations; // Recently searched locations
-    private static List<String> buildingNames;
+    private static Set<String> buildingNames; // List of all building long names
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -34,59 +44,109 @@ public class CampusPresenter {
     ////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Takes a short building name and updates currentStart.
+     * Initializes CampusPresenter.
+     */
+    public static void init() {
+        buildingNames = CampusModel.getAllBuildingNames();
+        recentLocations = new ArrayList<>();
+        wheelchair = false;
+        noStairs = false;
+        assistedEntrance = false;
+    }
+
+    /**
+     * Getter method for current start building
+     */
+    public static String getCurrentStart() {
+        return currentStart;
+    }
+
+    /**
+     * Getter method for current end building
+     */
+    public static String getCurrentEnd() {
+        return currentEnd;
+    }
+
+    /**
+     * Getter method for whether wheelchair filter is applied
+     */
+    public static boolean getWheelchair() {
+        return wheelchair;
+    }
+
+    /**
+     * Getter method for whether no-stairs filter is applied
+     */
+    public static boolean getNoStairs() {
+        return noStairs;
+    }
+
+    /**
+     * Getter method for whether assisted entrance filter is applied
+     */
+    public static boolean getAssistedEntrance() {
+        return assistedEntrance;
+    }
+
+    /**
+     * Takes a long building name and updates currentStart.
      *
-     * @param startBuildingName is short building name for start location
-     * @requires startBuildingName has length of >= 1 and is a valid building name
+     * @param startBuildingName is long building name for start location
+     * @requires startBuildingName is non-null, has length of >= 1, and is a valid building name
+     * @throws IllegalArgumentException if startBuildingName requirements aren't met
      */
     public static void updateStart(String startBuildingName) {
-
+        if (startBuildingName == null || startBuildingName.length() < 1 ||
+            !buildingNames.contains(startBuildingName)) {
+            throw new IllegalArgumentException();
+        }
+        currentStart = startBuildingName;
     }
 
     /**
-     * Takes a short building name and updates currentEnd.
+     * Takes a long building name and updates currentEnd.
      *
-     * @param endBuildingName is short building name for end location
-     * @requires endBuildingName has length of >= 1 and is a valid building name
+     * @param endBuildingName is long building name for end location
+     * @requires endBuildingName is non-null, has length of >= 1, and is a valid building name
+     * @throws IllegalArgumentException if endBuildingName requirements aren't met
      */
     public static void updateEnd(String endBuildingName) {
-
-    }
-
-    /**
-     * Takes a short building name and returns (x,y) coordinate of that place as a Point.
-     * The (x,y) coordinates are in terms of pixels on the map image.
-     *
-     * @param buildingName is short building name for given location
-     * @requires buildingName has length of >= 1 and is a valid building name
-     *
-     * @return point representing (x,y) coordinates of the building in terms of pixels on the map.
-     */
-    public static Point getPlace(String buildingName) {
-        return null;
+        if (endBuildingName == null || endBuildingName.length() < 1 ||
+                !buildingNames.contains(endBuildingName)) {
+            throw new IllegalArgumentException();
+        }
+        currentEnd = endBuildingName;
     }
 
     /**
      * Returns route from currentStart to currentEnd positions. If either currentStart or
      * currentEnd is not set, this function returns null.
      *
+     * @throws IllegalArgumentException if currentStart or currentEnd is null or empty
      * @return list of places in order representing route from start to finish
-     *              (if start or end is not filled in, returns null)
      *              (if route does not exist between the two places, returns empty list)
      */
     public static List<Place> getRoute() {
-        if (currentStart == null || currentEnd == null) {
+        if (currentStart == null || currentStart.length() == 0 ||
+                currentEnd == null || currentEnd.length() == 0) {
             throw new IllegalArgumentException();
-        } else {
-            return new ArrayList<>(); //CampusModel.getShortestPath(currentStart, currentEnd, wheelchair, noStairs);
         }
+
+        return CampusModel.shortestPathBetweenBuildings(currentStart, currentEnd, wheelchair, noStairs);
     }
 
     /**
      * Swaps the current start and end locations, and also reverses the current route.
      */
     public static void swapStartAndEnd() {
+        String tempLocation = currentStart;
+        currentStart = currentEnd;
+        currentEnd = tempLocation;
 
+        if (currentRoute != null && !currentRoute.isEmpty()) {
+            Collections.reverse(currentRoute);
+        }
     }
 
     /**
@@ -97,7 +157,7 @@ public class CampusPresenter {
      *                'true' means the route MUST be wheelchair-accessible)
      */
     public static void updateWheelchair(boolean toggledWC) {
-
+        wheelchair = toggledWC;
     }
 
     /**
@@ -107,7 +167,7 @@ public class CampusPresenter {
      *                  MUST NOT have stairs on it)
      */
     public static void updateNoStairs(boolean toggledNS) {
-
+        noStairs = toggledNS;
     }
 
     /**
@@ -118,7 +178,7 @@ public class CampusPresenter {
      *                  the route MUST end at an assisted entrance)
      */
     public static void updateAssistedEntrance(boolean toggledAE) {
-
+        assistedEntrance = toggledAE;
     }
 
     /**
@@ -128,40 +188,61 @@ public class CampusPresenter {
      * @param y coordinate (in pixels on map image)
      * @requires x >= 0 && x <= width (in pixels) of map image
      * @requires y >= 0 && y <= height (in pixels) of map image
+     * @throws IllegalArgumentException if passed invalid x and/or y coordinates
      *
      * @return description of building closest to the given (x,y) coordinates
      */
-    public static String getClosest(int x, int y) {
-        return "";
+    public static String getClosestDesc(int x, int y) {
+        if (x < 0 || x > CAMPUS_MAP_IMAGE_WIDTH || y < 0 || y > CAMPUS_MAP_IMAGE_HEIGHT) {
+            throw new IllegalArgumentException();
+        }
+
+        // Get the closeset building to the x,y coordinate
+        String closestBuilding = CampusModel.findClosestBuilding(x, y, false, false);
+        // Return description of given building
+        return getDesc(CampusModel.getShortName(closestBuilding));
     }
 
     /**
      * Returns info of the given building, including address, description, and accessibility
      * information.
      *
-     * @param buildingName is short building name for given location
+     * @param buildingName is long building name for given location
      * @requires buildingName has length of >= 1 and is a valid building name
+     * @throws IllegalArgumentException if buildingName requirements are not met
      *
-     * @return description of building with the given short name
+     * @return description of building with the given long name
      */
-    public static String getInfo(String buildingName) {
-        return "";
+    public static String getDesc(String buildingName) {
+        if (buildingName == null || buildingName.length() == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        // Get short name of building
+        String shortBuildingName = CampusModel.getShortName(buildingName);
+        // Return description of given building
+        return CampusModel.getBuildingDescription(shortBuildingName);
     }
 
     /**
      * Finds the building with a gender-neutral bathroom closest to the given (x,y) coordinates
-     * and returns its description.
+     * and returns its long name.
      *
      * @param x coordinate (in pixels on map image)
      * @param y coordinate (in pixels on map image)
      * @requires x >= 0 && x <= width (in pixels) of map image
      * @requires y >= 0 && y <= height (in pixels) of map image
+     * @throws IllegalArgumentException if given invalid x,y coordinates
      *
-     * @return description of building with a gender-neutral bathroom closest to the given (x,y)
+     * @return long name of building with a gender-neutral bathroom closest to the given (x,y)
      * coordinates
      */
     public static String getClosestGNBathroom(int x, int y) {
-        return "";
+        if (x < 0 || x > CAMPUS_MAP_IMAGE_WIDTH || y < 0 || y > CAMPUS_MAP_IMAGE_HEIGHT) {
+            throw new IllegalArgumentException();
+        }
+
+        return CampusModel.findClosestBuilding(x, y, true, false);
     }
 
     /**

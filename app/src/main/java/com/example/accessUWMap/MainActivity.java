@@ -49,12 +49,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize the Presenter component of the MVP framework
+        CampusPresenter.init();
+
+        // Init full list of possible search results for start and end search bars
+        initSearchResults();
+
         // Get scroll views that control 2-D scrollability (i.e. user can move freely around map)
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
 
-        // Init full list of possible search results for start and end search bars
-        initSearchResults();
         // Set up search bars for start and end locations
         AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
                 this, android.R.layout.select_dialog_item, searchableLocations);
