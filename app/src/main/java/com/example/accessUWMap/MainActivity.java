@@ -182,4 +182,12 @@ public class MainActivity extends AppCompatActivity {
             searchableLocations.add(new LocationSearchResult(currLocation));
         }
     }
+
+    /**
+     * Draw the route passed on the map, if route is null, clear the route from the canvas.
+     * @param route is the route to be drawn on the map
+     */
+    private void drawRoute(List<Place> route) {
+
+    }
 }
