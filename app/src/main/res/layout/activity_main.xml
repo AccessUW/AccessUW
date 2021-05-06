@@ -25,11 +25,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/backArrowButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/search_bar_text_padding_side"
+                android:layout_marginBottom="@dimen/search_bar_text_padding_side"
+                android:layout_weight="1"
+                android:contentDescription="@string/back_arrow_desc"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                app:srcCompat="@drawable/back_arrow_icon" />
+
             <AutoCompleteTextView
                 android:id="@+id/searchStartView"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="@dimen/search_bar_height"
-                android:layout_margin="@dimen/search_bar_margin"
+                android:layout_marginTop="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                android:layout_marginBottom="@dimen/search_bar_margin"
+                android:layout_weight="7"
                 android:background="@color/white"
                 android:backgroundTint="@color/white"
                 android:gravity="center_vertical"
@@ -118,7 +133,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
-                android:id="@+id/buildingNameView"
+                android:id="@+id/buildingNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/purple_700"
@@ -129,7 +144,7 @@
                 android:textSize="@dimen/description_build_name_text_size" />
 
             <TextView
-                android:id="@+id/elevatorInfoView"
+                android:id="@+id/elevatorInfoTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/purple_700"
@@ -140,7 +155,7 @@
                 android:textSize="@dimen/search_bar_text_size" />
 
             <TextView
-                android:id="@+id/accRRView"
+                android:id="@+id/accRRTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/purple_700"
@@ -151,7 +166,7 @@
                 android:textSize="@dimen/search_bar_text_size" />
 
             <TextView
-                android:id="@+id/gendNeuRRView"
+                android:id="@+id/gendNeuRRTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/purple_700"
@@ -185,6 +200,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/button_start_route" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/purple_700"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/destinationTextView"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_weight="7"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingTop="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="0dp"
+                android:paddingBottom="@dimen/search_bar_text_padding_side"
+                android:text="@string/nav_destination_view_default"
+                android:textColor="@color/white"
+                android:textSize="@dimen/description_build_name_text_size" />
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

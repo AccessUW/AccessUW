@@ -12,6 +12,8 @@
     <string name="desc_gender_neutral_restroom_view_default">Gender-neutral restroom: 2nd floor</string>
     <string name="button_find_route">Find Route</string>
     <string name="button_start_route">Start Route</string>
+    <string name="back_arrow_desc">Back arrow</string>
+    <string name="nav_destination_view_default">The Hub (SW)</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

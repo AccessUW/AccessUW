@@ -8,7 +8,6 @@ import android.view.MotionEvent;
 
 import android.view.View;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -24,7 +23,7 @@ import models.Place;
 
 public class MainActivity extends AppCompatActivity {
 
-    public enum AppStates {START, SEARCH, FOUND_START, BUILD_ROUTE, NAV};
+    public enum AppStates {EXPLORE, SEARCH, FOUND_START, BUILD_ROUTE, NAV};
 
     ////////////////////////////////////////////////////////////
     ///     Constants
@@ -50,11 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
-    private Button findRouteButton;
 
     // Views for building the route
     private LinearLayout buildRouteLayout;
-    private Button startRouteButton;
 
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
@@ -71,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize state
-        mState = AppStates.START;
+        mState = AppStates.EXPLORE;
 
         // Initialize the Presenter component of the MVP framework
         CampusPresenter.init();
@@ -87,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         startSearchBar = findViewById(R.id.startSearchBarLayout);
         endSearchBarAndFilters = findViewById(R.id.endSearchBarAndFiltersLayout);
 
-        // Set up search bars for start and end locations
+        // Set up search bars' auto-complete functionality for start and end locations
         AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
                 this, android.R.layout.select_dialog_item, searchableLocations);
         AutoCompleteTextView startSearchBar = findViewById(R.id.searchStartView);
@@ -104,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
         endSearchBar.setOnItemClickListener((adapterView, view, i, l) ->
                 updateEndLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
                         .getLocationResultName()));
+
+        // Set up back-arrow button listener
+        findViewById(R.id.backArrowButton).setOnClickListener(view -> goBack());
 
         // Set up toggle button filter listeners for when user filters their route for accessibility
         ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Update state to FOUND_START if currently in START state
-        if (mState == AppStates.START) {
+        if (mState == AppStates.EXPLORE) {
             updateState(AppStates.FOUND_START);
         }
     }
@@ -237,9 +237,9 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("WAS " + lastState);
         System.out.println("NOW " + newState);
 
-        // Set visibilities and pass relevant information based on last and new state
         switch(lastState) {
-            case START:
+            case EXPLORE:
+                // Going forward through route-building steps
                 if (newState == AppStates.FOUND_START) {
                     buildBuildingDesc();
                     buildDescLayout.setVisibility(View.VISIBLE);
@@ -249,21 +249,53 @@ public class MainActivity extends AppCompatActivity {
                 //TODO: Implement search state
 
             case FOUND_START:
+                // Going forward through route-building steps
                 if (newState == AppStates.BUILD_ROUTE) {
                     buildDescLayout.setVisibility(View.INVISIBLE);
                     endSearchBarAndFilters.setVisibility(View.VISIBLE);
                     buildRouteLayout.setVisibility(View.VISIBLE);
                 }
+                // Going backward through route-building steps (i.e. hit back arrow)
+                if (newState == AppStates.EXPLORE) {
+                    buildDescLayout.setVisibility(View.INVISIBLE);
+                }
 
             case BUILD_ROUTE:
+                // Going forward through route-building steps
                 if (newState == AppStates.NAV) {
                     startSearchBar.setVisibility(View.INVISIBLE);
                     endSearchBarAndFilters.setVisibility(View.INVISIBLE);
                     buildRouteLayout.setVisibility(View.INVISIBLE);
                 }
+                // Going backward through route-building steps (i.e. hit back arrow)
+                if (newState == AppStates.FOUND_START) {
+                    endSearchBarAndFilters.setVisibility(View.INVISIBLE);
+                    buildRouteLayout.setVisibility(View.INVISIBLE);
+                    buildDescLayout.setVisibility(View.VISIBLE);
+                }
 
             case NAV:
                 //TODO: Implement nav state
+
+                // Going backward through route-building steps (i.e. hit back arrow)
+                if (newState == AppStates.BUILD_ROUTE) {
+                    startSearchBar.setVisibility(View.VISIBLE);
+                    endSearchBarAndFilters.setVisibility(View.VISIBLE);
+                    buildRouteLayout.setVisibility(View.VISIBLE);
+                }
+        }
+    }
+
+    /**
+     * Method triggered by back-arrow button that calls updateState with the appropriate state
+     */
+    private void goBack() {
+        if (mState == AppStates.FOUND_START) {
+            updateState(AppStates.EXPLORE);
+        } else if (mState == AppStates.BUILD_ROUTE) {
+            updateState(AppStates.FOUND_START);
+        } else if (mState == AppStates.NAV) {
+            updateState(AppStates.BUILD_ROUTE);
         }
     }
 
@@ -273,6 +305,5 @@ public class MainActivity extends AppCompatActivity {
      */
     private void buildBuildingDesc() {
         String building = CampusPresenter.getCurrentStart();
-        System.out.println("AAAAAAAAAAA " + building);
     }
 }
