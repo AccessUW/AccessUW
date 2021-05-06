@@ -1,6 +1,14 @@
 package models;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,11 +23,84 @@ public class CampusModel {
 
     /**
      * This method initializes a CampusModel program
-     * @param filepath filepath to the UW Campus data
-     * @throws IllegalArgumentException if the filepath does not exist
+     * @param filepath filepath to the map_data
+     * @throws IllegalArgumentException if the filepath does not exist or does not contain the data
+     * @throws IOException if there was an error when reading from the csv data
      */
-    public static void init(String filepath) throws IllegalArgumentException {
-        // TODO: add initialization of models from csv files
+    public static void init(String filepath) throws IllegalArgumentException, IOException {
+        File entranceFile = new File(filepath + "campus_entrance_data.csv");
+        File pathFile = new File(filepath + "campus_path_data.csv");
+
+        FileReader entranceFileReader;
+        FileReader pathFileReader;
+        try {
+            entranceFileReader = new FileReader(entranceFile);
+            pathFileReader = new FileReader(pathFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("CampusModel init -- given filepath does not " +
+                    "contain necessary entrance or path csv files");
+        }
+
+        BufferedReader entranceReader = new BufferedReader(entranceFileReader);
+
+        // Data to fill
+        Set<Place> allPlaces = new HashSet<>();
+        Map<String, String> shortToLongName = new HashMap<>();
+        Map<String, String> longToShortName = new HashMap<>();
+        Map<String, Building> shortToBuilding = new HashMap<>();
+
+        while (true) {
+            String row = entranceReader.readLine();
+            if (row == null) {
+                break;
+            }
+
+            String[] data = row.split(",");
+            // 0 : short name
+            // 1 : long name
+            // 2 : x
+            // 3 : y
+            // 4 : type of entrance (M = manual, A = assisted, U = unaccessible)
+
+            String shortName = data[0];
+            if (shortName.equals("")) { // Skip over incomplete data for now
+                continue;
+            }
+            // Remove the parentheses from short names
+            int parenIdx = shortName.indexOf('(');
+            if (parenIdx != -1) {
+                shortName = shortName.substring(0, parenIdx - 1);
+            }
+
+            if (!shortToBuilding.containsKey(shortName)) {
+                // TODO: add correct restroom, elevator, and description when building data is done
+                shortToBuilding.put(shortName, new Building(shortName, true, true, ""));
+            }
+
+            Building building = shortToBuilding.get(shortName);
+
+            // Get the long name of the building
+            String longName = data[1];
+            parenIdx = longName.indexOf('(');
+            if (parenIdx != -1) {
+                longName = longName.substring(0, parenIdx - 1);
+            }
+            shortToLongName.put(shortName, longName);
+            longToShortName.put(longName, shortName);
+
+            // Add the entrance for this building
+            if (data[2].equals("") || data[3].equals("")) {
+                continue; // continue if there is no entrance coordinates
+            }
+            float x = Float.parseFloat(data[2]);
+            float y = Float.parseFloat(data[3]);
+            Place entrance = new Place(x, y, true);
+            allPlaces.add(entrance);
+            building.addEntrance(entrance, !data[4].equals("U"));
+        }
+        entranceReader.close();
+
     }
 
     /**
