@@ -63,6 +63,11 @@
 * Start coding testing
 * Get some external feedback on the design
 ### Progress and Issues
-*
+* Added further Figma prototype interactive functionality
+* Installed Travis CI
+* (Currently encountering MANY problems with Gradle, however)
+* Researched CI Services
 ### Plans and Goals
-*
+* Get some external feedback on the design
+* Fix ./gradlew run/test functionality
+* Install testing suite setup
