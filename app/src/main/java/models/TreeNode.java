@@ -8,12 +8,12 @@ public interface TreeNode {
      * Get the node that results from traversing left, or up the KD Tree
      * @return node that is left or up the KD Tree
      */
-    TreeNode getLeftUp();
+    TreeNode getLeftDown();
     /**
      * Get the node that results from traversing right, or down the KD Tree
      * @return node that is right or down the KD Tree
      */
-    TreeNode getRightDown();
+    TreeNode getRightUp();
 
     /**
      * Get the x value of this TreeNode

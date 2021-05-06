@@ -1,5 +1,7 @@
 package models;
 
+import android.os.Build;
+
 import java.util.Set;
 
 /**
@@ -97,7 +99,35 @@ public class Building {
         return description;
     }
 
-    //TODO: add equals method
+    /**
+     * Returns whether this Building is equal to another object
+     * @param o object we want to check the equality of
+     * @return true if they are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
 
-    //TODO: add hash method
+        if (!(o instanceof Building)) {
+            return false;
+        }
+
+        Building other = (Building) o;
+
+        return this.x == other.x && this.y == other.y && this.shortName.equals(other.shortName) &&
+                this.description.equals(other.description) && this.genderNeutralRestroom ==
+                other.genderNeutralRestroom && this.elevator == other.elevator && this.entrances ==
+                other.entrances && this.assistedEntrances == other.assistedEntrances;
+    }
+
+    /**
+     * Get the hash code of this Building
+     * @return int hash code for this building
+     */
+    @Override
+    public int hashCode() {
+        return (int)(this.x + this.y + this.shortName.length() + this.description.length());
+    }
 }
