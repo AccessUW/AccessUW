@@ -26,12 +26,10 @@ public class Building {
      * @param shortName short name identifier of the building
      * @param restroom true if the building has gender neutral restrooms
      * @param elevator true if the building has an elevator
-     * @param entrances all entrances to this building
-     * @param assisted assisted entrances to this building
      * @param description description of this building
      */
     public Building(float x, float y, String shortName, boolean restroom, boolean elevator,
-                    Set<Place> entrances, Set<Place> assisted, String description) {
+                    String description) {
 
     }
 
@@ -97,6 +95,26 @@ public class Building {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Adds an entrance to this building, updating this building's x, y position
+     * @param entrance Place of the entrance we want to add to this building
+     * @param assisted true if the entrance is assisted, false otherwise
+     */
+    public void addEntrance(Place entrance, boolean assisted) {
+        if (!entrances.contains(entrance)) {
+            entrances.add(entrance);
+            if (assisted) {
+                assistedEntrances.add(entrance);
+            }
+
+            // Recalculate Building's x, y by averaging entrances
+            float xSum = (x * entrances.size() - 1) + entrance.getX();
+            float ySum = (y * entrances.size() - 1) + entrance.getY();
+            x = xSum / entrances.size();
+            y = ySum / entrances.size();
+        }
     }
 
     /**
