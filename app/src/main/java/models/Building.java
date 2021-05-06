@@ -118,7 +118,8 @@ public class Building {
 
         return this.x == other.x && this.y == other.y && this.shortName.equals(other.shortName) &&
                 this.description.equals(other.description) && this.genderNeutralRestroom ==
-                other.genderNeutralRestroom && this.elevator == other.elevator;
+                other.genderNeutralRestroom && this.elevator == other.elevator && this.entrances ==
+                other.entrances && this.assistedEntrances == other.assistedEntrances;
     }
 
     /**
