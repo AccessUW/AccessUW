@@ -13,7 +13,8 @@
     <string name="button_find_route">Find Route</string>
     <string name="button_start_route">Start Route</string>
     <string name="back_arrow_desc">Back arrow</string>
-    <string name="nav_destination_view_default">The Hub (SW)</string>
+    <string name="nav_destination_view_default">To: The Hub (SW)</string>
+    <string name="swap_button_desc">Swap start and end locations</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

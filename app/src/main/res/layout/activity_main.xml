@@ -72,25 +72,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/startSearchBarLayout">
 
-            <AutoCompleteTextView
-                android:id="@+id/searchEndView"
+            <LinearLayout
+                android:id="@+id/endSearchBarAndSwapLayout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/search_bar_height"
-                android:layout_margin="@dimen/search_bar_margin"
-                android:background="@color/white"
-                android:backgroundTint="@color/white"
-                android:gravity="center_vertical"
-                android:hint="@string/search_end_hint"
-                android:lines="1"
-                android:maxLines="1"
-                android:paddingStart="@dimen/search_bar_text_padding_side"
-                android:paddingEnd="@dimen/search_bar_text_padding_side"
-                android:singleLine="true"
-                android:textColor="@color/purple_700"
-                android:textIsSelectable="true">
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-                <requestFocus />
-            </AutoCompleteTextView>
+                <ImageView
+                    android:id="@+id/swapLocationButton"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/search_bar_height"
+                    android:layout_marginTop="@dimen/search_bar_text_padding_side"
+                    android:layout_marginBottom="@dimen/search_bar_text_padding_side"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/swap_button_desc"
+                    android:paddingStart="@dimen/search_bar_text_padding_side"
+                    android:paddingEnd="@dimen/search_bar_text_padding_side"
+                    app:srcCompat="@drawable/switch_arrow_icon" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/searchEndView"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/search_bar_height"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="@dimen/search_bar_margin"
+                    android:layout_marginEnd="@dimen/search_bar_margin"
+                    android:layout_marginBottom="@dimen/search_bar_margin"
+                    android:layout_weight="7"
+                    android:background="@color/white"
+                    android:backgroundTint="@color/white"
+                    android:gravity="center_vertical"
+                    android:hint="@string/search_end_hint"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:paddingStart="@dimen/search_bar_text_padding_side"
+                    android:paddingEnd="@dimen/search_bar_text_padding_side"
+                    android:singleLine="true"
+                    android:textColor="@color/purple_700"
+                    android:textIsSelectable="true">
+
+                    <requestFocus />
+                </AutoCompleteTextView>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/routeFilterButtonsLayout"
@@ -208,19 +231,33 @@
             android:layout_height="match_parent"
             android:background="@color/purple_700"
             android:orientation="horizontal"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/cancelRouteButton"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_marginStart="@dimen/search_bar_text_padding_side"
+                android:layout_marginTop="@dimen/search_bar_text_padding_side"
+                android:layout_marginEnd="@dimen/search_bar_text_padding_side"
+                android:layout_marginBottom="@dimen/search_bar_text_padding_side"
+                android:layout_weight="1"
+                android:contentDescription="@android:string/cancel"
+                app:srcCompat="@drawable/cancel_icon" />
 
             <TextView
                 android:id="@+id/destinationTextView"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/search_bar_height"
+                android:layout_marginTop="@dimen/search_bar_text_padding_side"
+                android:layout_marginBottom="@dimen/search_bar_text_padding_side"
                 android:layout_weight="7"
-                android:paddingStart="@dimen/search_bar_text_padding_side"
-                android:paddingTop="@dimen/search_bar_text_padding_side"
-                android:paddingEnd="0dp"
-                android:paddingBottom="@dimen/search_bar_text_padding_side"
+                android:gravity="center_vertical"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
                 android:text="@string/nav_destination_view_default"
                 android:textColor="@color/white"
                 android:textSize="@dimen/description_build_name_text_size" />
