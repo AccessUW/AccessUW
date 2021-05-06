@@ -4,6 +4,7 @@ import android.graphics.Point;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -47,7 +48,14 @@ public class CampusPresenter {
      * Initializes CampusPresenter.
      */
     public static void init() {
-        buildingNames = CampusModel.getAllBuildingNames();
+        //TODO: Use Campus Model methods to get actual info!
+        buildingNames = new HashSet<>(); //CampusModel.getAllBuildingNames();
+        buildingNames.add("The Hub");
+        buildingNames.add("Terry Hall");
+        buildingNames.add("Odegaard Library");
+        buildingNames.add("Condon Hall");
+        buildingNames.add("Red Square");
+
         recentLocations = new ArrayList<>();
         wheelchair = false;
         noStairs = false;

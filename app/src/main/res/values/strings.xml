@@ -6,6 +6,12 @@
     <string name="search_end_hint">Enter an end location…</string>
     <string name="button_toggle_wheel_chair">Wheel-chair</string>
     <string name="button_toggle_no_stairs">No stairs</string>
+    <string name="desc_building_name_view_default">The Hub</string>
+    <string name="desc_elevator_info_view_default">Elevator access: All floors</string>
+    <string name="desc_accessible_restroom_view_default">Accessible restroom: Yes</string>
+    <string name="desc_gender_neutral_restroom_view_default">Gender-neutral restroom: 2nd floor</string>
+    <string name="button_find_route">Find Route</string>
+    <string name="button_start_route">Start Route</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

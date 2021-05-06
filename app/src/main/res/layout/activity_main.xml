@@ -7,91 +7,186 @@
     android:clickable="false"
     tools:context=".MainActivity">
 
-    <include layout="@layout/map_layout" />
-
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.AccessUW.AppBarOverlay">
+        android:layout_height="match_parent">
 
-        <AutoCompleteTextView
-            android:id="@+id/searchStartView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/search_bar_height"
-            android:layout_below="@+id/sampleTextView"
-            android:layout_margin="@dimen/search_bar_margin"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:gravity="center_vertical"
-            android:hint="@string/search_start_hint"
-            android:lines="1"
-            android:maxLines="1"
-            android:paddingStart="@dimen/search_bar_text_padding_side"
-            android:paddingEnd="@dimen/search_bar_text_padding_side"
-            android:singleLine="true"
-            android:textColor="@color/purple_700"
-            android:textIsSelectable="true">
-
-            <requestFocus />
-        </AutoCompleteTextView>
-
-        <AutoCompleteTextView
-            android:id="@+id/searchEndView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/search_bar_height"
-            android:layout_below="@+id/sampleTextView"
-            android:layout_margin="@dimen/search_bar_margin"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:gravity="center_vertical"
-            android:hint="@string/search_end_hint"
-            android:lines="1"
-            android:maxLines="1"
-            android:paddingStart="@dimen/search_bar_text_padding_side"
-            android:paddingEnd="@dimen/search_bar_text_padding_side"
-            android:singleLine="true"
-            android:textColor="@color/purple_700"
-            android:textIsSelectable="true">
-
-            <requestFocus />
-        </AutoCompleteTextView>
+        <include
+            android:id="@+id/include"
+            layout="@layout/map_layout" />
 
         <LinearLayout
-            android:id="@+id/routeFilterButtonsLayout"
+            android:id="@+id/startSearchBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/search_bar_height"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:background="@color/purple_700"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ToggleButton
-                android:id="@+id/filterWheelchair"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:textColor="@color/purple_700"
-                android:textOff="@string/button_toggle_wheel_chair"
-                android:textOn="@string/button_toggle_wheel_chair"
-                android:textSize="@dimen/search_bar_text_size" />
-
-            <ToggleButton
-                android:id="@+id/filterNoStairs"
-                android:layout_width="0dp"
+            <AutoCompleteTextView
+                android:id="@+id/searchStartView"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/search_bar_height"
-                android:layout_weight="2"
+                android:layout_margin="@dimen/search_bar_margin"
+                android:background="@color/white"
+                android:backgroundTint="@color/white"
+                android:gravity="center_vertical"
+                android:hint="@string/search_start_hint"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:singleLine="true"
                 android:textColor="@color/purple_700"
-                android:textOff="@string/button_toggle_no_stairs"
-                android:textOn="@string/button_toggle_no_stairs"
-                android:textSize="@dimen/search_bar_text_size" />
+                android:textIsSelectable="true">
+
+                <requestFocus />
+            </AutoCompleteTextView>
         </LinearLayout>
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <LinearLayout
+            android:id="@+id/endSearchBarAndFiltersLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/purple_700"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/startSearchBarLayout">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:contentDescription="@string/email"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+            <AutoCompleteTextView
+                android:id="@+id/searchEndView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_margin="@dimen/search_bar_margin"
+                android:background="@color/white"
+                android:backgroundTint="@color/white"
+                android:gravity="center_vertical"
+                android:hint="@string/search_end_hint"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:singleLine="true"
+                android:textColor="@color/purple_700"
+                android:textIsSelectable="true">
+
+                <requestFocus />
+            </AutoCompleteTextView>
+
+            <LinearLayout
+                android:id="@+id/routeFilterButtonsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/search_bar_height"
+                android:orientation="horizontal">
+
+                <ToggleButton
+                    android:id="@+id/filterWheelchair"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:textColor="@color/purple_700"
+                    android:textOff="@string/button_toggle_wheel_chair"
+                    android:textOn="@string/button_toggle_wheel_chair"
+                    android:textSize="@dimen/search_bar_text_size" />
+
+                <ToggleButton
+                    android:id="@+id/filterNoStairs"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/search_bar_height"
+                    android:layout_weight="2"
+                    android:textColor="@color/purple_700"
+                    android:textOff="@string/button_toggle_no_stairs"
+                    android:textOn="@string/button_toggle_no_stairs"
+                    android:textSize="@dimen/search_bar_text_size" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/building_description_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_700"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/buildingNameView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:text="@string/desc_building_name_view_default"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/description_build_name_text_size" />
+
+            <TextView
+                android:id="@+id/elevatorInfoView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:text="@string/desc_elevator_info_view_default"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/search_bar_text_size" />
+
+            <TextView
+                android:id="@+id/accRRView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:text="@string/desc_accessible_restroom_view_default"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/search_bar_text_size" />
+
+            <TextView
+                android:id="@+id/gendNeuRRView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:text="@string/desc_gender_neutral_restroom_view_default"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/search_bar_text_size" />
+
+            <Button
+                android:id="@+id/findRouteButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/search_bar_margin"
+                android:backgroundTint="@color/purple_200"
+                android:text="@string/button_find_route" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/build_route_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/startRouteButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_start_route" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

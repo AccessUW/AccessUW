@@ -6,8 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.MotionEvent;
 
+import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -20,6 +23,9 @@ import java.util.Set;
 import models.Place;
 
 public class MainActivity extends AppCompatActivity {
+
+    public enum AppStates {START, SEARCH, FOUND_START, BUILD_ROUTE, NAV};
+
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
@@ -29,11 +35,26 @@ public class MainActivity extends AppCompatActivity {
     ///     Fields
     ////////////////////////////////////////////////////////////
 
+    // Current state app is in
+    private AppStates mState;
+
     // Coords for scrolling in map view
     private float mx, my;
     // Scroll views for moving on the map
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
+
+    // Views for displaying search bars and route filters
+    private LinearLayout startSearchBar;
+    private LinearLayout endSearchBarAndFilters;
+
+    // Views for displaying building description
+    private LinearLayout buildDescLayout;
+    private Button findRouteButton;
+
+    // Views for building the route
+    private LinearLayout buildRouteLayout;
+    private Button startRouteButton;
 
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
@@ -49,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize state
+        mState = AppStates.START;
+
         // Initialize the Presenter component of the MVP framework
         CampusPresenter.init();
 
@@ -58,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
         // Get scroll views that control 2-D scrollability (i.e. user can move freely around map)
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
+
+        // Set up search bar layout and listeners
+        startSearchBar = findViewById(R.id.startSearchBarLayout);
+        endSearchBarAndFilters = findViewById(R.id.endSearchBarAndFiltersLayout);
 
         // Set up search bars for start and end locations
         AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
@@ -82,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
                 (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
         ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
                 (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
+
+        // Set up building description layout and listeners
+        buildDescLayout = findViewById(R.id.building_description_layout);
+        findViewById(R.id.findRouteButton).setOnClickListener(view -> updateState(AppStates.BUILD_ROUTE));
+
+        // Set up route-making layout
+        buildRouteLayout = findViewById(R.id.build_route_layout);
+        findViewById(R.id.startRouteButton).setOnClickListener(view -> updateState(AppStates.NAV));
     }
 
     @Override
@@ -124,6 +160,11 @@ public class MainActivity extends AppCompatActivity {
         // Ensure valid start input to send to presenter
         if (allBuildingNames.contains(newStart)) {
             CampusPresenter.updateStart(newStart);
+        }
+
+        // Update state to FOUND_START if currently in START state
+        if (mState == AppStates.START) {
+            updateState(AppStates.FOUND_START);
         }
     }
 
@@ -181,5 +222,57 @@ public class MainActivity extends AppCompatActivity {
         for (String currLocation : allBuildingNames) {
             searchableLocations.add(new LocationSearchResult(currLocation));
         }
+    }
+
+    /**
+     * Updates the state of the app based on user activity so that the appropriate components
+     * are (in)visible.
+     *
+     * @param newState is the new state the user is moving to
+     */
+    private void updateState(AppStates newState) {
+        AppStates lastState = mState;
+        mState = newState;
+
+        System.out.println("WAS " + lastState);
+        System.out.println("NOW " + newState);
+
+        // Set visibilities and pass relevant information based on last and new state
+        switch(lastState) {
+            case START:
+                if (newState == AppStates.FOUND_START) {
+                    buildBuildingDesc();
+                    buildDescLayout.setVisibility(View.VISIBLE);
+                }
+
+            case SEARCH:
+                //TODO: Implement search state
+
+            case FOUND_START:
+                if (newState == AppStates.BUILD_ROUTE) {
+                    buildDescLayout.setVisibility(View.INVISIBLE);
+                    endSearchBarAndFilters.setVisibility(View.VISIBLE);
+                    buildRouteLayout.setVisibility(View.VISIBLE);
+                }
+
+            case BUILD_ROUTE:
+                if (newState == AppStates.NAV) {
+                    startSearchBar.setVisibility(View.INVISIBLE);
+                    endSearchBarAndFilters.setVisibility(View.INVISIBLE);
+                    buildRouteLayout.setVisibility(View.INVISIBLE);
+                }
+
+            case NAV:
+                //TODO: Implement nav state
+        }
+    }
+
+    /**
+     * Updates the building description layout based on the current building the user is looking
+     * at.
+     */
+    private void buildBuildingDesc() {
+        String building = CampusPresenter.getCurrentStart();
+        System.out.println("AAAAAAAAAAA " + building);
     }
 }
