@@ -21,16 +21,17 @@ public class Building {
 
     /**
      * Creates a new Building object
-     * @param x x position of the building
-     * @param y y position of the building
      * @param shortName short name identifier of the building
      * @param restroom true if the building has gender neutral restrooms
      * @param elevator true if the building has an elevator
      * @param description description of this building
      */
-    public Building(float x, float y, String shortName, boolean restroom, boolean elevator,
+    public Building(String shortName, boolean restroom, boolean elevator,
                     String description) {
-
+        this.shortName = shortName;
+        this.genderNeutralRestroom = restroom;
+        this.elevator = elevator;
+        this.description = description;
     }
 
     /**
