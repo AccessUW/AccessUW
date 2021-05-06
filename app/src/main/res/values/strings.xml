@@ -6,6 +6,7 @@
     <string name="search_end_hint">Enter an end location…</string>
     <string name="button_toggle_wheel_chair">Wheel-chair</string>
     <string name="button_toggle_no_stairs">No stairs</string>
+    <string name="current_route">Current route</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

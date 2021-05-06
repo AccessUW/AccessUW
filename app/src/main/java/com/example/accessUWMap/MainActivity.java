@@ -1,5 +1,11 @@
 package com.example.accessUWMap;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +14,7 @@ import android.view.MotionEvent;
 
 import android.widget.AutoCompleteTextView;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -15,6 +22,7 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import models.Place;
@@ -38,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
-
 
     ////////////////////////////////////////////////////////////
     ///     Methods
@@ -154,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // Process successful route built between inputted start and end locations
                 System.out.println(route.toString());
+                drawRoute(route);
             }
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid start/end locations.",
@@ -184,10 +192,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Draw the route passed on the map, if route is null, clear the route from the canvas.
+     * Draw the route passed on the map.
      * @param route is the route to be drawn on the map
      */
     private void drawRoute(List<Place> route) {
-
+        // Get routeView
+        ImageView routeView = (ImageView) findViewById(R.id.routeView);
+        // Initialize bitmap
+        Bitmap routeBitmap = Bitmap.createBitmap(routeView.getWidth(), routeView.getHeight(),
+                      Bitmap.Config.ARGB_8888);
+        routeView.setImageBitmap(routeBitmap);
+        // Initialize canvas from bitmap
+        Canvas routeCanvas = new Canvas(routeBitmap);
+        // Initialize paint and set paint color, style, width
+        Paint paint = new Paint();
+        paint.setColor(getResources().getColor(R.color.dodger_blue));
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(12);
+        paint.setAntiAlias(true);
+        // Initialize path
+        Path path = new Path();
+        // Get iterator over route
+        ListIterator<Place> it = route.listIterator();
+        // Start path
+        routeCanvas.drawPaint(paint);
+        // Move to first point
+        if (it.hasNext()) {
+            Place p = it.next();
+            path.moveTo(p.getX, p.getY);
+        }
+        // Set rest of path
+        while (it.hasNext()) {
+            Place p = it.next();
+            path.lineTo(p.getX, p.getY);
+            path.moveTo(p.getX, p.getY);
+        }
+        // Close path
+        path.close();
+        // Draw path
+        routeCanvas.drawPath(path, paint);
+        routeView.invalidate();
     }
 }

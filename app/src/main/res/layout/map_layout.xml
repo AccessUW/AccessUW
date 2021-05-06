@@ -14,6 +14,12 @@
                 android:layout_height="fill_parent"
                 android:src="@drawable/uw_campus_map"
                 android:contentDescription="@string/main_campus_map_desc" />
+
+            <ImageView
+                android:id="@+id/routeView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:contentDescription="@string/current_route"/>
         </views.HScroll>
     </views.VScroll>
 
