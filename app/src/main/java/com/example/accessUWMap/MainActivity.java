@@ -219,13 +219,13 @@ public class MainActivity extends AppCompatActivity {
         // Move to first point
         if (it.hasNext()) {
             Place p = it.next();
-            path.moveTo(p.getX, p.getY);
+            path.moveTo(p.getX(), p.getY());
         }
         // Set rest of path
         while (it.hasNext()) {
             Place p = it.next();
-            path.lineTo(p.getX, p.getY);
-            path.moveTo(p.getX, p.getY);
+            path.lineTo(p.getX(), p.getY());
+            path.moveTo(p.getX(), p.getY());
         }
         // Close path
         path.close();
