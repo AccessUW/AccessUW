@@ -7,6 +7,8 @@ package models;
  */
 public class PlaceTreeNode implements TreeNode {
     private Place location;
+    public PlaceTreeNode leftDown;
+    public PlaceTreeNode rightUp;
 
     /**
      * Creates a new PlaceTreeNode object
@@ -39,8 +41,8 @@ public class PlaceTreeNode implements TreeNode {
      * @return node that is left or up the KD Tree
      */
     @Override
-    public TreeNode getLeftUp() {
-        return null;
+    public TreeNode getLeftDown() {
+        return leftDown;
     }
 
     /**
@@ -48,8 +50,8 @@ public class PlaceTreeNode implements TreeNode {
      * @return node that is right or down the KD Tree
      */
     @Override
-    public TreeNode getRightDown() {
-        return null;
+    public TreeNode getRightUp() {
+        return rightUp;
     }
 
     /**
