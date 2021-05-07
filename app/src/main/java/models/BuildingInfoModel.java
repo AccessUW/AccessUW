@@ -12,7 +12,19 @@ public class BuildingInfoModel {
     private Map<String, String> longToShortName;
     private Map<String, String> shortToLongName;
     private Map<String, Building> shortNameToBuilding;
-    private Map<String, String> shortNameToAddress;
+
+    /**
+     * Constructs a new BuildingInfoModel object
+     * @param longToShortName maps building long names to short names
+     * @param shortToLongName maps building short names to long names
+     * @param shortNameToBuilding maps building short names to the building
+     */
+    public BuildingInfoModel(Map<String, String> longToShortName, Map<String, String> shortToLongName,
+                             Map<String, Building> shortNameToBuilding) {
+        this.longToShortName = longToShortName;
+        this.shortToLongName = shortToLongName;
+        this.shortNameToBuilding = shortNameToBuilding;
+    }
 
     /**
      * Gets the short name identifier of a building on campus
@@ -25,7 +37,7 @@ public class BuildingInfoModel {
             throw new IllegalArgumentException("getShortName - given name isn't a building on the" +
                     " UW campus");
         }
-        return "";
+        return longToShortName.get(longName);
     }
 
     /**
@@ -39,7 +51,7 @@ public class BuildingInfoModel {
             throw new IllegalArgumentException("getLongName - given name isn't a building on the" +
                     " UW campus");
         }
-        return "";
+        return shortToLongName.get(shortName);
     }
 
     /**
@@ -53,7 +65,7 @@ public class BuildingInfoModel {
             throw new IllegalArgumentException("getBuilding - given name isn't a building on the" +
                     " UW campus");
         }
-        return null;
+        return shortNameToBuilding.get(shortName);
     }
 
     /**
@@ -62,7 +74,7 @@ public class BuildingInfoModel {
      * @return description of the given building
      */
     public String getBuildingDescription(String shortName) {
-        return "";
+        return shortNameToBuilding.get(shortName).getDescription();
     }
 
     /**
@@ -70,9 +82,17 @@ public class BuildingInfoModel {
      * @param shortName short name id of the building you want entrances of
      * @param assisted true if you only want assited entrances, false otherwise
      * @return Places that represent entrances of the given building
+     * @throws IllegalArgumentException if the given shortname is not valid
      */
     public Set<Place> getEntrances(String shortName, boolean assisted) {
-        return null;
+        if (!shortNameToBuilding.containsKey(shortName)) {
+            throw new IllegalArgumentException("getEntrances -- given short name is invalid");
+        }
+
+        if (assisted) {
+            return shortNameToBuilding.get(shortName).getAssistedEntrances();
+        }
+        return shortNameToBuilding.get(shortName).getEntrances();
     }
 
     /**
