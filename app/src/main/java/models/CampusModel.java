@@ -79,6 +79,9 @@ public class CampusModel {
             }
 
             Building building = shortToBuilding.get(shortName);
+            if (building == null) {
+                continue;
+            }
 
             // Get the long name of the building
             String longName = data[1];
@@ -101,6 +104,90 @@ public class CampusModel {
         }
         entranceReader.close();
 
+        // Add all buildings found to set
+        Set<Building> allBuildings = new HashSet<>(shortToBuilding.values());
+
+        // Add the path data
+        BufferedReader pathReader = new BufferedReader(pathFileReader);
+
+        while (true) {
+            String row = entranceReader.readLine();
+            if (row == null) {
+                break;
+            }
+
+            String[] data = row.split(",");
+            // 0 : startx
+            // 1 : starty
+            // 2 : endx
+            // 3 : endy
+            // 4 : wheelchair
+            // 5 : no stairs?
+
+            // Skip if we don't have a complete row
+            boolean incomplete = false;
+            for (String val : data) {
+                if (val.equals("")) {
+                    incomplete = true;
+                    break;
+                }
+            }
+
+            if (incomplete) {
+                continue;
+            }
+
+            float x1 = Float.parseFloat(data[0]);
+            float y1 = Float.parseFloat(data[1]);
+            float x2 = Float.parseFloat(data[2]);
+            float y2 = Float.parseFloat(data[3]);
+            boolean wheelchairAccessible = data[4].equals("T");
+            boolean hasStairs = data[5].equals("F");
+
+            // TODO: optimize so we don't have O(n^2) time to add an edge each time
+            // Check to see if there are places for either end
+            Place p1 = null;
+            Place p2 = null;
+            for (Place p : allPlaces) {
+                if (p.getX() == x1 && p.getY() == y1) {
+                    p1 = p;
+                } else if (p.getX() == x2 && p.getY() == y2) {
+                    p2 = p;
+                }
+
+                if (p1 != null && p2 != null) {
+                    break;
+                }
+            }
+
+            if (p1 == null) {
+                p1 = new Place(x1, y1, false);
+                allPlaces.add(p1);
+            }
+            if (p2 == null) {
+                p2 = new Place(x2, y2, false);
+                allPlaces.add(p2);
+            }
+
+            // Add edge between the places
+            p1.addNeighbor(p2, getDistance(p1, p2), wheelchairAccessible, hasStairs);
+        }
+        pathReader.close();
+
+        // Initialize the Models
+        campusTreeModel = new CampusTreeModel(allBuildings, allPlaces);
+        routeFinderModel = new RouteFinderModel();
+        buildingInfoModel = new BuildingInfoModel(longToShortName, shortToLongName, shortToBuilding);
+    }
+
+    /**
+     * Gets the distance between two places
+     * @param p1 place we want to get distance between
+     * @param p2 place we want to get distance between
+     * @return euclidean distance between the two places
+     */
+    private static float getDistance(Place p1, Place p2) {
+        return (float) Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 
     /**
