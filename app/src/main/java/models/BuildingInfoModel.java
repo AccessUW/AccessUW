@@ -96,7 +96,7 @@ public class BuildingInfoModel {
         }
 
         if (assisted) {
-            return shortNameToBuilding.get(shortName).getAssistedEntrances();
+            return shortNameToBuilding.get(shortName).getAccessibleEntrances();
         }
         return shortNameToBuilding.get(shortName).getEntrances();
     }

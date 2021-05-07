@@ -17,7 +17,7 @@ public class Building {
     private boolean genderNeutralRestroom;
     private boolean elevator;
     private Set<Place> entrances;
-    private Set<Place> assistedEntrances;
+    private Set<Place> accessibleEntrances;
     private String description;
 
     /**
@@ -34,7 +34,7 @@ public class Building {
         this.elevator = elevator;
         this.description = description;
         this.entrances = new HashSet<>();
-        this.assistedEntrances = new HashSet<>();
+        this.accessibleEntrances = new HashSet<>();
     }
 
     /**
@@ -89,8 +89,8 @@ public class Building {
      * Get all assisted entrances to this building
      * @return Places for all assisted entrances to this building
      */
-    public Set<Place> getAssistedEntrances() {
-        return assistedEntrances;
+    public Set<Place> getAccessibleEntrances() {
+        return accessibleEntrances;
     }
 
     /**
@@ -110,7 +110,7 @@ public class Building {
         if (!entrances.contains(entrance)) {
             entrances.add(entrance);
             if (assisted) {
-                assistedEntrances.add(entrance);
+                accessibleEntrances.add(entrance);
             }
 
             // Recalculate Building's x, y by averaging entrances

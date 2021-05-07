@@ -39,7 +39,7 @@ public class RouteFinderModel {
 
         Set<Place> ends;
         if (wheelchair) {
-            ends = end.getAssistedEntrances();
+            ends = end.getAccessibleEntrances();
         } else {
             ends = end.getEntrances();
         }
@@ -64,8 +64,8 @@ public class RouteFinderModel {
         // If the path requires wheelchair accessibility, only find accessible entrances to the
         // building
         if (wheelchair) {
-            ends = end.getAssistedEntrances();
-            starts = start.getAssistedEntrances();
+            ends = end.getAccessibleEntrances();
+            starts = start.getAccessibleEntrances();
         } else {
             ends = end.getEntrances();
             starts = start.getEntrances();
@@ -193,7 +193,7 @@ public class RouteFinderModel {
      */
     private boolean isGoal(Place place, Building b, boolean wheelchair) {
         if (wheelchair) {
-            return b.getAssistedEntrances().contains(place);
+            return b.getAccessibleEntrances().contains(place);
         } else {
             return b.getEntrances().contains(place);
         }
