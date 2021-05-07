@@ -44,8 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private HorizontalScrollView hScroll;
 
     // Views for displaying search bars and route filters
-    private LinearLayout startSearchBar;
-    private LinearLayout endSearchBarAndFilters;
+    private LinearLayout startSearchBarLayout;
+    private LinearLayout endSearchBarAndFiltersLayout;
+    private AutoCompleteTextView startSearchBar;
+    private AutoCompleteTextView endSearchBar;
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
@@ -84,16 +86,16 @@ public class MainActivity extends AppCompatActivity {
         hScroll = findViewById(R.id.hScroll);
 
         // Set up search bar layout and listeners
-        startSearchBar = findViewById(R.id.startSearchBarLayout);
-        endSearchBarAndFilters = findViewById(R.id.endSearchBarAndFiltersLayout);
+        startSearchBarLayout = findViewById(R.id.startSearchBarLayout);
+        endSearchBarAndFiltersLayout = findViewById(R.id.endSearchBarAndFiltersLayout);
 
         // Set up search bars' auto-complete functionality for start and end locations
         AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
                 this, android.R.layout.select_dialog_item, searchableLocations);
-        AutoCompleteTextView startSearchBar = findViewById(R.id.searchStartView);
+        startSearchBar = findViewById(R.id.searchStartView);
         startSearchBar.setAdapter(adapter);
         startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
-        AutoCompleteTextView endSearchBar = findViewById(R.id.searchEndView);
+        endSearchBar = findViewById(R.id.searchEndView);
         endSearchBar.setAdapter(adapter);
         endSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
 
@@ -108,9 +110,6 @@ public class MainActivity extends AppCompatActivity {
         // Set up back-arrow button listener
         findViewById(R.id.backArrowButton).setOnClickListener(view -> goBack());
 
-        // Set up swap start and end locations button
-        findViewById(R.id.swapLocationButton).setOnClickListener(view -> System.out.println("SWAPPED LOCATIONS"));
-
         // Set up toggle button filter listeners for when user filters their route for accessibility
         ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
                 (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
@@ -124,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up route-making layout
         buildRouteLayout = findViewById(R.id.build_route_layout);
         findViewById(R.id.startRouteButton).setOnClickListener(view -> updateState(AppStates.NAV));
+        findViewById(R.id.swapLocationButton).setOnClickListener(view -> swapStartAndEnd());
 
         // Set up nav layout
         navLayout = findViewById(R.id.nav_layout);
@@ -187,6 +187,17 @@ public class MainActivity extends AppCompatActivity {
         if (allBuildingNames.contains(newEnd)) {
             CampusPresenter.updateEnd(newEnd);
         }
+    }
+
+    /**
+     * Swaps start and end locations in the build-route state of the app.
+     */
+    public void swapStartAndEnd() {
+        String start = CampusPresenter.getCurrentStart();
+        String end = CampusPresenter.getCurrentEnd();
+        CampusPresenter.swapStartAndEnd();
+        startSearchBar.setText(end);
+        endSearchBar.setText(start);
     }
 
     /**
@@ -259,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 // Going forward through route-building steps
                 if (newState == AppStates.BUILD_ROUTE) {
                     buildDescLayout.setVisibility(View.INVISIBLE);
-                    endSearchBarAndFilters.setVisibility(View.VISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.VISIBLE);
                     buildRouteLayout.setVisibility(View.VISIBLE);
                 }
                 // Going backward through route-building steps (i.e. hit back arrow)
@@ -270,14 +281,14 @@ public class MainActivity extends AppCompatActivity {
             case BUILD_ROUTE:
                 // Going forward through route-building steps
                 if (newState == AppStates.NAV) {
-                    startSearchBar.setVisibility(View.INVISIBLE);
-                    endSearchBarAndFilters.setVisibility(View.INVISIBLE);
+                    startSearchBarLayout.setVisibility(View.INVISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
                     buildRouteLayout.setVisibility(View.INVISIBLE);
                     navLayout.setVisibility(View.VISIBLE);
                 }
                 // Going backward through route-building steps (i.e. hit back arrow)
                 if (newState == AppStates.FOUND_START) {
-                    endSearchBarAndFilters.setVisibility(View.INVISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
                     buildRouteLayout.setVisibility(View.INVISIBLE);
                     buildDescLayout.setVisibility(View.VISIBLE);
                 }
@@ -286,8 +297,8 @@ public class MainActivity extends AppCompatActivity {
                 // Going backward through route-building steps (i.e. hit back arrow)
                 if (newState == AppStates.BUILD_ROUTE) {
                     navLayout.setVisibility(View.INVISIBLE);
-                    startSearchBar.setVisibility(View.VISIBLE);
-                    endSearchBarAndFilters.setVisibility(View.VISIBLE);
+                    startSearchBarLayout.setVisibility(View.VISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.VISIBLE);
                     buildRouteLayout.setVisibility(View.VISIBLE);
                 }
         }
