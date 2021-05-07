@@ -2,6 +2,7 @@ package models;
 
 import android.os.Build;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -32,6 +33,8 @@ public class Building {
         this.genderNeutralRestroom = restroom;
         this.elevator = elevator;
         this.description = description;
+        this.entrances = new HashSet<>();
+        this.assistedEntrances = new HashSet<>();
     }
 
     /**
