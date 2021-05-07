@@ -22,12 +22,19 @@ public class CampusModel {
     private static BuildingInfoModel buildingInfoModel;
 
     /**
-     * This method initializes a CampusModel program
+     * This method initializes a CampusModel program if it hasn't been initialized already
      * @param filepath filepath to the map_data
      * @throws IllegalArgumentException if the filepath does not exist or does not contain the data
      * @throws IOException if there was an error when reading from the csv data
      */
     public static void init(String filepath) throws IllegalArgumentException, IOException {
+        if (campusTreeModel != null && routeFinderModel != null && buildingInfoModel != null) {
+            return; // do nothing if we've already initialized
+        } else {
+            campusTreeModel = null;
+            routeFinderModel = null;
+            buildingInfoModel = null;
+        }
         File entranceFile = new File(filepath + "campus_entrance_data.csv");
         File pathFile = new File(filepath + "campus_path_data.csv");
 
@@ -194,8 +201,9 @@ public class CampusModel {
      * Gets the short name identifier of a building on campus
      * @param longName long name of the building on UW campus
      * @return short name id corresponding to the given long name
+     * @throws IllegalArgumentException if longName is not a building on the UW campus
      */
-    public static String getShortName(String longName) {
+    public static String getShortName(String longName) throws IllegalArgumentException {
         return buildingInfoModel.getShortName(longName);
     }
 
@@ -215,7 +223,7 @@ public class CampusModel {
      * @return building corresponding to the given short name
      * @throws IllegalArgumentException if the short name doesn't have a corresponding building
      */
-    public static Building getBuilding(String shortName) {
+    public static Building getBuilding(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getBuilding(shortName);
     }
 
@@ -223,8 +231,9 @@ public class CampusModel {
      * Gets the description of the given building
      * @param shortName short name id of the building you want the description of
      * @return description of the given building
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static String getBuildingDescription(String shortName) {
+    public static String getBuildingDescription(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getBuildingDescription(shortName);
     }
 
@@ -245,8 +254,10 @@ public class CampusModel {
      * @param shortName short name identifier of the building you want the closest entrance of
      * @param assisted true if the entrance must be assited, false otherwise
      * @return closest entrance of the given building to the given x, y
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static Place getClosestEntrance(float x, float y, String shortName, boolean assisted) {
+    public static Place getClosestEntrance(float x, float y, String shortName, boolean assisted)
+            throws IllegalArgumentException{
         return buildingInfoModel.getClosestEntrance(x, y, shortName, assisted);
     }
 
@@ -254,8 +265,9 @@ public class CampusModel {
      * Get the address of the given building
      * @param shortName short name identifier of the building you want the address of
      * @return address of the given building
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static String getAddress(String shortName) {
+    public static String getAddress(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getAddress(shortName);
     }
 
@@ -263,8 +275,9 @@ public class CampusModel {
      * Get whether of not the given building has elevator access
      * @param shortName short name identifier of the building
      * @return true if the building has elevator access, otherwise false
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static boolean hasElevatorAccess(String shortName) {
+    public static boolean hasElevatorAccess(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.hasElevatorAccess(shortName);
     }
 
@@ -272,8 +285,9 @@ public class CampusModel {
      * Get whether or not the given building has a gender neutral restroom
      * @param shortName short name identifier of the building
      * @return true if the building has a gender neutral restroom, otherwise false
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static boolean hasGenderNeutralRestroom(String shortName) {
+    public static boolean hasGenderNeutralRestroom(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.hasGenderNeutralRestroom(shortName);
     }
 
@@ -292,10 +306,12 @@ public class CampusModel {
      * @param genderNeutralRestroom True if the building must have a genderNeutralRestroom
      * @param elevator True if the building must have an elevator
      * @return The long name of the building closest to the given x, y
+     * @throws IllegalStateException if there are no buildings or initialization had failed
      */
     public static String findClosestBuilding(float x, float y, boolean genderNeutralRestroom,
-                                      boolean elevator) {
-        return campusTreeModel.findClosestBuilding(x, y, genderNeutralRestroom, elevator);
+                                      boolean elevator) throws IllegalStateException {
+        String shortName = campusTreeModel.findClosestBuilding(x, y, genderNeutralRestroom, elevator);
+        return getLongName(shortName);
     }
 
     /**
@@ -303,8 +319,9 @@ public class CampusModel {
      * @param x x value of the point we want the closest place to
      * @param y y value of the point we want the closest place to
      * @return the Place closest to the given x, y
+     * @throws IllegalStateException if there are no buildings or initialization had failed
      */
-    public static Place findClosestPlace(float x, float y) {
+    public static Place findClosestPlace(float x, float y) throws IllegalStateException {
         return campusTreeModel.findClosestPlace(x, y);
     }
 
@@ -319,7 +336,8 @@ public class CampusModel {
      * doesn't exist
      */
     public static List<Place> getShortestPath(float startx, float starty, String end,
-                                              boolean wheelchair, boolean stairs) {
+                                              boolean wheelchair, boolean stairs) throws
+            IllegalArgumentException {
         Place start = campusTreeModel.findClosestPlace(startx, starty);
         Building endBuilding = buildingInfoModel.getBuilding(end);
         return routeFinderModel.shortestPath(start, endBuilding, wheelchair, stairs);
@@ -335,7 +353,8 @@ public class CampusModel {
      * doesn't exist.
      */
     public static List<Place> shortestPathBetweenBuildings(String start, String end,
-                                                           boolean wheelchair, boolean stairs) {
+                                                           boolean wheelchair, boolean stairs)
+            throws IllegalArgumentException {
         Building startBuilding = buildingInfoModel.getBuilding(start);
         Building endBuilding = buildingInfoModel.getBuilding(end);
         return routeFinderModel.shortestPathBetweenBuildings(startBuilding, endBuilding, wheelchair,
