@@ -2,6 +2,7 @@ package models;
 
 import android.os.Build;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -21,18 +22,19 @@ public class Building {
 
     /**
      * Creates a new Building object
-     * @param x x position of the building
-     * @param y y position of the building
      * @param shortName short name identifier of the building
      * @param restroom true if the building has gender neutral restrooms
      * @param elevator true if the building has an elevator
-     * @param entrances all entrances to this building
-     * @param assisted assisted entrances to this building
      * @param description description of this building
      */
-    public Building(float x, float y, String shortName, boolean restroom, boolean elevator,
-                    Set<Place> entrances, Set<Place> assisted, String description) {
-
+    public Building(String shortName, boolean restroom, boolean elevator,
+                    String description) {
+        this.shortName = shortName;
+        this.genderNeutralRestroom = restroom;
+        this.elevator = elevator;
+        this.description = description;
+        this.entrances = new HashSet<>();
+        this.assistedEntrances = new HashSet<>();
     }
 
     /**
@@ -100,6 +102,26 @@ public class Building {
     }
 
     /**
+     * Adds an entrance to this building, updating this building's x, y position
+     * @param entrance Place of the entrance we want to add to this building
+     * @param assisted true if the entrance is assisted, false otherwise
+     */
+    public void addEntrance(Place entrance, boolean assisted) {
+        if (!entrances.contains(entrance)) {
+            entrances.add(entrance);
+            if (assisted) {
+                assistedEntrances.add(entrance);
+            }
+
+            // Recalculate Building's x, y by averaging entrances
+            float xSum = (x * entrances.size() - 1) + entrance.getX();
+            float ySum = (y * entrances.size() - 1) + entrance.getY();
+            x = xSum / entrances.size();
+            y = ySum / entrances.size();
+        }
+    }
+
+    /**
      * Returns whether this Building is equal to another object
      * @param o object we want to check the equality of
      * @return true if they are equal, false otherwise
@@ -116,10 +138,9 @@ public class Building {
 
         Building other = (Building) o;
 
-        return this.x == other.x && this.y == other.y && this.shortName.equals(other.shortName) &&
-                this.description.equals(other.description) && this.genderNeutralRestroom ==
-                other.genderNeutralRestroom && this.elevator == other.elevator && this.entrances ==
-                other.entrances && this.assistedEntrances == other.assistedEntrances;
+        return this.shortName.equals(other.shortName) && this.description.equals(other.description)
+                && this.genderNeutralRestroom == other.genderNeutralRestroom && this.elevator ==
+                other.elevator;
     }
 
     /**
@@ -128,6 +149,7 @@ public class Building {
      */
     @Override
     public int hashCode() {
-        return (int)(this.x + this.y + this.shortName.length() + this.description.length());
+        return this.shortName.length() + this.description.length() + (genderNeutralRestroom ? 1 : 0) +
+                (elevator ? 3 : 0);
     }
 }

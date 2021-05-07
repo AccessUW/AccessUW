@@ -1,6 +1,14 @@
 package models;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,20 +22,188 @@ public class CampusModel {
     private static BuildingInfoModel buildingInfoModel;
 
     /**
-     * This method initializes a CampusModel program
-     * @param filepath filepath to the UW Campus data
-     * @throws IllegalArgumentException if the filepath does not exist
+     * This method initializes a CampusModel program if it hasn't been initialized already
+     * @param filepath filepath to the map_data
+     * @throws IllegalArgumentException if the filepath does not exist or does not contain the data
+     * @throws IOException if there was an error when reading from the csv data
      */
-    public static void init(String filepath) throws IllegalArgumentException {
-        // TODO: add initialization of models from csv files
+    public static void init(String filepath) throws IllegalArgumentException, IOException {
+        if (campusTreeModel != null && routeFinderModel != null && buildingInfoModel != null) {
+            return; // do nothing if we've already initialized
+        } else {
+            campusTreeModel = null;
+            routeFinderModel = null;
+            buildingInfoModel = null;
+        }
+        File entranceFile = new File(filepath + "campus_entrance_data.csv");
+        File pathFile = new File(filepath + "campus_path_data.csv");
+
+        FileReader entranceFileReader;
+        FileReader pathFileReader;
+        try {
+            entranceFileReader = new FileReader(entranceFile);
+            pathFileReader = new FileReader(pathFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("CampusModel init -- given filepath does not " +
+                    "contain necessary entrance or path csv files");
+        }
+
+        BufferedReader entranceReader = new BufferedReader(entranceFileReader);
+
+        // Data to fill
+        Set<Place> allPlaces = new HashSet<>();
+        Map<String, String> shortToLongName = new HashMap<>();
+        Map<String, String> longToShortName = new HashMap<>();
+        Map<String, Building> shortToBuilding = new HashMap<>();
+
+        while (true) {
+            String row = entranceReader.readLine();
+            if (row == null) {
+                break;
+            }
+
+            String[] data = row.split(",");
+            // 0 : short name
+            // 1 : long name
+            // 2 : x
+            // 3 : y
+            // 4 : type of entrance (M = manual, A = assisted, U = unaccessible)
+
+            String shortName = data[0];
+            if (shortName.equals("")) { // Skip over incomplete data for now
+                continue;
+            }
+            // Remove the parentheses from short names
+            int parenIdx = shortName.indexOf('(');
+            if (parenIdx != -1) {
+                shortName = shortName.substring(0, parenIdx - 1);
+            }
+
+            if (!shortToBuilding.containsKey(shortName)) {
+                // TODO: add correct restroom, elevator, and description when building data is done
+                shortToBuilding.put(shortName, new Building(shortName, true, true, ""));
+            }
+
+            Building building = shortToBuilding.get(shortName);
+            if (building == null) {
+                continue;
+            }
+
+            // Get the long name of the building
+            String longName = data[1];
+            parenIdx = longName.indexOf('(');
+            if (parenIdx != -1) {
+                longName = longName.substring(0, parenIdx - 1);
+            }
+            shortToLongName.put(shortName, longName);
+            longToShortName.put(longName, shortName);
+
+            // Add the entrance for this building
+            if (data[2].equals("") || data[3].equals("")) {
+                continue; // continue if there is no entrance coordinates
+            }
+            float x = Float.parseFloat(data[2]);
+            float y = Float.parseFloat(data[3]);
+            Place entrance = new Place(x, y, true);
+            allPlaces.add(entrance);
+            building.addEntrance(entrance, !data[4].equals("U"));
+        }
+        entranceReader.close();
+
+        // Add all buildings found to set
+        Set<Building> allBuildings = new HashSet<>(shortToBuilding.values());
+
+        // Add the path data
+        BufferedReader pathReader = new BufferedReader(pathFileReader);
+
+        while (true) {
+            String row = entranceReader.readLine();
+            if (row == null) {
+                break;
+            }
+
+            String[] data = row.split(",");
+            // 0 : startx
+            // 1 : starty
+            // 2 : endx
+            // 3 : endy
+            // 4 : wheelchair
+            // 5 : no stairs?
+
+            // Skip if we don't have a complete row
+            boolean incomplete = false;
+            for (String val : data) {
+                if (val.equals("")) {
+                    incomplete = true;
+                    break;
+                }
+            }
+
+            if (incomplete) {
+                continue;
+            }
+
+            float x1 = Float.parseFloat(data[0]);
+            float y1 = Float.parseFloat(data[1]);
+            float x2 = Float.parseFloat(data[2]);
+            float y2 = Float.parseFloat(data[3]);
+            boolean wheelchairAccessible = data[4].equals("T");
+            boolean hasStairs = data[5].equals("F");
+
+            // TODO: optimize so we don't have O(n^2) time to add an edge each time
+            // Check to see if there are places for either end
+            Place p1 = null;
+            Place p2 = null;
+            for (Place p : allPlaces) {
+                if (p.getX() == x1 && p.getY() == y1) {
+                    p1 = p;
+                } else if (p.getX() == x2 && p.getY() == y2) {
+                    p2 = p;
+                }
+
+                if (p1 != null && p2 != null) {
+                    break;
+                }
+            }
+
+            if (p1 == null) {
+                p1 = new Place(x1, y1, false);
+                allPlaces.add(p1);
+            }
+            if (p2 == null) {
+                p2 = new Place(x2, y2, false);
+                allPlaces.add(p2);
+            }
+
+            // Add edge between the places
+            p1.addNeighbor(p2, getDistance(p1, p2), wheelchairAccessible, hasStairs);
+        }
+        pathReader.close();
+
+        // Initialize the Models
+        campusTreeModel = new CampusTreeModel(allBuildings, allPlaces);
+        routeFinderModel = new RouteFinderModel();
+        buildingInfoModel = new BuildingInfoModel(longToShortName, shortToLongName, shortToBuilding);
+    }
+
+    /**
+     * Gets the distance between two places
+     * @param p1 place we want to get distance between
+     * @param p2 place we want to get distance between
+     * @return euclidean distance between the two places
+     */
+    private static float getDistance(Place p1, Place p2) {
+        return (float) Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 
     /**
      * Gets the short name identifier of a building on campus
      * @param longName long name of the building on UW campus
      * @return short name id corresponding to the given long name
+     * @throws IllegalArgumentException if longName is not a building on the UW campus
      */
-    public static String getShortName(String longName) {
+    public static String getShortName(String longName) throws IllegalArgumentException {
         return buildingInfoModel.getShortName(longName);
     }
 
@@ -47,7 +223,7 @@ public class CampusModel {
      * @return building corresponding to the given short name
      * @throws IllegalArgumentException if the short name doesn't have a corresponding building
      */
-    public static Building getBuilding(String shortName) {
+    public static Building getBuilding(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getBuilding(shortName);
     }
 
@@ -55,8 +231,9 @@ public class CampusModel {
      * Gets the description of the given building
      * @param shortName short name id of the building you want the description of
      * @return description of the given building
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static String getBuildingDescription(String shortName) {
+    public static String getBuildingDescription(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getBuildingDescription(shortName);
     }
 
@@ -77,8 +254,10 @@ public class CampusModel {
      * @param shortName short name identifier of the building you want the closest entrance of
      * @param assisted true if the entrance must be assited, false otherwise
      * @return closest entrance of the given building to the given x, y
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static Place getClosestEntrance(float x, float y, String shortName, boolean assisted) {
+    public static Place getClosestEntrance(float x, float y, String shortName, boolean assisted)
+            throws IllegalArgumentException{
         return buildingInfoModel.getClosestEntrance(x, y, shortName, assisted);
     }
 
@@ -86,8 +265,9 @@ public class CampusModel {
      * Get the address of the given building
      * @param shortName short name identifier of the building you want the address of
      * @return address of the given building
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static String getAddress(String shortName) {
+    public static String getAddress(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getAddress(shortName);
     }
 
@@ -95,8 +275,9 @@ public class CampusModel {
      * Get whether of not the given building has elevator access
      * @param shortName short name identifier of the building
      * @return true if the building has elevator access, otherwise false
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static boolean hasElevatorAccess(String shortName) {
+    public static boolean hasElevatorAccess(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.hasElevatorAccess(shortName);
     }
 
@@ -104,8 +285,9 @@ public class CampusModel {
      * Get whether or not the given building has a gender neutral restroom
      * @param shortName short name identifier of the building
      * @return true if the building has a gender neutral restroom, otherwise false
+     * @throws IllegalArgumentException if the given short name is invalid
      */
-    public static boolean hasGenderNeutralRestroom(String shortName) {
+    public static boolean hasGenderNeutralRestroom(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.hasGenderNeutralRestroom(shortName);
     }
 
@@ -124,10 +306,12 @@ public class CampusModel {
      * @param genderNeutralRestroom True if the building must have a genderNeutralRestroom
      * @param elevator True if the building must have an elevator
      * @return The long name of the building closest to the given x, y
+     * @throws IllegalStateException if there are no buildings or initialization had failed
      */
     public static String findClosestBuilding(float x, float y, boolean genderNeutralRestroom,
-                                      boolean elevator) {
-        return campusTreeModel.findClosestBuilding(x, y, genderNeutralRestroom, elevator);
+                                      boolean elevator) throws IllegalStateException {
+        String shortName = campusTreeModel.findClosestBuilding(x, y, genderNeutralRestroom, elevator);
+        return getLongName(shortName);
     }
 
     /**
@@ -135,8 +319,9 @@ public class CampusModel {
      * @param x x value of the point we want the closest place to
      * @param y y value of the point we want the closest place to
      * @return the Place closest to the given x, y
+     * @throws IllegalStateException if there are no buildings or initialization had failed
      */
-    public static Place findClosestPlace(float x, float y) {
+    public static Place findClosestPlace(float x, float y) throws IllegalStateException {
         return campusTreeModel.findClosestPlace(x, y);
     }
 
@@ -151,7 +336,8 @@ public class CampusModel {
      * doesn't exist
      */
     public static List<Place> getShortestPath(float startx, float starty, String end,
-                                              boolean wheelchair, boolean stairs) {
+                                              boolean wheelchair, boolean stairs) throws
+            IllegalArgumentException {
         Place start = campusTreeModel.findClosestPlace(startx, starty);
         Building endBuilding = buildingInfoModel.getBuilding(end);
         return routeFinderModel.shortestPath(start, endBuilding, wheelchair, stairs);
@@ -167,7 +353,8 @@ public class CampusModel {
      * doesn't exist.
      */
     public static List<Place> shortestPathBetweenBuildings(String start, String end,
-                                                           boolean wheelchair, boolean stairs) {
+                                                           boolean wheelchair, boolean stairs)
+            throws IllegalArgumentException {
         Building startBuilding = buildingInfoModel.getBuilding(start);
         Building endBuilding = buildingInfoModel.getBuilding(end);
         return routeFinderModel.shortestPathBetweenBuildings(startBuilding, endBuilding, wheelchair,
