@@ -61,88 +61,98 @@
             </AutoCompleteTextView>
         </LinearLayout>
 
+<!--        <LinearLayout-->
+<!--            android:id="@+id/endSearchBarAndFiltersLayout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:background="@color/purple_700"-->
+<!--            android:orientation="vertical"-->
+<!--            android:visibility="invisible"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/startSearchBarLayout">-->
+
         <LinearLayout
-            android:id="@+id/endSearchBarAndFiltersLayout"
+            android:id="@+id/endSearchBarAndSwapLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/purple_700"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startSearchBarLayout">
+            app:layout_constraintTop_toBottomOf="@id/startSearchBarLayout">
 
-            <LinearLayout
-                android:id="@+id/endSearchBarAndSwapLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/swapLocationButton"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/search_bar_height"
-                    android:layout_marginTop="@dimen/search_bar_text_padding_side"
-                    android:layout_marginBottom="@dimen/search_bar_text_padding_side"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/swap_button_desc"
-                    android:paddingStart="@dimen/search_bar_text_padding_side"
-                    android:paddingEnd="@dimen/search_bar_text_padding_side"
-                    app:srcCompat="@drawable/switch_arrow_icon" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/searchEndView"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/search_bar_height"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="@dimen/search_bar_margin"
-                    android:layout_marginEnd="@dimen/search_bar_margin"
-                    android:layout_marginBottom="@dimen/search_bar_margin"
-                    android:layout_weight="7"
-                    android:background="@color/white"
-                    android:backgroundTint="@color/white"
-                    android:gravity="center_vertical"
-                    android:hint="@string/search_end_hint"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:paddingStart="@dimen/search_bar_text_padding_side"
-                    android:paddingEnd="@dimen/search_bar_text_padding_side"
-                    android:singleLine="true"
-                    android:textColor="@color/purple_700"
-                    android:textIsSelectable="true">
-
-                    <requestFocus />
-                </AutoCompleteTextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/routeFilterButtonsLayout"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/swapLocationButton"
+                android:layout_width="0dp"
                 android:layout_height="@dimen/search_bar_height"
-                android:orientation="horizontal">
+                android:layout_marginTop="@dimen/search_bar_text_padding_side"
+                android:layout_marginBottom="@dimen/search_bar_text_padding_side"
+                android:layout_weight="1"
+                android:contentDescription="@string/swap_button_desc"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                app:srcCompat="@drawable/switch_arrow_icon" />
 
-                <ToggleButton
-                    android:id="@+id/filterWheelchair"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:textColor="@color/purple_700"
-                    android:textOff="@string/button_toggle_wheel_chair"
-                    android:textOn="@string/button_toggle_wheel_chair"
-                    android:textSize="@dimen/search_bar_text_size" />
+            <AutoCompleteTextView
+                android:id="@+id/searchEndView"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                android:layout_marginBottom="@dimen/search_bar_margin"
+                android:layout_weight="7"
+                android:background="@color/white"
+                android:backgroundTint="@color/white"
+                android:gravity="center_vertical"
+                android:hint="@string/search_end_hint"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:singleLine="true"
+                android:textColor="@color/purple_700"
+                android:textIsSelectable="true">
 
-                <ToggleButton
-                    android:id="@+id/filterNoStairs"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/search_bar_height"
-                    android:layout_weight="2"
-                    android:textColor="@color/purple_700"
-                    android:textOff="@string/button_toggle_no_stairs"
-                    android:textOn="@string/button_toggle_no_stairs"
-                    android:textSize="@dimen/search_bar_text_size" />
-            </LinearLayout>
-
+                <requestFocus />
+            </AutoCompleteTextView>
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/routeFilterButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_bar_height"
+            android:background="@color/purple_700"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/endSearchBarAndSwapLayout">
+
+            <ToggleButton
+                android:id="@+id/filterWheelchair"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/purple_700"
+                android:textOff="@string/button_toggle_wheel_chair"
+                android:textOn="@string/button_toggle_wheel_chair"
+                android:textSize="@dimen/search_bar_text_size" />
+
+            <ToggleButton
+                android:id="@+id/filterNoStairs"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_weight="2"
+                android:textColor="@color/purple_700"
+                android:textOff="@string/button_toggle_no_stairs"
+                android:textOn="@string/button_toggle_no_stairs"
+                android:textSize="@dimen/search_bar_text_size" />
+        </LinearLayout>
+
+<!--        </LinearLayout>-->
 
         <LinearLayout
             android:id="@+id/building_description_layout"
@@ -208,22 +218,26 @@
                 android:text="@string/button_find_route" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/build_route_layout"
+<!--        <LinearLayout-->
+<!--            android:id="@+id/build_route_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical"-->
+<!--            android:visibility="invisible"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent">-->
+
+        <Button
+            android:id="@+id/startRouteButton"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:text="@string/button_start_route"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <Button
-                android:id="@+id/startRouteButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/button_start_route" />
-        </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent" />
+<!--        </LinearLayout>-->
 
         <LinearLayout
             android:id="@+id/nav_layout"
