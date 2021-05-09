@@ -135,7 +135,11 @@ public class CampusPresenter {
             throw new IllegalArgumentException();
         }
 
-        return CampusModel.shortestPathBetweenBuildings(currentStart, currentEnd, wheelchair, noStairs);
+        String shortStart = CampusModel.getShortName(currentStart);
+        String shortEnd = CampusModel.getShortName(currentEnd);
+        currentRoute = CampusModel.shortestPathBetweenBuildings(shortStart, shortEnd, wheelchair, noStairs);
+
+        return currentRoute;
     }
 
     /**
