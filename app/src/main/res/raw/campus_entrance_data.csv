@@ -212,10 +212,10 @@ MGH (W),Mary Gates Hall (W),1942.3674,1472.7388,A
 ,McCarty Hall (W),,,A
 MCM,McMahon,2444,918,A
 MNY,Meany Hall (N),1658.923,1295.8089,M
-"MNY (NE, lower)","Meany Hall (NE, lower)",1684.1768,1297.0716,M
-"MNY (NE, upper)","Meany Hall (NE, upper)",1692,1301,A
-"MNY (E, lower)","Meany Hall (E, lower)",1696,1379,
-"MNY (E, upper)","Meany Hall (E, upper)",1705,1380,M
+MNY (NE lower),Meany Hall (NE lower),1684.1768,1297.0716,M
+MNY (NE upper),Meany Hall (NE upper),1692,1301,A
+MNY (E lower),Meany Hall (E lower),1696,1379,
+MNY (E upper),Meany Hall (E upper),1705,1380,M
 MNY (W),Meany Hall (W),1632.444,1398.6113,A
 MEB,Mechanical Engineering,2355,1626,A
 MEB (E),Mechanical Engineering (E),2380,1734,A

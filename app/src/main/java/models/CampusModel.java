@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,14 +52,15 @@ public class CampusModel {
                     "contain necessary entrance or path csv files");
         }
 
-        BufferedReader entranceReader = new BufferedReader(new InputStreamReader(entranceInputStream));
-
         // Data to fill
         Set<Place> allPlaces = new HashSet<>();
         Map<String, String> shortToLongName = new HashMap<>();
         Map<String, String> longToShortName = new HashMap<>();
         Map<String, Building> shortToBuilding = new HashMap<>();
 
+        // Add the entrance data
+        BufferedReader entranceReader = new BufferedReader(new InputStreamReader(entranceInputStream));
+        entranceReader.readLine(); // Skip column title line
         while (true) {
             String row = entranceReader.readLine();
             if (row == null) {
@@ -71,45 +73,46 @@ public class CampusModel {
             // 2 : x
             // 3 : y
             // 4 : type of entrance (M = manual, A = assisted, U = unaccessible)
+            if (data.length == 5) {
+                String shortName = data[0];
+                if (shortName.equals("")) { // Skip over incomplete data for now
+                    continue;
+                }
+                // Remove the parentheses from short names
+                int parenIdx = shortName.indexOf('(');
+                if (parenIdx != -1) {
+                    shortName = shortName.substring(0, parenIdx - 1);
+                }
 
-            String shortName = data[0];
-            if (shortName.equals("")) { // Skip over incomplete data for now
-                continue;
-            }
-            // Remove the parentheses from short names
-            int parenIdx = shortName.indexOf('(');
-            if (parenIdx != -1) {
-                shortName = shortName.substring(0, parenIdx - 1);
-            }
+                if (!shortToBuilding.containsKey(shortName)) {
+                    // TODO: add correct restroom, elevator, and description when building data is done
+                    shortToBuilding.put(shortName, new Building(shortName, true, true, ""));
+                }
 
-            if (!shortToBuilding.containsKey(shortName)) {
-                // TODO: add correct restroom, elevator, and description when building data is done
-                shortToBuilding.put(shortName, new Building(shortName, true, true, ""));
-            }
+                Building building = shortToBuilding.get(shortName);
+                if (building == null) {
+                    continue;
+                }
 
-            Building building = shortToBuilding.get(shortName);
-            if (building == null) {
-                continue;
-            }
+                // Get the long name of the building
+                String longName = data[1];
+                parenIdx = longName.indexOf('(');
+                if (parenIdx != -1) {
+                    longName = longName.substring(0, parenIdx - 1);
+                }
+                shortToLongName.put(shortName, longName);
+                longToShortName.put(longName, shortName);
 
-            // Get the long name of the building
-            String longName = data[1];
-            parenIdx = longName.indexOf('(');
-            if (parenIdx != -1) {
-                longName = longName.substring(0, parenIdx - 1);
+                // Add the entrance for this building
+                if (data[2].equals("") || data[3].equals("")) {
+                    continue; // continue if there is no entrance coordinates
+                }
+                float x = Float.parseFloat(data[2]);
+                float y = Float.parseFloat(data[3]);
+                Place entrance = new Place(x, y, true);
+                allPlaces.add(entrance);
+                building.addEntrance(entrance, !data[4].equals("U"));
             }
-            shortToLongName.put(shortName, longName);
-            longToShortName.put(longName, shortName);
-
-            // Add the entrance for this building
-            if (data[2].equals("") || data[3].equals("")) {
-                continue; // continue if there is no entrance coordinates
-            }
-            float x = Float.parseFloat(data[2]);
-            float y = Float.parseFloat(data[3]);
-            Place entrance = new Place(x, y, true);
-            allPlaces.add(entrance);
-            building.addEntrance(entrance, !data[4].equals("U"));
         }
         entranceReader.close();
         entranceInputStream.close();
@@ -119,9 +122,9 @@ public class CampusModel {
 
         // Add the path data
         BufferedReader pathReader = new BufferedReader(new InputStreamReader(pathInputStream));
-
+        pathReader.readLine(); // Skip column title line
         while (true) {
-            String row = entranceReader.readLine();
+            String row = pathReader.readLine();
             if (row == null) {
                 break;
             }
