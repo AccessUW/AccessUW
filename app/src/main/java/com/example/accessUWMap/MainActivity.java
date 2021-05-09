@@ -1,33 +1,32 @@
 package com.example.accessUWMap;
 
-import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.MotionEvent;
 
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import models.Place;
 
 public class MainActivity extends AppCompatActivity {
+
+    public enum AppStates {SEARCH, FOUND_START, BUILD_ROUTE, NAV};
+
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
@@ -37,15 +36,35 @@ public class MainActivity extends AppCompatActivity {
     ///     Fields
     ////////////////////////////////////////////////////////////
 
+    // Current state app is in
+    private AppStates mState;
+
     // Coords for scrolling in map view
     private float mx, my;
     // Scroll views for moving on the map
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
 
+    // Views for displaying search bars and route filters
+    private LinearLayout startSearchBarLayout;
+    private LinearLayout endSearchBarAndFiltersLayout;
+    private AutoCompleteTextView startSearchBar;
+    private AutoCompleteTextView endSearchBar;
+
+    // Views for displaying building description
+    private LinearLayout buildDescLayout;
+
+    // Views for building the route
+    private LinearLayout buildRouteLayout;
+
+    // Views for navigation
+    private LinearLayout navLayout;
+    private TextView destTextView;
+
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
+
 
     ////////////////////////////////////////////////////////////
     ///     Methods
@@ -56,8 +75,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize state
+        mState = AppStates.SEARCH;
+
         // Initialize the Presenter component of the MVP framework
-        CampusPresenter.init();
+        try {
+            CampusPresenter.init(this);
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
 
         // Init full list of possible search results for start and end search bars
         initSearchResults();
@@ -66,13 +92,17 @@ public class MainActivity extends AppCompatActivity {
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
 
-        // Set up search bars for start and end locations
+        // Set up search bar layout and listeners
+        startSearchBarLayout = findViewById(R.id.startSearchBarLayout);
+        endSearchBarAndFiltersLayout = findViewById(R.id.endSearchBarAndFiltersLayout);
+
+        // Set up search bars' auto-complete functionality for start and end locations
         AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
                 this, android.R.layout.select_dialog_item, searchableLocations);
-        AutoCompleteTextView startSearchBar = findViewById(R.id.searchStartView);
+        startSearchBar = findViewById(R.id.searchStartView);
         startSearchBar.setAdapter(adapter);
         startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
-        AutoCompleteTextView endSearchBar = findViewById(R.id.searchEndView);
+        endSearchBar = findViewById(R.id.searchEndView);
         endSearchBar.setAdapter(adapter);
         endSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
 
@@ -84,11 +114,28 @@ public class MainActivity extends AppCompatActivity {
                 updateEndLocation(((LocationSearchResult) adapterView.getItemAtPosition(i))
                         .getLocationResultName()));
 
+        // Set up back-arrow button listener
+        findViewById(R.id.backArrowButton).setOnClickListener(view -> goBack());
+
         // Set up toggle button filter listeners for when user filters their route for accessibility
         ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
                 (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
         ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
                 (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
+
+        // Set up building description layout and listeners
+        buildDescLayout = findViewById(R.id.building_description_layout);
+        findViewById(R.id.findRouteButton).setOnClickListener(view -> updateState(AppStates.BUILD_ROUTE));
+
+        // Set up route-making layout
+        buildRouteLayout = findViewById(R.id.build_route_layout);
+        findViewById(R.id.startRouteButton).setOnClickListener(view -> startRouteSearch());
+        findViewById(R.id.swapLocationButton).setOnClickListener(view -> swapStartAndEnd());
+
+        // Set up nav layout
+        navLayout = findViewById(R.id.nav_layout);
+        findViewById(R.id.cancelRouteButton).setOnClickListener(view -> goBack());
+        destTextView = findViewById(R.id.destinationTextView);
     }
 
     @Override
@@ -132,6 +179,11 @@ public class MainActivity extends AppCompatActivity {
         if (allBuildingNames.contains(newStart)) {
             CampusPresenter.updateStart(newStart);
         }
+
+        // Update state to FOUND_START if currently in START state
+        if (mState == AppStates.SEARCH) {
+            updateState(AppStates.FOUND_START);
+        }
     }
 
     /**
@@ -143,6 +195,17 @@ public class MainActivity extends AppCompatActivity {
         if (allBuildingNames.contains(newEnd)) {
             CampusPresenter.updateEnd(newEnd);
         }
+    }
+
+    /**
+     * Swaps start and end locations in the build-route state of the app.
+     */
+    public void swapStartAndEnd() {
+        String start = CampusPresenter.getCurrentStart();
+        String end = CampusPresenter.getCurrentEnd();
+        CampusPresenter.swapStartAndEnd();
+        startSearchBar.setText(end);
+        endSearchBar.setText(start);
     }
 
     /**
@@ -159,9 +222,10 @@ public class MainActivity extends AppCompatActivity {
                         "Sorry, no route exists between those 2 places with the given filters.",
                         Toast.LENGTH_LONG).show();
             } else {
+                // Update state
+                updateState(AppStates.NAV);
                 // Process successful route built between inputted start and end locations
                 System.out.println(route.toString());
-                drawRoute(route);
             }
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid start/end locations.",
@@ -174,17 +238,17 @@ public class MainActivity extends AppCompatActivity {
      * search bars.
      */
     private void initSearchResults() {
-        allBuildingNames = new HashSet<>();
         searchableLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
-        allBuildingNames = new HashSet<>(); //CampusPresenter.getAllBuildingNames();
 
-        allBuildingNames.add("Terry Hall");
-        allBuildingNames.add("Odegaard Library");
-        allBuildingNames.add("The HUB");
-        allBuildingNames.add("Condon Hall");
-        allBuildingNames.add("The District Market");
+        allBuildingNames = CampusPresenter.getAllBuildingNames();
+//        allBuildingNames = new HashSet<>();
+//        allBuildingNames.add("Terry Hall");
+//        allBuildingNames.add("Odegaard Library");
+//        allBuildingNames.add("The HUB");
+//        allBuildingNames.add("Condon Hall");
+//        allBuildingNames.add("The District Market");
 
         for (String currLocation : allBuildingNames) {
             searchableLocations.add(new LocationSearchResult(currLocation));
@@ -192,45 +256,83 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Draw the route passed on the map.
-     * @param route is the route to be drawn on the map
+     * Updates the state of the app based on user activity so that the appropriate components
+     * are (in)visible.
+     *
+     * @param newState is the new state the user is moving to
      */
-    private void drawRoute(List<Place> route) {
-        // Get routeView
-        ImageView routeView = (ImageView) findViewById(R.id.routeView);
-        // Initialize bitmap
-        Bitmap routeBitmap = Bitmap.createBitmap(routeView.getWidth(), routeView.getHeight(),
-                      Bitmap.Config.ARGB_8888);
-        routeView.setImageBitmap(routeBitmap);
-        // Initialize canvas from bitmap
-        Canvas routeCanvas = new Canvas(routeBitmap);
-        // Initialize paint and set paint color, style, width
-        Paint paint = new Paint();
-        paint.setColor(getResources().getColor(R.color.dodger_blue));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(12);
-        paint.setAntiAlias(true);
-        // Initialize path
-        Path path = new Path();
-        // Get iterator over route
-        ListIterator<Place> it = route.listIterator();
-        // Start path
-        routeCanvas.drawPaint(paint);
-        // Move to first point
-        if (it.hasNext()) {
-            Place p = it.next();
-            path.moveTo(p.getX(), p.getY());
+    private void updateState(AppStates newState) {
+        AppStates lastState = mState;
+        mState = newState;
+
+        switch(lastState) {
+            case SEARCH:
+                // Going forward through route-building steps
+                if (newState == AppStates.FOUND_START) {
+                    buildBuildingDesc();
+                    buildDescLayout.setVisibility(View.VISIBLE);
+                }
+
+            case FOUND_START:
+                // Going forward through route-building steps
+                if (newState == AppStates.BUILD_ROUTE) {
+                    buildDescLayout.setVisibility(View.INVISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.VISIBLE);
+                    buildRouteLayout.setVisibility(View.VISIBLE);
+                }
+                // Going backward through route-building steps (i.e. hit back arrow)
+                if (newState == AppStates.SEARCH) {
+                    buildDescLayout.setVisibility(View.INVISIBLE);
+                }
+
+            case BUILD_ROUTE:
+                // Going forward through route-building steps
+                if (newState == AppStates.NAV) {
+                    // Undo BUILD_ROUTE
+                    startSearchBarLayout.setVisibility(View.INVISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
+                    buildRouteLayout.setVisibility(View.INVISIBLE);
+                    // Set up NAV
+                    String newDestination = "To: " + CampusPresenter.getCurrentEnd();
+                    destTextView.setText(newDestination);
+                    navLayout.setVisibility(View.VISIBLE);
+                }
+                // Going backward through route-building steps (i.e. hit back arrow)
+                if (newState == AppStates.FOUND_START) {
+                    endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
+                    buildRouteLayout.setVisibility(View.INVISIBLE);
+                    buildDescLayout.setVisibility(View.VISIBLE);
+                }
+
+            case NAV:
+                // Going backward through route-building steps (i.e. hit back arrow)
+                if (newState == AppStates.BUILD_ROUTE) {
+                    navLayout.setVisibility(View.INVISIBLE);
+                    startSearchBarLayout.setVisibility(View.VISIBLE);
+                    endSearchBarAndFiltersLayout.setVisibility(View.VISIBLE);
+                    buildRouteLayout.setVisibility(View.VISIBLE);
+                }
         }
-        // Set rest of path
-        while (it.hasNext()) {
-            Place p = it.next();
-            path.lineTo(p.getX(), p.getY());
-            path.moveTo(p.getX(), p.getY());
+    }
+
+    /**
+     * Method triggered by back-arrow button that calls updateState with the appropriate state
+     */
+    private void goBack() {
+        if (mState == AppStates.FOUND_START) {
+            updateState(AppStates.SEARCH);
+        } else if (mState == AppStates.BUILD_ROUTE) {
+            updateState(AppStates.FOUND_START);
+        } else if (mState == AppStates.NAV) {
+            updateState(AppStates.BUILD_ROUTE);
         }
-        // Close path
-        path.close();
-        // Draw path
-        routeCanvas.drawPath(path, paint);
-        routeView.invalidate();
+    }
+
+    /**
+     * Updates the building description layout based on the current building the user is looking
+     * at.
+     */
+    private void buildBuildingDesc() {
+        String building = CampusPresenter.getCurrentStart();
     }
 }

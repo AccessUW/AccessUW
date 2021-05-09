@@ -44,7 +44,7 @@ public class PlacePriorityQueue {
      */
     public Place popMin() {
         swap(0, getSize() - 1);
-        Place min = items.get(getSize() - 1);
+        Place min = items.remove(getSize() - 1);
         indices.remove(min);
         priorities.remove(min);
 

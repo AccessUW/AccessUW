@@ -7,8 +7,8 @@ package models;
  */
 public class BuildingTreeNode implements TreeNode {
     private Building building;
-    private BuildingTreeNode leftUp;
-    private BuildingTreeNode downRight;
+    public BuildingTreeNode leftDown;
+    public BuildingTreeNode rightUp;
 
     /**
      * Creates a new BuildingTreeNode object
@@ -41,8 +41,8 @@ public class BuildingTreeNode implements TreeNode {
      * @return node that is left or up the KD Tree
      */
     @Override
-    public TreeNode getLeftUp() {
-        return leftUp;
+    public TreeNode getLeftDown() {
+        return leftDown;
     }
 
     /**
@@ -50,8 +50,8 @@ public class BuildingTreeNode implements TreeNode {
      * @return node that is right or down the KD Tree
      */
     @Override
-    public TreeNode getRightDown() {
-        return downRight;
+    public TreeNode getRightUp() {
+        return rightUp;
     }
 
     /**

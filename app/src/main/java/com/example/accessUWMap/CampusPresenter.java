@@ -1,12 +1,11 @@
 package com.example.accessUWMap;
 
-import android.graphics.Point;
+import android.content.Context;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 import models.CampusModel;
@@ -46,8 +45,11 @@ public class CampusPresenter {
     /**
      * Initializes CampusPresenter.
      */
-    public static void init() {
+    public static void init(Context context) throws IOException {
+        CampusModel.init(context);
+
         buildingNames = CampusModel.getAllBuildingNames();
+
         recentLocations = new ArrayList<>();
         wheelchair = false;
         noStairs = false;
@@ -133,7 +135,11 @@ public class CampusPresenter {
             throw new IllegalArgumentException();
         }
 
-        return CampusModel.shortestPathBetweenBuildings(currentStart, currentEnd, wheelchair, noStairs);
+        String shortStart = CampusModel.getShortName(currentStart);
+        String shortEnd = CampusModel.getShortName(currentEnd);
+        currentRoute = CampusModel.shortestPathBetweenBuildings(shortStart, shortEnd, wheelchair, noStairs);
+
+        return currentRoute;
     }
 
     /**
