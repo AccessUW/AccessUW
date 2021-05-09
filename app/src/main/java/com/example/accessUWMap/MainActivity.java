@@ -213,9 +213,6 @@ public class MainActivity extends AppCompatActivity {
      * end is not selected, user will be notified to choose a valid start/end location.
      */
     public void startRouteSearch() {
-        // Update state
-        updateState(AppStates.NAV);
-
         // Get the route between inputted start and end locations
         try {
             List<Place> route = new ArrayList<>(); //CampusPresenter.getRoute();
@@ -225,6 +222,8 @@ public class MainActivity extends AppCompatActivity {
                         "Sorry, no route exists between those 2 places with the given filters.",
                         Toast.LENGTH_LONG).show();
             } else {
+                // Update state
+                updateState(AppStates.NAV);
                 // Process successful route built between inputted start and end locations
                 System.out.println(route.toString());
             }
