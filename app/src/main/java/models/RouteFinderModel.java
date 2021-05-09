@@ -109,21 +109,21 @@ public class RouteFinderModel {
             visited.add(p);
 
             // If we found a goal, stop searching
-            if (isGoal(p, end, wheelchair)) {
+            if (isGoal(p, ends)) {
                 solution.add(p);
                 foundSolution = true;
                 break;
             }
 
             for (RouteEdge re : p.getNeighbors()) {
-                if (wheelchair && !re.wheelChairAccess || !stairs && re.hasStairs) {
+                if ((wheelchair && !re.wheelChairAccess) || (!stairs && re.hasStairs)) {
                     continue; // skip paths that go against our filters
                 }
 
                 // Get the neighboring Place
                 Place q = null;
                 for (Place place : re.ends) {
-                    if (!p.equals(q)) {
+                    if (!p.equals(place)) {
                         q = place;
                     }
                 }
@@ -143,7 +143,7 @@ public class RouteFinderModel {
                     if (currDistance == null || thisDistance == null) {
                         throw new Error();
                     }
-                    thisDistance +=  + re.distance;
+                    thisDistance += re.distance;
 
                     // Update parent and distTo if the current edge give a shorter path to q
                     if (thisDistance < currDistance) {
@@ -187,16 +187,11 @@ public class RouteFinderModel {
     /**
      * Private helper to check if a place is an entrance at our destination
      * @param place place we want to check
-     * @param b our goal building
-     * @param wheelchair true if the goal should be an accessible entrance
+     * @param ends set of possible ending locations of the path
      * @return true if the given place is a valid entrance of the given building, false otherwise
      */
-    private boolean isGoal(Place place, Building b, boolean wheelchair) {
-        if (wheelchair) {
-            return b.getAccessibleEntrances().contains(place);
-        } else {
-            return b.getEntrances().contains(place);
-        }
+    private boolean isGoal(Place place, Set<Place> ends) {
+        return ends.contains(place);
     }
 
     /**
