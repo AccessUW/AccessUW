@@ -218,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the route between inputted start and end locations
         try {
-            //TODO: Same "null object reference" issue here
             List<Place> route = new ArrayList<>(); //CampusPresenter.getRoute();
 
             if (route.isEmpty()) {
@@ -244,14 +243,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Acquire list of all buildings on campus
 
-        // TODO: This throws "Attempt to invoke virtual method .....BuildingInfoModel.getAllBuildingNames() on a null object reference
-        // allBuildingNames = CampusPresenter.getAllBuildingNames();
-        allBuildingNames = new HashSet<>();
-        allBuildingNames.add("Terry Hall");
-        allBuildingNames.add("Odegaard Library");
-        allBuildingNames.add("The HUB");
-        allBuildingNames.add("Condon Hall");
-        allBuildingNames.add("The District Market");
+        allBuildingNames = CampusPresenter.getAllBuildingNames();
+//        allBuildingNames = new HashSet<>();
+//        allBuildingNames.add("Terry Hall");
+//        allBuildingNames.add("Odegaard Library");
+//        allBuildingNames.add("The HUB");
+//        allBuildingNames.add("Condon Hall");
+//        allBuildingNames.add("The District Market");
 
         for (String currLocation : allBuildingNames) {
             searchableLocations.add(new LocationSearchResult(currLocation));
