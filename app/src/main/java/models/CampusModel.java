@@ -1,10 +1,14 @@
 package models;
 
+import android.content.Context;
+import android.os.Environment;
+
+import com.example.accessUWMap.R;
+
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,11 +27,11 @@ public class CampusModel {
 
     /**
      * This method initializes a CampusModel program if it hasn't been initialized already
-     * @param filepath filepath to the map_data
+     * @param context for access to resources including raw folder of campus map data
      * @throws IllegalArgumentException if the filepath does not exist or does not contain the data
      * @throws IOException if there was an error when reading from the csv data
      */
-    public static void init(String filepath) throws IllegalArgumentException, IOException {
+    public static void init(Context context) throws IllegalArgumentException, IOException {
         if (campusTreeModel != null && routeFinderModel != null && buildingInfoModel != null) {
             return; // do nothing if we've already initialized
         } else {
@@ -35,21 +39,19 @@ public class CampusModel {
             routeFinderModel = null;
             buildingInfoModel = null;
         }
-        File entranceFile = new File(filepath + "campus_entrance_data.csv");
-        File pathFile = new File(filepath + "campus_path_data.csv");
 
-        FileReader entranceFileReader;
-        FileReader pathFileReader;
+        InputStream entranceInputStream;
+        InputStream pathInputStream;
         try {
-            entranceFileReader = new FileReader(entranceFile);
-            pathFileReader = new FileReader(pathFile);
-        } catch (FileNotFoundException e) {
+            entranceInputStream = context.getResources().openRawResource(R.raw.campus_entrance_data);
+            pathInputStream = context.getResources().openRawResource(R.raw.campus_path_data);
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("CampusModel init -- given filepath does not " +
                     "contain necessary entrance or path csv files");
         }
 
-        BufferedReader entranceReader = new BufferedReader(entranceFileReader);
+        BufferedReader entranceReader = new BufferedReader(new InputStreamReader(entranceInputStream));
 
         // Data to fill
         Set<Place> allPlaces = new HashSet<>();
@@ -110,12 +112,13 @@ public class CampusModel {
             building.addEntrance(entrance, !data[4].equals("U"));
         }
         entranceReader.close();
+        entranceInputStream.close();
 
         // Add all buildings found to set
         Set<Building> allBuildings = new HashSet<>(shortToBuilding.values());
 
         // Add the path data
-        BufferedReader pathReader = new BufferedReader(pathFileReader);
+        BufferedReader pathReader = new BufferedReader(new InputStreamReader(pathInputStream));
 
         while (true) {
             String row = entranceReader.readLine();
@@ -180,6 +183,7 @@ public class CampusModel {
             p1.addNeighbor(p2, getDistance(p1, p2), wheelchairAccessible, hasStairs);
         }
         pathReader.close();
+        pathInputStream.close();
 
         // Initialize the Models
         campusTreeModel = new CampusTreeModel(allBuildings, allPlaces);

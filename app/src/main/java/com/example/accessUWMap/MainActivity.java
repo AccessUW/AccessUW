@@ -11,9 +11,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Views for navigation
     private LinearLayout navLayout;
+    private TextView destTextView;
 
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
@@ -76,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
         mState = AppStates.SEARCH;
 
         // Initialize the Presenter component of the MVP framework
-        CampusPresenter.init();
+        try {
+            CampusPresenter.init(this);
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
 
         // Init full list of possible search results for start and end search bars
         initSearchResults();
@@ -122,12 +129,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up route-making layout
         buildRouteLayout = findViewById(R.id.build_route_layout);
-        findViewById(R.id.startRouteButton).setOnClickListener(view -> updateState(AppStates.NAV));
+        findViewById(R.id.startRouteButton).setOnClickListener(view -> startRouteSearch());
         findViewById(R.id.swapLocationButton).setOnClickListener(view -> swapStartAndEnd());
 
         // Set up nav layout
         navLayout = findViewById(R.id.nav_layout);
         findViewById(R.id.cancelRouteButton).setOnClickListener(view -> goBack());
+        destTextView = findViewById(R.id.destinationTextView);
     }
 
     @Override
@@ -205,9 +213,13 @@ public class MainActivity extends AppCompatActivity {
      * end is not selected, user will be notified to choose a valid start/end location.
      */
     public void startRouteSearch() {
+        // Update state
+        updateState(AppStates.NAV);
+
         // Get the route between inputted start and end locations
         try {
-            List<Place> route = CampusPresenter.getRoute();
+            //TODO: Same "null object reference" issue here
+            List<Place> route = new ArrayList<>(); //CampusPresenter.getRoute();
 
             if (route.isEmpty()) {
                 Toast.makeText(this,
@@ -228,12 +240,13 @@ public class MainActivity extends AppCompatActivity {
      * search bars.
      */
     private void initSearchResults() {
-        allBuildingNames = new HashSet<>();
         searchableLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
-        allBuildingNames = new HashSet<>(); //CampusPresenter.getAllBuildingNames();
 
+        // TODO: This throws "Attempt to invoke virtual method .....BuildingInfoModel.getAllBuildingNames() on a null object reference
+        // allBuildingNames = CampusPresenter.getAllBuildingNames();
+        allBuildingNames = new HashSet<>();
         allBuildingNames.add("Terry Hall");
         allBuildingNames.add("Odegaard Library");
         allBuildingNames.add("The HUB");
@@ -254,9 +267,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateState(AppStates newState) {
         AppStates lastState = mState;
         mState = newState;
-
-        System.out.println("WAS " + lastState);
-        System.out.println("NOW " + newState);
 
         switch(lastState) {
             case SEARCH:
@@ -281,9 +291,13 @@ public class MainActivity extends AppCompatActivity {
             case BUILD_ROUTE:
                 // Going forward through route-building steps
                 if (newState == AppStates.NAV) {
+                    // Undo BUILD_ROUTE
                     startSearchBarLayout.setVisibility(View.INVISIBLE);
                     endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
                     buildRouteLayout.setVisibility(View.INVISIBLE);
+                    // Set up NAV
+                    String newDestination = "To: " + CampusPresenter.getCurrentEnd();
+                    destTextView.setText(newDestination);
                     navLayout.setVisibility(View.VISIBLE);
                 }
                 // Going backward through route-building steps (i.e. hit back arrow)
