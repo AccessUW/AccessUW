@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
     public void startRouteSearch() {
         // Get the route between inputted start and end locations
         try {
-            List<Place> route = new ArrayList<>(); //CampusPresenter.getRoute();
+            List<Place> route = CampusPresenter.getRoute();
 
             if (route.isEmpty()) {
                 Toast.makeText(this,
