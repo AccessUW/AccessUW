@@ -84,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
 
 
-
-
     ////////////////////////////////////////////////////////////
     ///     Methods
     ////////////////////////////////////////////////////////////
