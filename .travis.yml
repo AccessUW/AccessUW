@@ -29,6 +29,8 @@ android:
       - 'google-gdk-license-.+'
 
 before-install:
+  - yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30"
+  - yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3"
   - chmod +x gradlew
 
 script:
