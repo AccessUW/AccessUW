@@ -1,6 +1,7 @@
 package com.example.accessUWMap;
 
 import android.content.Context;
+import android.graphics.Point;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,6 +90,31 @@ public class CampusPresenter {
      */
     public static boolean getAssistedEntrance() {
         return assistedEntrance;
+    }
+
+    /**
+     * Get top-left-most entrance coordinates (as a point) for the given building.
+     *
+     * @param longBuildingName is the long version of the desired building name
+     * @throws IllegalArgumentException if longBuildingName is not a valid building name
+     * @return point representing coordinates of top-left-most entrance of given building
+     */
+    public static Point getTopLeftEntranceOfBuilding(String longBuildingName) {
+        if (!buildingNames.contains(longBuildingName)) {
+            throw new IllegalArgumentException();
+        }
+
+        Set<Place> buildingEntrances = CampusModel.getEntrances(CampusModel.getShortName(longBuildingName), false);
+        System.out.println("NUM PLACES: " + buildingEntrances.size());
+        Place topLeftPlace = null;
+        for (Place currPlace : buildingEntrances) {
+            if (topLeftPlace == null) {
+                topLeftPlace = currPlace;
+            } else if ((currPlace.getX() + currPlace.getY()) < (topLeftPlace.getX() + topLeftPlace.getY())) {
+                topLeftPlace = currPlace;
+            }
+        }
+        return new Point((int) topLeftPlace.getX(), (int) topLeftPlace.getY());
     }
 
     /**

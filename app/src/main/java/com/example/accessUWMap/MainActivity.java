@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
      * Moves map view to see the start location.
      */
     private void moveMapToStart() {
-        // Get coordinate of start location
+//        // Get coordinate of start location
 //        Point topLeft = CampusPresenter.getTopLeftEntranceOfBuilding(CampusPresenter.getCurrentStart());
 //        float startX = (float) topLeft.x;
 //        float startY = (float) topLeft.y;
@@ -370,8 +370,8 @@ public class MainActivity extends AppCompatActivity {
 //
 //        hScroll.scrollTo((int) scrollX, (int) scrollY);
 //        vScroll.scrollTo((int) scrollX, (int) scrollY);
-
-        // Move map view to that spot
+//
+//        // Move map view to that spot
 //        vScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
 //        hScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
     }
