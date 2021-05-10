@@ -14,20 +14,17 @@
 
                 <ImageView
                     android:id="@+id/mapView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="@dimen/map_width"
+                    android:layout_height="@dimen/map_height"
                     android:src="@drawable/uw_campus_map"
                     android:contentDescription="@string/main_campus_map_desc" />
 
                 <ImageView
                     android:id="@+id/routeView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="@dimen/map_width"
+                    android:layout_height="@dimen/map_height"
                     android:layout_alignTop="@+id/mapView"
-                    android:layout_alignBottom="@+id/mapView"
-                    android:layout_alignLeft="@+id/mapView"
-                    android:layout_alignRight="@+id/mapView"
-                    android:scaleType="fitXY"
+                    android:layout_alignStart="@+id/mapView"
                     android:layout_gravity="top"
                     android:contentDescription="@string/current_route"/>
             </RelativeLayout>

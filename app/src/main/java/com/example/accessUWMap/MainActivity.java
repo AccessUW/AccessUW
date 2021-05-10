@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
-    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4613;
-    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 3112;
+    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4330;
+    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 2964;
     private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
 
 
@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private Set<String> allBuildingNames; // Names of buildings
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
 
+    private ImageView mapV;
 
     ////////////////////////////////////////////////////////////
     ///     Methods
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mapV = findViewById(R.id.mapView);
 
         // Initialize state
         mState = AppStates.SEARCH;
@@ -163,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         // Get routeView
         routeView = (ImageView) findViewById(R.id.routeView);
         // Initialize bitmap
-        Bitmap routeBitmap = Bitmap.createBitmap(4330, 2964,
+        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH, CAMPUS_MAP_IMAGE_HEIGHT,
                 Bitmap.Config.ARGB_8888);
         routeView.setImageBitmap(routeBitmap);
         // Initialize canvas from bitmap
@@ -216,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
         if (mState == AppStates.SEARCH) {
             updateState(AppStates.FOUND_START);
         }
+        System.out.println("W: " + mapV.getWidth() + ", " + mapV.getMeasuredWidth() + ", " + mapV.getMaxWidth());
+        System.out.println("H: " + mapV.getHeight() + ", " + mapV.getMeasuredHeight() + ", " + mapV.getMaxHeight());
     }
 
     /**
@@ -257,7 +262,13 @@ public class MainActivity extends AppCompatActivity {
                 // Update state
                 updateState(AppStates.NAV);
                 // Process successful route built between inputted start and end locations
-                System.out.println(route.toString());
+                System.out.println("START: " + CampusPresenter.getCurrentStart());
+                System.out.println("END: " + CampusPresenter.getCurrentEnd());
+                System.out.println("ROUTE:");
+                for (Place currPlace : route) {
+                    System.out.println(currPlace.getX() + ", " + currPlace.getY());
+                }
+                System.out.println("(stop)");
                 drawRoute(route);
             }
         } catch (IllegalArgumentException e) {
@@ -412,15 +423,18 @@ public class MainActivity extends AppCompatActivity {
         // Get iterator over route
         ListIterator<Place> it = route.listIterator();
 
+        int xTempOffSet = -163;
+        int yTempOffSet = 6;
+
         if (it.hasNext()) {
             Place p = it.next();
-            path.moveTo(p.getX(), p.getY());
+            path.moveTo(p.getX() + xTempOffSet, p.getY() + yTempOffSet);
         }
         // Set rest of path
         while (it.hasNext()) {
             Place p = it.next();
-            path.lineTo(p.getX(), p.getY());
-            path.moveTo(p.getX(), p.getY());
+            path.lineTo(p.getX() + xTempOffSet, p.getY() + yTempOffSet);
+            path.moveTo(p.getX() + xTempOffSet, p.getY() +yTempOffSet);
         }
         // Close path
         path.close();
