@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.view.MotionEvent;
 
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +25,6 @@ import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -37,7 +38,10 @@ public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
+    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4613;
+    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 3112;
     private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
+
 
     ////////////////////////////////////////////////////////////
     ///     Fields
@@ -54,15 +58,16 @@ public class MainActivity extends AppCompatActivity {
 
     // Views for displaying search bars and route filters
     private LinearLayout startSearchBarLayout;
-    private LinearLayout endSearchBarAndFiltersLayout;
+    private LinearLayout endSearchBarAndSwapLayout;
+    private LinearLayout routeFilterLayout;
     private AutoCompleteTextView startSearchBar;
     private AutoCompleteTextView endSearchBar;
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
 
-    // Views for building the route
-    private LinearLayout buildRouteLayout;
+    // Button for building the route
+    private Button startNavRouteButton;
 
     // Views for navigation
     private LinearLayout navLayout;
@@ -104,12 +109,16 @@ public class MainActivity extends AppCompatActivity {
         initSearchResults();
 
         // Get scroll views that control 2-D scrollability (i.e. user can move freely around map)
+        // and initialize mx,my starting coordinates
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
+        mx = 0;
+        my = 0;
 
         // Set up search bar layout and listeners
         startSearchBarLayout = findViewById(R.id.startSearchBarLayout);
-        endSearchBarAndFiltersLayout = findViewById(R.id.endSearchBarAndFiltersLayout);
+        endSearchBarAndSwapLayout = findViewById(R.id.endSearchBarAndSwapLayout);
+        routeFilterLayout = findViewById(R.id.routeFilterButtonsLayout);
 
         // Set up search bars' auto-complete functionality for start and end locations
         AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
@@ -143,8 +152,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.findRouteButton).setOnClickListener(view -> updateState(AppStates.BUILD_ROUTE));
 
         // Set up route-making layout
-        buildRouteLayout = findViewById(R.id.build_route_layout);
-        findViewById(R.id.startRouteButton).setOnClickListener(view -> startRouteSearch());
+        startNavRouteButton = findViewById(R.id.startRouteButton);
+        startNavRouteButton.setOnClickListener(view -> startRouteSearch());
         findViewById(R.id.swapLocationButton).setOnClickListener(view -> swapStartAndEnd());
 
         // Set up nav layout
@@ -296,14 +305,16 @@ public class MainActivity extends AppCompatActivity {
                 if (newState == AppStates.FOUND_START) {
                     buildBuildingDesc();
                     buildDescLayout.setVisibility(View.VISIBLE);
+                    moveMapToStart();
                 }
 
             case FOUND_START:
                 // Going forward through route-building steps
                 if (newState == AppStates.BUILD_ROUTE) {
                     buildDescLayout.setVisibility(View.INVISIBLE);
-                    endSearchBarAndFiltersLayout.setVisibility(View.VISIBLE);
-                    buildRouteLayout.setVisibility(View.VISIBLE);
+                    endSearchBarAndSwapLayout.setVisibility(View.VISIBLE);
+                    routeFilterLayout.setVisibility(View.VISIBLE);
+                    startNavRouteButton.setVisibility(View.VISIBLE);
                 }
                 // Going backward through route-building steps (i.e. hit back arrow)
                 if (newState == AppStates.SEARCH) {
@@ -315,8 +326,9 @@ public class MainActivity extends AppCompatActivity {
                 if (newState == AppStates.NAV) {
                     // Undo BUILD_ROUTE
                     startSearchBarLayout.setVisibility(View.INVISIBLE);
-                    endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
-                    buildRouteLayout.setVisibility(View.INVISIBLE);
+                    endSearchBarAndSwapLayout.setVisibility(View.INVISIBLE);
+                    routeFilterLayout.setVisibility(View.INVISIBLE);
+                    startNavRouteButton.setVisibility(View.INVISIBLE);
                     // Set up NAV
                     String newDestination = "To: " + CampusPresenter.getCurrentEnd();
                     destTextView.setText(newDestination);
@@ -324,9 +336,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 // Going backward through route-building steps (i.e. hit back arrow)
                 if (newState == AppStates.FOUND_START) {
-                    endSearchBarAndFiltersLayout.setVisibility(View.INVISIBLE);
-                    buildRouteLayout.setVisibility(View.INVISIBLE);
+                    endSearchBarAndSwapLayout.setVisibility(View.INVISIBLE);
+                    routeFilterLayout.setVisibility(View.INVISIBLE);
+                    startNavRouteButton.setVisibility(View.INVISIBLE);
                     buildDescLayout.setVisibility(View.VISIBLE);
+                    moveMapToStart();
                 }
 
             case NAV:
@@ -334,8 +348,9 @@ public class MainActivity extends AppCompatActivity {
                 if (newState == AppStates.BUILD_ROUTE) {
                     navLayout.setVisibility(View.INVISIBLE);
                     startSearchBarLayout.setVisibility(View.VISIBLE);
-                    endSearchBarAndFiltersLayout.setVisibility(View.VISIBLE);
-                    buildRouteLayout.setVisibility(View.VISIBLE);
+                    endSearchBarAndSwapLayout.setVisibility(View.VISIBLE);
+                    routeFilterLayout.setVisibility(View.VISIBLE);
+                    startNavRouteButton.setVisibility(View.VISIBLE);
                 }
         }
     }
@@ -359,6 +374,31 @@ public class MainActivity extends AppCompatActivity {
      */
     private void buildBuildingDesc() {
         String building = CampusPresenter.getCurrentStart();
+    }
+
+    /**
+     * Moves map view to see the start location.
+     */
+    private void moveMapToStart() {
+        // Get coordinate of start location
+//        Point topLeft = CampusPresenter.getTopLeftEntranceOfBuilding(CampusPresenter.getCurrentStart());
+//        float startX = (float) topLeft.x;
+//        float startY = (float) topLeft.y;
+//
+//        float scrollX = ((float) CAMPUS_MAP_IMAGE_WIDTH / hScroll.getWidth()) * startX;
+//        float scrollY = ((float) CAMPUS_MAP_IMAGE_HEIGHT / vScroll.getHeight()) * startY;
+//
+//        System.out.println("W/H: " + hScroll.getWidth() + ", " + vScroll.getHeight());
+//        System.out.println("Phone x,y: " + mx + ", " + my);
+//        System.out.println("Place x,y: " + startX + ", " + startY);
+//        System.out.println("Scroll x,y: " + scrollX + ", " + scrollY);
+//
+//        hScroll.scrollTo((int) scrollX, (int) scrollY);
+//        vScroll.scrollTo((int) scrollX, (int) scrollY);
+
+        // Move map view to that spot
+//        vScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
+//        hScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
     }
 
     /**
