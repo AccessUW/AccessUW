@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 updateState(AppStates.NAV);
                 // Process successful route built between inputted start and end locations
                 System.out.println(route.toString());
+                drawRoute(route);
             }
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid start/end locations.",
@@ -273,14 +274,7 @@ public class MainActivity extends AppCompatActivity {
         searchableLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
-
         allBuildingNames = CampusPresenter.getAllBuildingNames();
-//        allBuildingNames = new HashSet<>();
-//        allBuildingNames.add("Terry Hall");
-//        allBuildingNames.add("Odegaard Library");
-//        allBuildingNames.add("The HUB");
-//        allBuildingNames.add("Condon Hall");
-//        allBuildingNames.add("The District Market");
 
         for (String currLocation : allBuildingNames) {
             searchableLocations.add(new LocationSearchResult(currLocation));
@@ -407,7 +401,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize paint and set paint settings
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(getResources().getColor(R.color.dodger_blue));
+        paint.setColor(getColor(R.color.dodger_blue));
         paint.setStrokeWidth(10);
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
