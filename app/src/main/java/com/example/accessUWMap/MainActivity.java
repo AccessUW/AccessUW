@@ -423,18 +423,15 @@ public class MainActivity extends AppCompatActivity {
         // Get iterator over route
         ListIterator<Place> it = route.listIterator();
 
-        int xTempOffSet = -163;
-        int yTempOffSet = 6;
-
         if (it.hasNext()) {
             Place p = it.next();
-            path.moveTo(p.getX() + xTempOffSet, p.getY() + yTempOffSet);
+            path.moveTo(p.getX(), p.getY());
         }
         // Set rest of path
         while (it.hasNext()) {
             Place p = it.next();
-            path.lineTo(p.getX() + xTempOffSet, p.getY() + yTempOffSet);
-            path.moveTo(p.getX() + xTempOffSet, p.getY() +yTempOffSet);
+            path.lineTo(p.getX(), p.getY());
+            path.moveTo(p.getX(), p.getY());
         }
         // Close path
         path.close();
