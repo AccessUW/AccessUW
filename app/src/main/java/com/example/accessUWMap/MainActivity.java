@@ -2,6 +2,7 @@ package com.example.accessUWMap;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Bundle;
@@ -67,9 +68,17 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout navLayout;
     private TextView destTextView;
 
+    // View for drawing the route
+    private ImageView routeView;
+
+    // Canvas for drawing the route
+    private Canvas routeCanvas;
+
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
+
+
 
 
     ////////////////////////////////////////////////////////////
@@ -142,6 +151,16 @@ public class MainActivity extends AppCompatActivity {
         navLayout = findViewById(R.id.nav_layout);
         findViewById(R.id.cancelRouteButton).setOnClickListener(view -> goBack());
         destTextView = findViewById(R.id.destinationTextView);
+
+        // Set up canvas and paint for drawing route
+        // Get routeView
+        routeView = (ImageView) findViewById(R.id.routeView);
+        // Initialize bitmap
+        Bitmap routeBitmap = Bitmap.createBitmap(4330, 2964,
+                Bitmap.Config.ARGB_8888);
+        routeView.setImageBitmap(routeBitmap);
+        // Initialize canvas from bitmap
+        routeCanvas = new Canvas(routeBitmap);
     }
 
     @Override
@@ -347,27 +366,20 @@ public class MainActivity extends AppCompatActivity {
      * @param route is the route to be drawn on the map
      */
     private void drawRoute(List<Place> route) {
-        // Get routeView
-        ImageView routeView = (ImageView) findViewById(R.id.routeView);
-        // Initialize bitmap
-        Bitmap routeBitmap = Bitmap.createBitmap(routeView.getWidth(), routeView.getHeight(),
-                Bitmap.Config.ARGB_8888);
-        routeView.setImageBitmap(routeBitmap);
-        // Initialize canvas from bitmap
-        Canvas routeCanvas = new Canvas(routeBitmap);
-        // Initialize paint and set paint color, style, width
+        // Initialize paint and set paint settings
         Paint paint = new Paint();
-        paint.setColor(getResources().getColor(R.color.dodger_blue));
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(12);
+        paint.setColor(getResources().getColor(R.color.dodger_blue));
+        paint.setStrokeWidth(10);
         paint.setAntiAlias(true);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+
         // Initialize path
         Path path = new Path();
         // Get iterator over route
         ListIterator<Place> it = route.listIterator();
-        // Start path
-        routeCanvas.drawPaint(paint);
-        // Move to first point
+
         if (it.hasNext()) {
             Place p = it.next();
             path.moveTo(p.getX(), p.getY());
@@ -380,8 +392,10 @@ public class MainActivity extends AppCompatActivity {
         }
         // Close path
         path.close();
+
         // Draw path
         routeCanvas.drawPath(path, paint);
+        // Invalidate view so that next draw clears view
         routeView.invalidate();
     }
 }
