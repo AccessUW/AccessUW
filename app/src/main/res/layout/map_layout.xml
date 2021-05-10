@@ -8,12 +8,30 @@
         <views.HScroll
             android:id="@+id/hScroll"
             android:layout_width="fill_parent" android:layout_height="fill_parent">
-
-            <ImageView
+            <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:src="@drawable/uw_campus_map"
-                android:contentDescription="@string/main_campus_map_desc" />
+                android:layout_height="fill_parent">
+
+                <ImageView
+                    android:id="@+id/mapView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/uw_campus_map"
+                    android:contentDescription="@string/main_campus_map_desc" />
+
+                <ImageView
+                    android:id="@+id/routeView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_alignTop="@+id/mapView"
+                    android:layout_alignBottom="@+id/mapView"
+                    android:layout_alignLeft="@+id/mapView"
+                    android:layout_alignRight="@+id/mapView"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="top"
+                    android:contentDescription="@string/current_route"/>
+            </RelativeLayout>
+
         </views.HScroll>
     </views.VScroll>
 

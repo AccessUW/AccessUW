@@ -1,5 +1,10 @@
 package com.example.accessUWMap;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Bundle;
 
@@ -11,6 +16,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -20,6 +26,7 @@ import android.widget.ToggleButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import models.Place;
@@ -65,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
     // Views for navigation
     private LinearLayout navLayout;
     private TextView destTextView;
+
+    // View for drawing the route
+    private ImageView routeView;
+
+    // Canvas for drawing the route
+    private Canvas routeCanvas;
 
     // List of buildings on campus
     private Set<String> allBuildingNames; // Names of buildings
@@ -145,6 +158,16 @@ public class MainActivity extends AppCompatActivity {
         navLayout = findViewById(R.id.nav_layout);
         findViewById(R.id.cancelRouteButton).setOnClickListener(view -> goBack());
         destTextView = findViewById(R.id.destinationTextView);
+
+        // Set up canvas and paint for drawing route
+        // Get routeView
+        routeView = (ImageView) findViewById(R.id.routeView);
+        // Initialize bitmap
+        Bitmap routeBitmap = Bitmap.createBitmap(4330, 2964,
+                Bitmap.Config.ARGB_8888);
+        routeView.setImageBitmap(routeBitmap);
+        // Initialize canvas from bitmap
+        routeCanvas = new Canvas(routeBitmap);
     }
 
     @Override
@@ -374,5 +397,43 @@ public class MainActivity extends AppCompatActivity {
         // Move map view to that spot
 //        vScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
 //        hScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
+    }
+
+    /**
+     * Draw the route passed on the map.
+     * @param route is the route to be drawn on the map
+     */
+    private void drawRoute(List<Place> route) {
+        // Initialize paint and set paint settings
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(getResources().getColor(R.color.dodger_blue));
+        paint.setStrokeWidth(10);
+        paint.setAntiAlias(true);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+
+        // Initialize path
+        Path path = new Path();
+        // Get iterator over route
+        ListIterator<Place> it = route.listIterator();
+
+        if (it.hasNext()) {
+            Place p = it.next();
+            path.moveTo(p.getX(), p.getY());
+        }
+        // Set rest of path
+        while (it.hasNext()) {
+            Place p = it.next();
+            path.lineTo(p.getX(), p.getY());
+            path.moveTo(p.getX(), p.getY());
+        }
+        // Close path
+        path.close();
+
+        // Draw path
+        routeCanvas.drawPath(path, paint);
+        // Invalidate view so that next draw clears view
+        routeView.invalidate();
     }
 }
