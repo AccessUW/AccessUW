@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -409,6 +410,8 @@ public class MainActivity extends AppCompatActivity {
      * @param route is the route to be drawn on the map
      */
     private void drawRoute(List<Place> route) {
+        // Clear canvas
+        routeCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
         // Initialize paint and set paint settings
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
