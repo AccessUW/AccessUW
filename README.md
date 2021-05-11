@@ -29,6 +29,13 @@ person instruction this coming Autumn.
 - Click on it and install the app
 - The app should now be visible in your installed apps list!
 
+## Operational use cases:
+- Use case 1: User finds shortest route between two buildings on campus is mostly operational (some
+    buildings don't work but the app can generate shortest routes between two working buildings)
+- Use case 3: The user wants to search for a building on the UW Campus by name is partially operational
+    (nearly all UW campus buildings are present in the autocomplete feature and all building descriptions
+    are present in the data, however the app does not currently query the description of the given building)
+
 ## Major features:
 - Finds shortest path between 2 locations on the UW campus and displays a route
 - Filter for routes based on accessibility constraints (such as wheelchair-accessible routes)
