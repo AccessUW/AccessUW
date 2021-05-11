@@ -351,6 +351,9 @@ public class MainActivity extends AppCompatActivity {
                 // Going backward through route-building steps (i.e. hit back arrow)
                 if (newState == AppStates.BUILD_ROUTE) {
                     navLayout.setVisibility(View.INVISIBLE);
+                    // Clear canvas
+                    routeCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
+                    // Make BUILD_ROUTE-related layouts visible
                     startSearchBarLayout.setVisibility(View.VISIBLE);
                     endSearchBarAndSwapLayout.setVisibility(View.VISIBLE);
                     routeFilterLayout.setVisibility(View.VISIBLE);
