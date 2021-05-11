@@ -33,9 +33,11 @@
 * Finish route drawing feature for front-end
 * Finish updated map
 ### Progress and Issues
-*
+* Route drawing feature completed
+* Progress made on updated map
 ### Plans and Goals
-*
+* Focus on finishing updated map
+* Help out with polishing front-end features
 ## Turner's Report
 ### Last Week
 * Finish all data and push to GitHub for back-end ASAP
