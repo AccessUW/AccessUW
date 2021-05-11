@@ -33,7 +33,8 @@ before-install:
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3"
   # help for listing the possible sdks for system images
   - sdkmanager --list --verbose
-  - yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-30;default;x86_64"
+  - yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;sys-img-x86-android-30"
+  - android --list
   - echo no | android create avd --force -n test -t android-30 --abi x86 -c 100M
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
