@@ -11,7 +11,7 @@ person instruction this coming Autumn.
 - Ensure your physical device is operating at Android 9.0 or newer
 - Ensure you have a File Manager on your phone so you can easily find downloaded files
 - On your Android device, use your UW net-ID to access [AccessUW's Google Drive](https://cse403group.slack.com/archives/D01SW89RP9A/p1620604483000200)
-- Download the AccessUW app APK
+- Download the AccessUW app APK named access_uw_app.apk
 - Find the APK in your downloads folder, click it, give it permissions, and install it
 - The app should now be visible in your installed apps list!
 ### Android device emulator:
@@ -22,7 +22,7 @@ person instruction this coming Autumn.
 - Download an Android Emulator of Android 9.0 or newer
 #### Download APK of project:
 - On your Android device, use your UW net-ID to access [AccessUW's Google Drive](https://cse403group.slack.com/archives/D01SW89RP9A/p1620604483000200)
-- Download the AccessUW app APK
+- Download the AccessUW app APK named access_uw_app.apk
 - Boot up your emulated Android device
 - Drag and drop the APK into the emulator screen (the file be placed in the /sdcard/Download/ directory by default)
 - Find the file using the Device File Explorer, Downloads app, or Files app
