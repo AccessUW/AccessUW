@@ -101,6 +101,7 @@ public class CampusPresenter {
      */
     public static Point getRoughCenterOfBuilding(String longBuildingName) {
         if (!buildingNames.contains(longBuildingName)) {
+            System.out.println("AAA: " + longBuildingName);
             throw new IllegalArgumentException();
         }
 

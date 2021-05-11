@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         if (mState == AppStates.SEARCH) {
             updateState(AppStates.FOUND_START);
         }
-        moveMapToStart();
+        moveMapToBuilding(CampusPresenter.getCurrentStart());
     }
 
     /**
@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
         if (allBuildingNames.contains(newEnd)) {
             CampusPresenter.updateEnd(newEnd);
         }
+        moveMapToBuilding(CampusPresenter.getCurrentEnd());
     }
 
     /**
@@ -348,8 +349,10 @@ public class MainActivity extends AppCompatActivity {
                     endSearchBarAndSwapLayout.setVisibility(View.INVISIBLE);
                     routeFilterLayout.setVisibility(View.INVISIBLE);
                     startNavRouteButton.setVisibility(View.INVISIBLE);
+                    // Move map back to start location
+                    moveMapToBuilding(CampusPresenter.getCurrentStart());
+                    // Make building description layout visible
                     buildDescLayout.setVisibility(View.VISIBLE);
-                    moveMapToStart();
                 }
 
             case NAV:
@@ -358,6 +361,8 @@ public class MainActivity extends AppCompatActivity {
                     navLayout.setVisibility(View.INVISIBLE);
                     // Clear canvas
                     routeCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
+                    // Move map back to end location
+                    moveMapToBuilding(CampusPresenter.getCurrentEnd());
                     // Make BUILD_ROUTE-related layouts visible
                     startSearchBarLayout.setVisibility(View.VISIBLE);
                     endSearchBarAndSwapLayout.setVisibility(View.VISIBLE);
@@ -390,10 +395,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Moves map view to see the start location.
+     *
+     * @param longBuildingName is the long version of the desired building name to center the map on.
      */
-    private void moveMapToStart() {
+    private void moveMapToBuilding(String longBuildingName) {
         // Get coordinate of roughly the center of the start building
-        Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(CampusPresenter.getCurrentStart());
+        Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
         // Convert roughCenter coordinates from px to dp
         float centerX = roughCenter.x * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         float centerY = roughCenter.y * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
