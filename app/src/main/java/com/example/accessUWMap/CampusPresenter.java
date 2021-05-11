@@ -163,7 +163,9 @@ public class CampusPresenter {
 
         String shortStart = CampusModel.getShortName(currentStart);
         String shortEnd = CampusModel.getShortName(currentEnd);
-        currentRoute = CampusModel.shortestPathBetweenBuildings(shortStart, shortEnd, wheelchair, noStairs);
+        // Obtain the current route
+        // Note: !noStairs is passed in since routes are checked on whether they have stairs or not
+        currentRoute = CampusModel.shortestPathBetweenBuildings(shortStart, shortEnd, wheelchair, !noStairs);
 
         return currentRoute;
     }
