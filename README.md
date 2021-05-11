@@ -10,7 +10,7 @@ person instruction this coming Autumn.
 (General steps listed below, follow [Javatpoint's instructions](https://www.javatpoint.com/how-to-install-apk-on-android#:~:text=Copy%20the%20downloaded%20APK%20file,tap%20on%20it%20to%20install) for more detailed steps and troubleshooting)
 - Ensure your physical device is operating at Android 9.0 or newer
 - Ensure you have a File Manager on your phone so you can easily find downloaded files
-- On your Android device, use your UW net-ID to access [AccessUW's Google Drive](https://cse403group.slack.com/archives/D01SW89RP9A/p1620604483000200)
+- On your Android device, use your UW net-ID to access [AccessUW's Google Drive](https://drive.google.com/drive/folders/15NJg1pMImN9zvDMFNJpA-DUkWg-hoXbQ?usp=sharing)
 - Download the AccessUW app APK named access_uw_app.apk
 - Find the APK in your downloads folder, click it, give it permissions, and install it
 - The app should now be visible in your installed apps list!
@@ -21,7 +21,7 @@ person instruction this coming Autumn.
 - Download SDK Tools 26.1.1 or higher
 - Download an Android Emulator of Android 9.0 or newer
 #### Download APK of project:
-- On your Android device, use your UW net-ID to access [AccessUW's Google Drive](https://cse403group.slack.com/archives/D01SW89RP9A/p1620604483000200)
+- On your Android device, use your UW net-ID to access [AccessUW's Google Drive](https://drive.google.com/drive/folders/15NJg1pMImN9zvDMFNJpA-DUkWg-hoXbQ?usp=sharing)
 - Download the AccessUW app APK named access_uw_app.apk
 - Boot up your emulated Android device
 - Drag and drop the APK into the emulator screen (the file be placed in the /sdcard/Download/ directory by default)
