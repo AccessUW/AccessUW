@@ -270,14 +270,9 @@ public class MainActivity extends AppCompatActivity {
                 // Update state
                 updateState(AppStates.NAV);
                 // Process successful route built between inputted start and end locations
-                System.out.println("START: " + CampusPresenter.getCurrentStart());
-                System.out.println("END: " + CampusPresenter.getCurrentEnd());
-                System.out.println("ROUTE:");
-                for (Place currPlace : route) {
-                    System.out.println(currPlace.getX() + ", " + currPlace.getY());
-                }
-                System.out.println("(stop)");
                 drawRoute(route);
+                // Move map back to starting location
+                moveMapToBuilding(CampusPresenter.getCurrentStart());
             }
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid start/end locations.",
@@ -349,8 +344,6 @@ public class MainActivity extends AppCompatActivity {
                     endSearchBarAndSwapLayout.setVisibility(View.INVISIBLE);
                     routeFilterLayout.setVisibility(View.INVISIBLE);
                     startNavRouteButton.setVisibility(View.INVISIBLE);
-                    // Move map back to start location
-                    moveMapToBuilding(CampusPresenter.getCurrentStart());
                     // Make building description layout visible
                     buildDescLayout.setVisibility(View.VISIBLE);
                 }
@@ -361,8 +354,6 @@ public class MainActivity extends AppCompatActivity {
                     navLayout.setVisibility(View.INVISIBLE);
                     // Clear canvas
                     routeCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
-                    // Move map back to end location
-                    moveMapToBuilding(CampusPresenter.getCurrentEnd());
                     // Make BUILD_ROUTE-related layouts visible
                     startSearchBarLayout.setVisibility(View.VISIBLE);
                     endSearchBarAndSwapLayout.setVisibility(View.VISIBLE);
@@ -405,8 +396,14 @@ public class MainActivity extends AppCompatActivity {
         float centerX = roughCenter.x * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         float centerY = roughCenter.y * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         // Calculate offsets of screen width/height to center start building in view
-        float horizontalOffset = screenWidth/2f;
-        float verticalOffset = screenHeight/3f;
+        //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
+        //        user sets the end location takes up more space at the top
+        //      - Otherwise, center the building a bit higher since there's more room above the lower menu
+        float horizontalOffset = screenWidth / 2f;
+        float verticalOffset = screenHeight / 3f;
+        if (mState == AppStates.BUILD_ROUTE) {
+            verticalOffset = screenHeight / 2f;
+        }
         // Calculate coordinates for the map view to scroll to
         int scrollX = (int) (centerX - horizontalOffset);
         int scrollY = (int) (centerY - verticalOffset);
