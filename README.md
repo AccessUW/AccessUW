@@ -63,3 +63,12 @@ features, etc.)
     - /app/src/main/java/CampusPresenter.java contains the Presenter of our MVP framework
 - /app/src/main/res contains most of the app's resources (e.g. the map image and string names)
 - /Reports contains our team's weekly progress reports
+
+## Building & Testing the system
+Building & testing the system is relatively automatic, with Travis CI automatically running our current script on each commit.
+
+For manual building/testing, you can perform `./gradlew build` to build the system, and then `./gradlew test` to run unit tests.
+
+Instrumentation tests can be performed by starting up an emulator and then running `./gradlew cAT`.
+
+For all steps at once, one can start up an emulator and then run `./gradlew build cC`.
