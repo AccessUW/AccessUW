@@ -20,7 +20,7 @@ android:
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-x86-android-30
+    - sys-img-x86-android-26
     - sys-img-armeabi-v7a-android-17
 
   licenses:
@@ -31,8 +31,10 @@ android:
 before-install:
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30"
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3"
+  - echo no | android crete avd --force -n test -t android-22 --abi armeabi-v7a -c 100M
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
   - chmod +x gradlew
 
 script:
-  - ./gradlew build
-  - ./gradlew test
+  - ./gradlew build cC
