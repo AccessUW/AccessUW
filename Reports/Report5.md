@@ -25,9 +25,14 @@
 * Finish BuildingInfoModel for building information querying
 * Finish CampusTreeModel for closest building search
 ### Progress and Issues
-*
+* Finished initialization from csv files
+* Finsihed BuildingInfoModel and CampusTreeModel
+* There is currently high memory usage, so we might have to change some of the models
+* RouteFinderModel doesn't consistently return correct path, might be problem with data or the model itself
 ### Plans and Goals
-*
+* Test RouteFinderModel component
+* Test CampusTree component
+* Debug high memory usage and explore possible changes for some models
 ## Judas' Report
 ### Last Week
 * Finish route drawing feature for front-end
