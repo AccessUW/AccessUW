@@ -59,9 +59,11 @@
 * Research about fragments
 * Navigation of activities(frontend)
 ### Progress and Issues
-*
+* demo - use cases of the app
+* focus on testing documentation
 ### Plans and Goals
-*
+* help out the front-end implementation
+* write user documentation
 ## Kevin's Report
 ### Last Week
 * Get some external feedback on the design
