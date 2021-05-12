@@ -93,28 +93,41 @@ public class CampusPresenter {
     }
 
     /**
-     * Get top-left-most entrance coordinates (as a point) for the given building.
+     * Get coordinates (as a point) of roughly the center of the given building.
      *
      * @param longBuildingName is the long version of the desired building name
      * @throws IllegalArgumentException if longBuildingName is not a valid building name
-     * @return point representing coordinates of top-left-most entrance of given building
+     * @return point representing coordinates of roughly the center of the given building
      */
-    public static Point getTopLeftEntranceOfBuilding(String longBuildingName) {
+    public static Point getRoughCenterOfBuilding(String longBuildingName) {
         if (!buildingNames.contains(longBuildingName)) {
+            System.out.println("AAA: " + longBuildingName);
             throw new IllegalArgumentException();
         }
 
         Set<Place> buildingEntrances = CampusModel.getEntrances(CampusModel.getShortName(longBuildingName), false);
-        System.out.println("NUM PLACES: " + buildingEntrances.size());
+
+        // Get top-left-most and bottom-right-most entrances
         Place topLeftPlace = null;
+        Place botRightPlace = null;
         for (Place currPlace : buildingEntrances) {
-            if (topLeftPlace == null) {
-                topLeftPlace = currPlace;
-            } else if ((currPlace.getX() + currPlace.getY()) < (topLeftPlace.getX() + topLeftPlace.getY())) {
+            if (topLeftPlace == null || (currPlace.getX() + currPlace.getY()) < (topLeftPlace.getX() + topLeftPlace.getY())) {
                 topLeftPlace = currPlace;
             }
+            if (botRightPlace == null || (currPlace.getX() + currPlace.getY()) > (botRightPlace.getX() + botRightPlace.getY())) {
+                botRightPlace = currPlace;
+            }
         }
-        return new Point((int) topLeftPlace.getX(), (int) topLeftPlace.getY());
+
+        // If only 1 entrance, return that entrance's coordinates. Otherwise, return average of topLeft and botRight entrance's
+        // coordinates.
+        if (topLeftPlace.equals(botRightPlace)) {
+            return new Point((int) topLeftPlace.getX(), (int) topLeftPlace.getY());
+        } else {
+            int roughX = (int) (topLeftPlace.getX() + botRightPlace.getX())/2;
+            int roughY = (int) (topLeftPlace.getY() + botRightPlace.getY())/2;
+            return new Point(roughX, roughY);
+        }
     }
 
     /**

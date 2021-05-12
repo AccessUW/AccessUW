@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
 import android.view.View;
@@ -48,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
     ///     Fields
     ////////////////////////////////////////////////////////////
 
+    // Screen dimensions
+    private int screenWidth;
+    private int screenHeight;
+
     // Current state app is in
     private AppStates mState;
 
@@ -84,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
     private Set<String> allBuildingNames; // Names of buildings
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
 
-    private ImageView mapV;
-
     ////////////////////////////////////////////////////////////
     ///     Methods
     ////////////////////////////////////////////////////////////
@@ -95,7 +98,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mapV = findViewById(R.id.mapView);
+        // Define screen dimensions
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
 
         // Initialize state
         mState = AppStates.SEARCH;
@@ -220,8 +227,7 @@ public class MainActivity extends AppCompatActivity {
         if (mState == AppStates.SEARCH) {
             updateState(AppStates.FOUND_START);
         }
-        System.out.println("W: " + mapV.getWidth() + ", " + mapV.getMeasuredWidth() + ", " + mapV.getMaxWidth());
-        System.out.println("H: " + mapV.getHeight() + ", " + mapV.getMeasuredHeight() + ", " + mapV.getMaxHeight());
+        moveMapToBuilding(CampusPresenter.getCurrentStart());
     }
 
     /**
@@ -233,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
         if (allBuildingNames.contains(newEnd)) {
             CampusPresenter.updateEnd(newEnd);
         }
+        moveMapToBuilding(CampusPresenter.getCurrentEnd());
     }
 
     /**
@@ -263,14 +270,9 @@ public class MainActivity extends AppCompatActivity {
                 // Update state
                 updateState(AppStates.NAV);
                 // Process successful route built between inputted start and end locations
-                System.out.println("START: " + CampusPresenter.getCurrentStart());
-                System.out.println("END: " + CampusPresenter.getCurrentEnd());
-                System.out.println("ROUTE:");
-                for (Place currPlace : route) {
-                    System.out.println(currPlace.getX() + ", " + currPlace.getY());
-                }
-                System.out.println("(stop)");
                 drawRoute(route);
+                // Move map back to starting location
+                moveMapToBuilding(CampusPresenter.getCurrentStart());
             }
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid start/end locations.",
@@ -309,7 +311,6 @@ public class MainActivity extends AppCompatActivity {
                 if (newState == AppStates.FOUND_START) {
                     buildBuildingDesc();
                     buildDescLayout.setVisibility(View.VISIBLE);
-                    moveMapToStart();
                 }
 
             case FOUND_START:
@@ -343,8 +344,8 @@ public class MainActivity extends AppCompatActivity {
                     endSearchBarAndSwapLayout.setVisibility(View.INVISIBLE);
                     routeFilterLayout.setVisibility(View.INVISIBLE);
                     startNavRouteButton.setVisibility(View.INVISIBLE);
+                    // Make building description layout visible
                     buildDescLayout.setVisibility(View.VISIBLE);
-                    moveMapToStart();
                 }
 
             case NAV:
@@ -385,27 +386,30 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Moves map view to see the start location.
+     *
+     * @param longBuildingName is the long version of the desired building name to center the map on.
      */
-    private void moveMapToStart() {
-//        // Get coordinate of start location
-//        Point topLeft = CampusPresenter.getTopLeftEntranceOfBuilding(CampusPresenter.getCurrentStart());
-//        float startX = (float) topLeft.x;
-//        float startY = (float) topLeft.y;
-//
-//        float scrollX = ((float) CAMPUS_MAP_IMAGE_WIDTH / hScroll.getWidth()) * startX;
-//        float scrollY = ((float) CAMPUS_MAP_IMAGE_HEIGHT / vScroll.getHeight()) * startY;
-//
-//        System.out.println("W/H: " + hScroll.getWidth() + ", " + vScroll.getHeight());
-//        System.out.println("Phone x,y: " + mx + ", " + my);
-//        System.out.println("Place x,y: " + startX + ", " + startY);
-//        System.out.println("Scroll x,y: " + scrollX + ", " + scrollY);
-//
-//        hScroll.scrollTo((int) scrollX, (int) scrollY);
-//        vScroll.scrollTo((int) scrollX, (int) scrollY);
-//
-//        // Move map view to that spot
-//        vScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
-//        hScroll.scrollBy((int) (mx - scrollX), (int) (my - scrollY));
+    private void moveMapToBuilding(String longBuildingName) {
+        // Get coordinate of roughly the center of the start building
+        Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
+        // Convert roughCenter coordinates from px to dp
+        float centerX = roughCenter.x * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float centerY = roughCenter.y * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        // Calculate offsets of screen width/height to center start building in view
+        //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
+        //        user sets the end location takes up more space at the top
+        //      - Otherwise, center the building a bit higher since there's more room above the lower menu
+        float horizontalOffset = screenWidth / 2f;
+        float verticalOffset = screenHeight / 3f;
+        if (mState == AppStates.BUILD_ROUTE) {
+            verticalOffset = screenHeight / 2f;
+        }
+        // Calculate coordinates for the map view to scroll to
+        int scrollX = (int) (centerX - horizontalOffset);
+        int scrollY = (int) (centerY - verticalOffset);
+        // Scroll map views
+        hScroll.scrollTo(scrollX, scrollY);
+        vScroll.scrollTo(scrollX, scrollY);
     }
 
     /**
