@@ -40,15 +40,17 @@ before-script:
   - android list
 # h to trigger rebuild
 #  - echo yes | android update sdk -a --no-ui --filter sys-img-armebi-v7a-android-30,sys-img-x86-android-30
-  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis -c 50M
-  - emulator -avd test -noaudio -no-window -verbose -no-boot-anim &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+
+# disabled for beta release purposes
+#  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis -c 50M
+#  - emulator -avd test -noaudio -no-window -verbose -no-boot-anim &
+#  - android-wait-for-emulator
+#  - adb shell input keyevent 82 &
 
 script:
   - ./gradlew clean build
   - ./gradlew test
-  - ./gradlew build cC
+#  - ./gradlew build cC
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
