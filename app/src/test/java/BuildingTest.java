@@ -1,24 +1,17 @@
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
 
 import models.Building;
 
 public class BuildingTest {
     @Test
     public void testConstructor() {
-        List<Integer> gn = new LinkedList<>();
-        gn.add(0);
-        gn.add(1);
-        gn.add(2);
+        String gn = "B 1 2 3";
 
-        List<Integer> acc = new LinkedList<>();
-        acc.add(1);
-        acc.add(3);
+        String acc = "1 2";
 
-        List<Integer> gnEmpty = new LinkedList<>();
-        List<Integer> accEmpty = new LinkedList<>();
+        String gnEmpty = "";
+        String accEmpty = "";
 
         Building b = new Building("A", 1, 1, gn, acc, true);
 
@@ -55,17 +48,11 @@ public class BuildingTest {
 
     @Test
     public void testEquals() {
-        List<Integer> gn = new LinkedList<>();
-        gn.add(0);
-        gn.add(1);
-        gn.add(2);
+        String gn = "B 1 2 3";
 
-        List<Integer> acc = new LinkedList<>();
-        acc.add(1);
-        acc.add(3);
+        String acc = "1 2";
 
-        List<Integer> gnEmpty = new LinkedList<>();
-        List<Integer> accEmpty = new LinkedList<>();
+        String accEmpty = "";
 
 
         Building a = new Building("A", 1, 1, gn, acc, true);

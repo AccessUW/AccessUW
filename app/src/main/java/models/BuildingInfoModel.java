@@ -161,12 +161,13 @@ public class BuildingInfoModel {
     }
 
     /**
-     * Gets a list of the floors with a gender neutral restroom in the given building
+     * Gets the floor numbers of all floors with a gender neutral restroom in this building
      * @param shortName short name identifier of the building
-     * @return list of floors with a gender neutral restroom, or an empty list if no floors have one
+     * @return Space separated string of floors with gender neutral restroom, with the empty string
+     * meaning there are no floors and 'All' meaning there are on all floors
      * @throws IllegalArgumentException if the given shortname is not valid
      */
-    public List<Integer> getGenderNeutralRestroomFloors(String shortName) {
+    public String getGenderNeutralRestroomFloors(String shortName) {
         if (!shortNameToBuilding.containsKey(shortName)) {
             throw new IllegalArgumentException("getGenderNeutralRestroomFloors -- given short name is invalid");
         }
@@ -187,12 +188,13 @@ public class BuildingInfoModel {
     }
 
     /**
-     * Gets a list of the floors with an accessible restroom in the given building
+     * Gets the floor numbers of all floors with an accessible restroom in this building
      * @param shortName short name identifier of the building
-     * @return list of floors with an accessible restroom, or an empty list if no floors have one
+     * @return Space separated string of floors with an accessible restroom, with the empty string
+     * meaning there are no floors and 'All' meaning there are on all floors
      * @throws IllegalArgumentException if the given shortname is not valid
      */
-    public List<Integer> getAccessibleRestroomFloors(String shortName) {
+    public String getAccessibleRestroomFloors(String shortName) {
         if (!shortNameToBuilding.containsKey(shortName)) {
             throw new IllegalArgumentException("getAccessibleRestroomFloors -- given short name is invalid");
         }

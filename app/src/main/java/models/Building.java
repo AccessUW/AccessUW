@@ -16,8 +16,8 @@ public class Building {
     private float x;
     private float y;
     private String shortName;
-    private List<Integer> genderNeutralRestrooms;
-    private List<Integer> accessibleRestrooms;
+    private String genderNeutralRestrooms;
+    private String accessibleRestrooms;
     private boolean elevator;
     private Set<Place> entrances;
     private Set<Place> accessibleEntrances;
@@ -27,15 +27,15 @@ public class Building {
      * @param shortName short name identifier of the building
      * @param x x coordinate of the building
      * @param y y coordinate of the building
-     * @param gNRestroomFloors list of floors with gender neutral restrooms
-     * @param accessibleRestroomFloors list of floors with accessible restrooms
+     * @param gNRestroomFloors space separated string of floors with gender neutral restrooms
+     * @param accessibleRestroomFloors space separated string of floors with accessible restrooms
      * @param elevator true if the building has an elevator
      */
-    public Building(String shortName, float x, float y, List<Integer> gNRestroomFloors,
-                    List<Integer> accessibleRestroomFloors, boolean elevator) {
+    public Building(String shortName, float x, float y, String gNRestroomFloors,
+                    String accessibleRestroomFloors, boolean elevator) {
         this.shortName = shortName;
-        this.genderNeutralRestrooms = new LinkedList<>(gNRestroomFloors);
-        this.accessibleRestrooms = new LinkedList<>(accessibleRestroomFloors);
+        this.genderNeutralRestrooms = gNRestroomFloors;
+        this.accessibleRestrooms = accessibleRestroomFloors;
         this.elevator = elevator;
         this.entrances = new HashSet<>();
         this.accessibleEntrances = new HashSet<>();
@@ -75,10 +75,10 @@ public class Building {
 
     /**
      * Gets the floor numbers of all floors with a gender neutral restroom in this building
-     * @return List of integers of the floors with a gender neutral restroom with 0 being the basement,
-     * 1 being the first floor, and so on
+     * @return Space separated string of floors with gender neutral restroom, with the empty string
+     * meaning there are no floors and 'All' meaning there are on all floors
      */
-    public List<Integer> getGenderNeutralRestroomFloors() {
+    public String getGenderNeutralRestroomFloors() {
         return this.genderNeutralRestrooms;
     }
 
@@ -92,10 +92,10 @@ public class Building {
 
     /**
      * Gets the floor numbers of all floors with an accessible restroom in this building
-     * @return List of integers of the floors with an accessible restroom with 0 being the basement,
-     * 1 being the first floor, and so on
+     * @return Space separated string of floors with an accessible restroom, with the empty string
+     * meaning there are no floors and 'All' meaning there are on all floors
      */
-    public List<Integer> getAccessibleRestroomFloors() {
+    public String getAccessibleRestroomFloors() {
         return this.accessibleRestrooms;
     }
 
@@ -173,7 +173,7 @@ public class Building {
      */
     @Override
     public int hashCode() {
-        return this.shortName.length() + this.genderNeutralRestrooms.size() +
-                this.accessibleRestrooms.size() + this.entrances.size() + (elevator ? 3 : 0);
+        return this.shortName.length() + this.genderNeutralRestrooms.length() +
+                this.accessibleRestrooms.length() + this.entrances.size() + (elevator ? 3 : 0);
     }
 }
