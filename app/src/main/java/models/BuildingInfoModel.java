@@ -1,10 +1,9 @@
 package models;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-// TODO: implement class
 
 /**
  * This class defines a model for information of all buildings of the UW campus
@@ -67,20 +66,6 @@ public class BuildingInfoModel {
                     " UW campus");
         }
         return shortNameToBuilding.get(shortName);
-    }
-
-    /**
-     * Gets the description of the given building
-     * @param shortName short name id of the building you want the description of
-     * @return description of the given building
-     * @throws IllegalArgumentException if the given short name is invalid
-     */
-    public String getBuildingDescription(String shortName) {
-        if (!shortNameToBuilding.containsKey(shortName)) {
-            throw new IllegalArgumentException("getBuildingDescription -- given short name is " +
-                    "invalid");
-        }
-        return shortNameToBuilding.get(shortName).getDescription();
     }
 
     /**
@@ -170,9 +155,48 @@ public class BuildingInfoModel {
      */
     public boolean hasGenderNeutralRestroom(String shortName) {
         if (!shortNameToBuilding.containsKey(shortName)) {
-            throw new IllegalArgumentException("getAddress -- given short name is invalid");
+            throw new IllegalArgumentException("hasGenderNeutralRestroom -- given short name is invalid");
         }
         return shortNameToBuilding.get(shortName).hasGenderNeutralRestroom();
+    }
+
+    /**
+     * Gets a list of the floors with a gender neutral restroom in the given building
+     * @param shortName short name identifier of the building
+     * @return list of floors with a gender neutral restroom, or an empty list if no floors have one
+     * @throws IllegalArgumentException if the given shortname is not valid
+     */
+    public List<Integer> getGenderNeutralRestroomFloors(String shortName) {
+        if (!shortNameToBuilding.containsKey(shortName)) {
+            throw new IllegalArgumentException("getGenderNeutralRestroomFloors -- given short name is invalid");
+        }
+        return shortNameToBuilding.get(shortName).getGenderNeutralRestroomFloors();
+    }
+
+    /**
+     * Get whether or not the given building has an accessible restroom
+     * @param shortName short name identifier of the building
+     * @return true if the building has an accessible restroom, otherwise false
+     * @throws IllegalArgumentException if the given shortname is not valid
+     */
+    public boolean hasAccessibleRestroom(String shortName) {
+        if (!shortNameToBuilding.containsKey(shortName)) {
+            throw new IllegalArgumentException("hasAccessibleRestroom -- given short name is invalid");
+        }
+        return shortNameToBuilding.get(shortName).hasAccessibleRestroom();
+    }
+
+    /**
+     * Gets a list of the floors with an accessible restroom in the given building
+     * @param shortName short name identifier of the building
+     * @return list of floors with an accessible restroom, or an empty list if no floors have one
+     * @throws IllegalArgumentException if the given shortname is not valid
+     */
+    public List<Integer> getAccessibleRestroomFloors(String shortName) {
+        if (!shortNameToBuilding.containsKey(shortName)) {
+            throw new IllegalArgumentException("getAccessibleRestroomFloors -- given short name is invalid");
+        }
+        return shortNameToBuilding.get(shortName).getAccessibleRestroomFloors();
     }
 
     /**

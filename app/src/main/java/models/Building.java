@@ -3,6 +3,8 @@ package models;
 import android.os.Build;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,25 +16,27 @@ public class Building {
     private float x;
     private float y;
     private String shortName;
-    private boolean genderNeutralRestroom;
+    private List<Integer> genderNeutralRestrooms;
+    private List<Integer> accessibleRestrooms;
     private boolean elevator;
     private Set<Place> entrances;
     private Set<Place> accessibleEntrances;
-    private String description;
 
     /**
      * Creates a new Building object
      * @param shortName short name identifier of the building
-     * @param restroom true if the building has gender neutral restrooms
+     * @param x x coordinate of the building
+     * @param y y coordinate of the building
+     * @param gNRestroomFloors list of floors with gender neutral restrooms
+     * @param accessibleRestroomFloors list of floors with accessible restrooms
      * @param elevator true if the building has an elevator
-     * @param description description of this building
      */
-    public Building(String shortName, boolean restroom, boolean elevator,
-                    String description) {
+    public Building(String shortName, float x, float y, List<Integer> gNRestroomFloors,
+                    List<Integer> accessibleRestroomFloors, boolean elevator) {
         this.shortName = shortName;
-        this.genderNeutralRestroom = restroom;
+        this.genderNeutralRestrooms = new LinkedList<>(gNRestroomFloors);
+        this.accessibleRestrooms = new LinkedList<>(accessibleRestroomFloors);
         this.elevator = elevator;
-        this.description = description;
         this.entrances = new HashSet<>();
         this.accessibleEntrances = new HashSet<>();
     }
@@ -66,7 +70,33 @@ public class Building {
      * @return true if the building has a gender neutral restroom, false otherwise
      */
     public boolean hasGenderNeutralRestroom() {
-        return genderNeutralRestroom;
+        return !this.genderNeutralRestrooms.isEmpty();
+    }
+
+    /**
+     * Gets the floor numbers of all floors with a gender neutral restroom in this building
+     * @return List of integers of the floors with a gender neutral restroom with 0 being the basement,
+     * 1 being the first floor, and so on
+     */
+    public List<Integer> getGenderNeutralRestroomFloors() {
+        return this.genderNeutralRestrooms;
+    }
+
+    /**
+     * Returns whether the building has an accessible restroom or not
+     * @return true if the building has an accessible restroom, false otherwise
+     */
+    public boolean hasAccessibleRestroom() {
+        return !this.accessibleRestrooms.isEmpty();
+    }
+
+    /**
+     * Gets the floor numbers of all floors with an accessible restroom in this building
+     * @return List of integers of the floors with an accessible restroom with 0 being the basement,
+     * 1 being the first floor, and so on
+     */
+    public List<Integer> getAccessibleRestroomFloors() {
+        return this.accessibleRestrooms;
     }
 
     /**
@@ -91,14 +121,6 @@ public class Building {
      */
     public Set<Place> getAccessibleEntrances() {
         return accessibleEntrances;
-    }
-
-    /**
-     * Get the description of this building
-     * @return short description of this building
-     */
-    public String getDescription() {
-        return description;
     }
 
     /**
@@ -138,9 +160,11 @@ public class Building {
 
         Building other = (Building) o;
 
-        return this.shortName.equals(other.shortName) && this.description.equals(other.description)
-                && this.genderNeutralRestroom == other.genderNeutralRestroom && this.elevator ==
-                other.elevator;
+        return this.shortName.equals(other.shortName) &&
+                this.genderNeutralRestrooms.equals(other.genderNeutralRestrooms) &&
+                this.accessibleRestrooms.equals(other.accessibleRestrooms) &&
+                this.entrances.equals(other.entrances) &&
+                this.elevator == other.elevator;
     }
 
     /**
@@ -149,7 +173,7 @@ public class Building {
      */
     @Override
     public int hashCode() {
-        return this.shortName.length() + this.description.length() + (genderNeutralRestroom ? 1 : 0) +
-                (elevator ? 3 : 0);
+        return this.shortName.length() + this.genderNeutralRestrooms.size() +
+                this.accessibleRestrooms.size() + this.entrances.size() + (elevator ? 3 : 0);
     }
 }
