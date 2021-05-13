@@ -13,14 +13,14 @@ import java.util.Set;
  * assisted entrances and gender neutral restrooms
  */
 public class Building {
-    private float x;
-    private float y;
-    private String shortName;
-    private String genderNeutralRestrooms;
-    private String accessibleRestrooms;
-    private boolean elevator;
-    private Set<Place> entrances;
-    private Set<Place> accessibleEntrances;
+    private final float x;
+    private final float y;
+    private final String shortName;
+    private final String genderNeutralRestrooms;
+    private final String accessibleRestrooms;
+    private final boolean elevator;
+    private final Set<Place> entrances;
+    private final Set<Place> accessibleEntrances;
 
     /**
      * Creates a new Building object
