@@ -194,7 +194,7 @@ public class CampusModel {
                 longToShortName.put(longName, shortName);
 
                 // Add the entrance for this building
-                if (data[2].equals("") || data[3].equals("")) {
+                if (data[2].equals("0") || data[3].equals("0")) {
                     continue; // continue if there is no entrance coordinates
                 }
                 float x = Float.parseFloat(data[2]);
