@@ -10,8 +10,8 @@ public class BuildingTest {
 
         String acc = "1 2";
 
-        String gnEmpty = "";
-        String accEmpty = "";
+        String gnEmpty = "None";
+        String accEmpty = "None";
 
         Building b = new Building("A", 1, 1, gn, acc, true);
 
@@ -24,7 +24,7 @@ public class BuildingTest {
         Building b1 = new Building("B", 2, 2, gn, accEmpty, false);
 
         assert b1.getShortName().equals("B");
-        assert b1.getX() == 2 && b.getY() == 2;
+        assert b1.getX() == 2 && b1.getY() == 2;
         assert b1.hasGenderNeutralRestroom();
         assert !b1.hasAccessibleRestroom();
         assert !b1.hasElevator();
@@ -32,7 +32,7 @@ public class BuildingTest {
         Building b2 = new Building("C", 3, 3, gnEmpty, acc, true);
 
         assert b2.getShortName().equals("C");
-        assert b2.getX() == 3 && b.getY() == 3;
+        assert b2.getX() == 3 && b2.getY() == 3;
         assert !b2.hasGenderNeutralRestroom();
         assert b2.hasAccessibleRestroom();
         assert b2.hasElevator();
@@ -40,7 +40,7 @@ public class BuildingTest {
         Building b3 = new Building("D", 4, 4, gnEmpty, accEmpty, false);
 
         assert b3.getShortName().equals("D");
-        assert b3.getX() == 4 && b.getY() == 4;
+        assert b3.getX() == 4 && b3.getY() == 4;
         assert !b3.hasGenderNeutralRestroom();
         assert !b3.hasAccessibleRestroom();
         assert !b3.hasElevator();
@@ -52,7 +52,7 @@ public class BuildingTest {
 
         String acc = "1 2";
 
-        String accEmpty = "";
+        String accEmpty = "None";
 
 
         Building a = new Building("A", 1, 1, gn, acc, true);

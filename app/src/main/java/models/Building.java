@@ -39,6 +39,8 @@ public class Building {
         this.elevator = elevator;
         this.entrances = new HashSet<>();
         this.accessibleEntrances = new HashSet<>();
+        this.x = x;
+        this.y = y;
     }
 
     /**
@@ -70,12 +72,12 @@ public class Building {
      * @return true if the building has a gender neutral restroom, false otherwise
      */
     public boolean hasGenderNeutralRestroom() {
-        return !this.genderNeutralRestrooms.isEmpty();
+        return !this.genderNeutralRestrooms.equals("None");
     }
 
     /**
      * Gets the floor numbers of all floors with a gender neutral restroom in this building
-     * @return Space separated string of floors with gender neutral restroom, with the empty string
+     * @return Space separated string of floors with gender neutral restroom, with "None"
      * meaning there are no floors and 'All' meaning there are on all floors
      */
     public String getGenderNeutralRestroomFloors() {
@@ -87,12 +89,12 @@ public class Building {
      * @return true if the building has an accessible restroom, false otherwise
      */
     public boolean hasAccessibleRestroom() {
-        return !this.accessibleRestrooms.isEmpty();
+        return !this.accessibleRestrooms.equals("None");
     }
 
     /**
      * Gets the floor numbers of all floors with an accessible restroom in this building
-     * @return Space separated string of floors with an accessible restroom, with the empty string
+     * @return Space separated string of floors with an accessible restroom, with "None"
      * meaning there are no floors and 'All' meaning there are on all floors
      */
     public String getAccessibleRestroomFloors() {
@@ -134,12 +136,6 @@ public class Building {
             if (assisted) {
                 accessibleEntrances.add(entrance);
             }
-
-            // Recalculate Building's x, y by averaging entrances
-            float xSum = (x * entrances.size() - 1) + entrance.getX();
-            float ySum = (y * entrances.size() - 1) + entrance.getY();
-            x = xSum / entrances.size();
-            y = ySum / entrances.size();
         }
     }
 

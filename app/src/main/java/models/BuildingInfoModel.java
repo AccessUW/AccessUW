@@ -163,7 +163,7 @@ public class BuildingInfoModel {
     /**
      * Gets the floor numbers of all floors with a gender neutral restroom in this building
      * @param shortName short name identifier of the building
-     * @return Space separated string of floors with gender neutral restroom, with the empty string
+     * @return Space separated string of floors with gender neutral restroom, with "None"
      * meaning there are no floors and 'All' meaning there are on all floors
      * @throws IllegalArgumentException if the given shortname is not valid
      */
@@ -190,7 +190,7 @@ public class BuildingInfoModel {
     /**
      * Gets the floor numbers of all floors with an accessible restroom in this building
      * @param shortName short name identifier of the building
-     * @return Space separated string of floors with an accessible restroom, with the empty string
+     * @return Space separated string of floors with an accessible restroom, with "None"
      * meaning there are no floors and 'All' meaning there are on all floors
      * @throws IllegalArgumentException if the given shortname is not valid
      */
