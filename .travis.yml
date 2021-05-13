@@ -12,6 +12,7 @@ android:
 
     # The SDK version used to compile your project
     - android-30
+    - android-22
 
     # Additional components
     - extra-google-google_play_services
@@ -21,7 +22,7 @@ android:
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
     - sys-img-x86-android-26
-    - sys-img-x86-image-android-17
+    - sys-img-armeabi-v7a-google_apis-25
 
   licenses:
       - 'android-sdk-preview-license-52d11cd2'
@@ -29,17 +30,34 @@ android:
       - 'google-gdk-license-.+'
 
 before-install:
+  - chmod +x gradlew
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30"
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3"
+before-script:
   # help for listing the possible sdks for system images
   - sdkmanager --list --verbose
 #  - yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-29;default;x86"
   - android list
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a -c 100M
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
+# h to trigger rebuild
+#  - echo yes | android update sdk -a --no-ui --filter sys-img-armebi-v7a-android-30,sys-img-x86-android-30
+
+# disabled for beta release purposes
+  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis -c 50M
+  - emulator -avd test -noaudio -no-window -verbose -no-boot-anim &
+  - travis_wait android-wait-for-emulator
   - adb shell input keyevent 82 &
-  - chmod +x gradlew
 
 script:
+  - ./gradlew clean build
+  - ./gradlew test
   - ./gradlew build cC
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches
+    - $HOME/.gradle/wrapper
+    - $HOME/.android/build-cache

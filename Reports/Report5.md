@@ -70,6 +70,10 @@
 * Fix ./gradlew run/test functionality
 * Install testing suite setup
 ### Progress and Issues
-* 
+* ./gradlew run/test works!!! Travis CI stuff partially figured out
+* Emulator script + instrumentation testing is painful and I've gone through 100 builds just to see it time out while running
+* Wrote documentation regarding how to build & test the system
+* Figured out that gradlew failed because my computer itself & Android studio was outdated, switched accordingly
 ### Plans and Goals
-*
+* Get some external feedback on the design
+* Fix instrumentation testing setup
