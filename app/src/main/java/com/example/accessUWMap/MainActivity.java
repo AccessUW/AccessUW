@@ -40,9 +40,11 @@ public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
-    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4330;
-    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 2964;
+    private static final int CAMPUS_MAP_IMAGE_WIDTH_PX = 4330;
+    private static final int CAMPUS_MAP_IMAGE_HEIGHT_PX = 2964;
     private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
+    private static final int CLICK_NEAREST_MOVEMENT_THRESHOLD = 20;
+    private static final int VERTICAL_OFFSET_CLICK_ON_MAP = 30;
 
 
     ////////////////////////////////////////////////////////////
@@ -61,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
     // Scroll views for moving on the map
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
+    // Track where and for how long user has been pressing to see if they're doing a long press
+    private int pressDownX;
+    private int pressDownY;
 
     // Views for displaying search bars and route filters
     private LinearLayout startSearchBarLayout;
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         initSearchResults();
 
         // Get scroll views that control 2-D scrollability (i.e. user can move freely around map)
-        // and initialize mx,my starting coordinates
+        // and initialize mx,my starting coordinates and userLastMapTouch coordinates
         vScroll = findViewById(R.id.vScroll);
         hScroll = findViewById(R.id.hScroll);
         mx = 0;
@@ -174,11 +179,26 @@ public class MainActivity extends AppCompatActivity {
         // Get routeView
         routeView = (ImageView) findViewById(R.id.routeView);
         // Initialize bitmap
-        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH, CAMPUS_MAP_IMAGE_HEIGHT,
+        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX, CAMPUS_MAP_IMAGE_HEIGHT_PX,
                 Bitmap.Config.ARGB_8888);
         routeView.setImageBitmap(routeBitmap);
         // Initialize canvas from bitmap
         routeCanvas = new Canvas(routeBitmap);
+    }
+
+    /**
+     * Initialize the search results to populate the AutoCompleteTextView start and end location
+     * search bars.
+     */
+    private void initSearchResults() {
+        searchableLocations = new ArrayList<>();
+
+        // Acquire list of all buildings on campus
+        allBuildingNames = CampusPresenter.getAllBuildingNames();
+
+        for (String currLocation : allBuildingNames) {
+            searchableLocations.add(new LocationSearchResult(currLocation));
+        }
     }
 
     @Override
@@ -187,11 +207,13 @@ public class MainActivity extends AppCompatActivity {
         float curX, curY;
 
         switch (event.getAction()) {
-
             case MotionEvent.ACTION_DOWN:
                 // Get current x,y on screen of where user clicks
                 mx = event.getX();
                 my = event.getY();
+                // Track where user first clicks down
+                pressDownX = (int) mx;
+                pressDownY = (int) my;
                 break;
             case MotionEvent.ACTION_MOVE:
                 // Scroll on the map based on user's finger movement
@@ -208,9 +230,48 @@ public class MainActivity extends AppCompatActivity {
                 curY = event.getY();
                 vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
                 hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                // If minimal x,y movement, trigger click choose building on map
+                if ((Math.abs((event.getX() - pressDownX)) <= CLICK_NEAREST_MOVEMENT_THRESHOLD) &&
+                    (Math.abs((event.getY() - pressDownY)) <= CLICK_NEAREST_MOVEMENT_THRESHOLD)) {
+                    // Get coordinates of where the user pressed in terms of pixels then pass it to select
+                    // the nearest building
+                    int mapClickX = (int) (dpToPX(hScroll.getScrollX() + mx));
+                    int mapClickY = (int) (dpToPX(vScroll.getScrollY() + my) - VERTICAL_OFFSET_CLICK_ON_MAP);
+                    clickChooseBuilding(mapClickX, mapClickY);
+                }
                 break;
         }
         return true;
+    }
+
+    /**
+     * Select closest building to where the user touched as the start location (if in SEARCH or
+     * FOUND_START states) or the end location (if in BUILD_ROUTE state)
+     *
+     * @param x is the x coordinate (in pixels) on the map of where the user pressed
+     * @param y is the y coordinate (in pixels) on the map of where the user pressed
+     */
+    private void clickChooseBuilding(int x, int y) {
+        // Adjusts invalid input
+        if (x < 0) {
+            x = 0;
+        } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
+            x = CAMPUS_MAP_IMAGE_WIDTH_PX;
+        }
+        if (y < 0) {
+            y = 0;
+        } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
+            y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
+        }
+
+        // Selects nearest start or end building (depending on current app state) based on where the user clicked
+        if (mState == AppStates.SEARCH || mState == AppStates.FOUND_START) {
+            String closestStartBuilding = CampusPresenter.getClosestBuilding(x, y);
+            System.out.println("User click coords: " + x + ", " + y);
+            System.out.println("CLOSE: " + closestStartBuilding);
+        } else if (mState == AppStates.BUILD_ROUTE) {
+            String closestEndBuilding = CampusPresenter.getClosestBuilding(x, y);
+        }
     }
 
     /**
@@ -277,21 +338,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid start/end locations.",
                     Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Initialize the search results to populate the AutoCompleteTextView start and end location
-     * search bars.
-     */
-    private void initSearchResults() {
-        searchableLocations = new ArrayList<>();
-
-        // Acquire list of all buildings on campus
-        allBuildingNames = CampusPresenter.getAllBuildingNames();
-
-        for (String currLocation : allBuildingNames) {
-            searchableLocations.add(new LocationSearchResult(currLocation));
         }
     }
 
@@ -393,8 +439,8 @@ public class MainActivity extends AppCompatActivity {
         // Get coordinate of roughly the center of the start building
         Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
         // Convert roughCenter coordinates from px to dp
-        float centerX = roughCenter.x * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        float centerY = roughCenter.y * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float centerX = pxToDP(roughCenter.x);
+        float centerY = pxToDP(roughCenter.y);
         // Calculate offsets of screen width/height to center start building in view
         //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
         //        user sets the end location takes up more space at the top
@@ -450,5 +496,25 @@ public class MainActivity extends AppCompatActivity {
         routeCanvas.drawPath(path, paint);
         // Invalidate view so that next draw clears view
         routeView.invalidate();
+    }
+
+    /**
+     * Convert the given number in pixels to dp.
+     *
+     * @param px value to be converted
+     * @return converted px value in terms of dp
+     */
+    private float pxToDP(float px) {
+        return px * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    /**
+     * Convert the given number in dp to pixels.
+     *
+     * @param dp value to be converted
+     * @return converted dp value in terms of px
+     */
+    private float dpToPX(float dp) {
+        return dp / ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
