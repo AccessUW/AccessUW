@@ -74,9 +74,11 @@ CHL (SE),Chemistry Library (SE),1762.7,1708.8,A
 CHL (SW),Chemistry Library (SW),1728,1717,A
 CCC,Child Care Center,1095,1461,M
 CLK,Clark Hall,2326.1,1001.1,A
-CMU,Commmunications Building,2331,1107,A
-CMU (W),Commmunications Building (W),2280,1095,A
-CMU (S),Community Design Center (S),2265,1158,M
+CMU,Communications Building,2331,1107,A
+CMU (W),Communications Building (W),2280,1095,A
+CMU (S),Communications Building (S),2265,1158,M
+CDB,Community Design Center,1280,1430,
+CDB (E),Community Design Center,1321,1431,
 CDH,Condon Hall,1048,1212,U
 CDH (NE),Condon Hall (NE),1031,1153,A
 CDH (NW),Condon Hall (NW),981,1153,M

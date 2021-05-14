@@ -120,7 +120,6 @@ public class CampusPresenter {
      */
     public static Point getRoughCenterOfBuilding(String longBuildingName) {
         if (!buildingNames.contains(longBuildingName)) {
-            System.out.println("AAA: " + longBuildingName);
             throw new IllegalArgumentException();
         }
 
@@ -140,12 +139,17 @@ public class CampusPresenter {
 
         // If only 1 entrance, return that entrance's coordinates. Otherwise, return average of topLeft and botRight entrance's
         // coordinates.
-        if (topLeftPlace.equals(botRightPlace)) {
-            return new Point((int) topLeftPlace.getX(), (int) topLeftPlace.getY());
-        } else {
-            int roughX = (int) (topLeftPlace.getX() + botRightPlace.getX())/2;
-            int roughY = (int) (topLeftPlace.getY() + botRightPlace.getY())/2;
-            return new Point(roughX, roughY);
+        try {
+            if (topLeftPlace.equals(botRightPlace)) {
+                return new Point((int) topLeftPlace.getX(), (int) topLeftPlace.getY());
+            } else {
+                int roughX = (int) (topLeftPlace.getX() + botRightPlace.getX()) / 2;
+                int roughY = (int) (topLeftPlace.getY() + botRightPlace.getY()) / 2;
+                return new Point(roughX, roughY);
+            }
+        } catch (NullPointerException e) {
+            System.out.println(longBuildingName);
+            return new Point(0,0);
         }
     }
 
