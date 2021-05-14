@@ -21,10 +21,8 @@ public class CampusPresenter {
     ////////////////////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////////////////////
-    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4613;
-    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 3112;
-
-    private static final int MAX_RECENT_LOCATIONS = 3;
+    private static final int CAMPUS_MAP_IMAGE_WIDTH_PX = 4330;
+    private static final int CAMPUS_MAP_IMAGE_HEIGHT_PX = 2964;
 
     ////////////////////////////////////////////////////////////////////////////
     ///     Fields
@@ -47,10 +45,11 @@ public class CampusPresenter {
      * Initializes CampusPresenter.
      */
     public static void init(Context context) throws IOException {
+        // Init model
         CampusModel.init(context);
 
+        // Init Presenter variables
         buildingNames = CampusModel.getAllBuildingNames();
-
         recentLocations = new ArrayList<>();
         wheelchair = false;
         noStairs = false;
@@ -90,6 +89,26 @@ public class CampusPresenter {
      */
     public static boolean getAssistedEntrance() {
         return assistedEntrance;
+    }
+
+    /**
+     * Finds the closest building to the given (x,y) coordinates and returns its long name.
+     *
+     * @param x coordinate (in pixels on map image)
+     * @param y coordinate (in pixels on map image)
+     * @requires x >= 0 && x <= width (in px) of map image
+     * @requires y >= 0 && y <= height (in px) of map image
+     * @throws IllegalArgumentException if passed invalid x and/or y coordinates
+     *
+     * @return long name of building closest to the given (x,y) coordinates
+     */
+    public static String getClosestBuilding(int x, int y) {
+        if (x < 0 || x > CAMPUS_MAP_IMAGE_WIDTH_PX || y < 0 || y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
+            throw new IllegalArgumentException();
+        }
+
+        // Get the closest building to the x,y coordinate
+        return CampusModel.findClosestBuilding(x, y, false, false);
     }
 
     /**
@@ -319,7 +338,7 @@ public class CampusPresenter {
      * coordinates
      */
     public static String getClosestGNBathroom(int x, int y) {
-        if (x < 0 || x > CAMPUS_MAP_IMAGE_WIDTH || y < 0 || y > CAMPUS_MAP_IMAGE_HEIGHT) {
+        if (x < 0 || x > CAMPUS_MAP_IMAGE_WIDTH_PX || y < 0 || y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
             throw new IllegalArgumentException();
         }
 
