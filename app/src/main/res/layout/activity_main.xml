@@ -177,6 +177,17 @@
                 android:textSize="@dimen/description_build_name_text_size" />
 
             <TextView
+                android:id="@+id/buildingShortName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/purple_700"
+                android:paddingStart="@dimen/search_bar_text_padding_side"
+                android:paddingEnd="@dimen/search_bar_text_padding_side"
+                android:text="@string/desc_building_short_name_view_default"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/search_bar_text_size" />
+
+            <TextView
                 android:id="@+id/elevatorInfoTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

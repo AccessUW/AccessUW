@@ -229,46 +229,80 @@ public class CampusPresenter {
     }
 
     /**
-     * Finds the closest building to the given (x,y) coordinates and returns its description.
-     *
-     * @param x coordinate (in pixels on map image)
-     * @param y coordinate (in pixels on map image)
-     * @requires x >= 0 && x <= width (in pixels) of map image
-     * @requires y >= 0 && y <= height (in pixels) of map image
-     * @throws IllegalArgumentException if passed invalid x and/or y coordinates
-     *
-     * @return description of building closest to the given (x,y) coordinates
-     */
-    public static String getClosestDesc(int x, int y) {
-        if (x < 0 || x > CAMPUS_MAP_IMAGE_WIDTH || y < 0 || y > CAMPUS_MAP_IMAGE_HEIGHT) {
-            throw new IllegalArgumentException();
-        }
-
-        // Get the closeset building to the x,y coordinate
-        String closestBuilding = CampusModel.findClosestBuilding(x, y, false, false);
-        // Return description of given building
-        return getDesc(CampusModel.getShortName(closestBuilding));
-    }
-
-    /**
-     * Returns info of the given building, including address, description, and accessibility
-     * information.
+     * Returns info of the given building, including elevator and bathroom information.
      *
      * @param buildingName is long building name for given location
      * @requires buildingName has length of >= 1 and is a valid building name
      * @throws IllegalArgumentException if buildingName requirements are not met
      *
-     * @return description of building with the given long name
+     * @return description of building with the given long name as an array with the following
+     * values:
+     *    0 - short name of building
+     *    1 - elevator info
+     *    2 - accessible restroom info
+     *    3 - gender-neutral restroom info
      */
-    public static String getDesc(String buildingName) {
+    public static String[] getDesc(String buildingName) {
         if (buildingName == null || buildingName.length() == 0) {
             throw new IllegalArgumentException();
         }
 
-        // Get short name of building
+        // Get building information
         String shortBuildingName = CampusModel.getShortName(buildingName);
+        String elevatorInfo = CampusModel.hasElevatorAccess(shortBuildingName) ? "All floors" : "None";
+        String accRestroomInfo = CampusModel.getAccessibleRestroomFloors(shortBuildingName);
+        String genderNeutralRestroomInfo = CampusModel.getGenderNeutralRestroomFloors(shortBuildingName);
+
+        // Restructure accessible restroom info
+        String descAccRestroomInfo = "";
+        if (accRestroomInfo.equals("All")) {
+            descAccRestroomInfo += "All floors";
+        } else if (accRestroomInfo.equals("None")) {
+            descAccRestroomInfo += "None";
+        } else {
+            String[] accRestroomFloors = accRestroomInfo.split(" ");
+            if (accRestroomFloors.length == 1) {
+                descAccRestroomInfo = "Floor " + accRestroomFloors[0];
+            } else if (accRestroomFloors.length == 2) {
+                descAccRestroomInfo = "Floors " + accRestroomFloors[0] + " and " + accRestroomFloors[1];
+            } else {
+                descAccRestroomInfo = "Floors ";
+                for (int i = 0; i < accRestroomFloors.length; i++) {
+                    if (accRestroomFloors.length > 1 && i == accRestroomFloors.length - 1) {
+                        descAccRestroomInfo += "and " + accRestroomFloors[i];
+                    } else {
+                        descAccRestroomInfo += accRestroomFloors[i] + ", ";
+                    }
+                }
+            }
+        }
+
+        // Restructure gender-neutral restroom info
+        String descGenderNeutralRestroomInfo = "";
+        if (genderNeutralRestroomInfo.equals("All")) {
+            descGenderNeutralRestroomInfo += "All floors";
+        } else if (genderNeutralRestroomInfo.equals("None")) {
+            descGenderNeutralRestroomInfo += "None";
+        } else {
+            String[] genderNeutralRestroomFloors = genderNeutralRestroomInfo.split(" ");
+            if (genderNeutralRestroomFloors.length == 1) {
+                descGenderNeutralRestroomInfo = "Floor " + genderNeutralRestroomFloors[0];
+            } else if (genderNeutralRestroomFloors.length == 2) {
+                descGenderNeutralRestroomInfo = "Floors " + genderNeutralRestroomFloors[0] + " and " + genderNeutralRestroomFloors[1];
+            } else {
+                descGenderNeutralRestroomInfo = "Floors ";
+                for (int i = 0; i < genderNeutralRestroomFloors.length; i++) {
+                    if (genderNeutralRestroomFloors.length > 1 && i == genderNeutralRestroomFloors.length - 1) {
+                        descGenderNeutralRestroomInfo += "and " + genderNeutralRestroomFloors[i];
+                    } else {
+                        descGenderNeutralRestroomInfo += genderNeutralRestroomFloors[i] + ", ";
+                    }
+                }
+            }
+        }
+
         // Return description of given building
-        return CampusModel.getBuildingDescription(shortBuildingName);
+        return new String[]{shortBuildingName, elevatorInfo, descAccRestroomInfo, descGenderNeutralRestroomInfo};
     }
 
     /**

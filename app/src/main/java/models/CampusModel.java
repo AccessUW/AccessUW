@@ -395,7 +395,7 @@ public class CampusModel {
      * meaning there are no floors and 'All' meaning there are on all floors
      * @throws IllegalArgumentException if the given shortname is not valid
      */
-    public String getGenderNeutralRestroomFloors(String shortName) throws IllegalArgumentException {
+    public static String getGenderNeutralRestroomFloors(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getGenderNeutralRestroomFloors(shortName);
     }
 
@@ -405,7 +405,7 @@ public class CampusModel {
      * @return true if the building has an accessible restroom, otherwise false
      * @throws IllegalArgumentException if the given shortname is not valid
      */
-    public boolean hasAccessibleRestroom(String shortName) throws IllegalArgumentException {
+    public static boolean hasAccessibleRestroom(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.hasAccessibleRestroom(shortName);
     }
 
@@ -416,7 +416,7 @@ public class CampusModel {
      * meaning there are no floors and 'All' meaning there are on all floors
      * @throws IllegalArgumentException if the given shortname is not valid
      */
-    public String getAccessibleRestroomFloors(String shortName) throws IllegalArgumentException {
+    public static String getAccessibleRestroomFloors(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getAccessibleRestroomFloors(shortName);
     }
 

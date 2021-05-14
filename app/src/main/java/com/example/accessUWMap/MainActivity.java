@@ -71,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
+    private TextView descBuildingName;
+    private TextView descShortBuildingName;
+    private TextView descElevatorInfo;
+    private TextView descAccessibleRestroomInfo;
+    private TextView descGenderNeutralRestroomInfo;
 
     // Button for building the route
     private Button startNavRouteButton;
@@ -159,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
         // Set up building description layout and listeners
         buildDescLayout = findViewById(R.id.building_description_layout);
         findViewById(R.id.findRouteButton).setOnClickListener(view -> updateState(AppStates.BUILD_ROUTE));
+        descBuildingName = findViewById(R.id.buildingNameTextView);
+        descShortBuildingName = findViewById(R.id.buildingShortName);
+        descElevatorInfo = findViewById(R.id.elevatorInfoTextView);
+        descAccessibleRestroomInfo = findViewById(R.id.accRRTextView);
+        descGenderNeutralRestroomInfo = findViewById(R.id.gendNeuRRTextView);
 
         // Set up route-making layout
         startNavRouteButton = findViewById(R.id.startRouteButton);
@@ -214,6 +224,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Initialize the search results to populate the AutoCompleteTextView start and end location
+     * search bars.
+     */
+    private void initSearchResults() {
+        // TODO: Map short + long names to long names so that you can display "CDH: Condon Hall" so people
+        // can search for either one (the short or long name) and that result will come up, but then use
+        // the map to get just the long name to pass that into the updateStart() and updateEnd() functions
+
+        searchableLocations = new ArrayList<>();
+
+        // Acquire list of all buildings on campus
+        allBuildingNames = CampusPresenter.getAllBuildingNames();
+
+        for (String currLocation : allBuildingNames) {
+            searchableLocations.add(new LocationSearchResult(currLocation));
+        }
+    }
+
+    /**
      * Updater method that controls the current start location of the user's selected route
      * @param newStart is the new start location for the user's route
      */
@@ -227,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
         if (mState == AppStates.SEARCH) {
             updateState(AppStates.FOUND_START);
         }
+        buildBuildingDesc();
         moveMapToBuilding(CampusPresenter.getCurrentStart());
     }
 
@@ -281,21 +311,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize the search results to populate the AutoCompleteTextView start and end location
-     * search bars.
-     */
-    private void initSearchResults() {
-        searchableLocations = new ArrayList<>();
-
-        // Acquire list of all buildings on campus
-        allBuildingNames = CampusPresenter.getAllBuildingNames();
-
-        for (String currLocation : allBuildingNames) {
-            searchableLocations.add(new LocationSearchResult(currLocation));
-        }
-    }
-
-    /**
      * Updates the state of the app based on user activity so that the appropriate components
      * are (in)visible.
      *
@@ -309,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
             case SEARCH:
                 // Going forward through route-building steps
                 if (newState == AppStates.FOUND_START) {
-                    buildBuildingDesc();
                     buildDescLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -381,7 +395,23 @@ public class MainActivity extends AppCompatActivity {
      * at.
      */
     private void buildBuildingDesc() {
+        // Get start building
         String building = CampusPresenter.getCurrentStart();
+        // Get description of start building
+        String[] buildDesc = CampusPresenter.getDesc(building);
+
+        // Build strings for description
+        String descShortBuildingNameText = "Building code: " + buildDesc[0];
+        String descElevatorText = "Elevator access: " + buildDesc[1];
+        String descAccRestroomText = "Accessible restroom: " + buildDesc[2];
+        String descGenderNeutralRestroomText = "Gender-neutral restroom: " + buildDesc[3];
+
+        // Set text views
+        descBuildingName.setText(building);
+        descShortBuildingName.setText(descShortBuildingNameText);
+        descElevatorInfo.setText(descElevatorText);
+        descAccessibleRestroomInfo.setText(descAccRestroomText);
+        descGenderNeutralRestroomInfo.setText(descGenderNeutralRestroomText);
     }
 
     /**
@@ -391,6 +421,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void moveMapToBuilding(String longBuildingName) {
         // Get coordinate of roughly the center of the start building
+        //TODO: Utilize x,y of building in description data and get rid of this getRoughCenterOfBuilding method
         Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
         // Convert roughCenter coordinates from px to dp
         float centerX = roughCenter.x * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
