@@ -280,12 +280,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Selects nearest start or end building (depending on current app state) based on where the user clicked
+        String selectedBuilding = CampusPresenter.getClosestBuilding(x, y);
         if (mState == AppStates.SEARCH || mState == AppStates.FOUND_START) {
-            String closestStartBuilding = CampusPresenter.getClosestBuilding(x, y);
-            System.out.println("User click coords: " + x + ", " + y);
-            System.out.println("CLOSE: " + closestStartBuilding);
+            updateStartLocation(selectedBuilding);
+            // TODO: Set to SHORT: LONG instead of just long, like "SAV: Savery Hall"
+            startSearchBar.setText(CampusPresenter.getClosestBuilding(x, y));
         } else if (mState == AppStates.BUILD_ROUTE) {
-            String closestEndBuilding = CampusPresenter.getClosestBuilding(x, y);
+            updateEndLocation(selectedBuilding);
+            // TODO: Set to SHORT: LONG instead of just long, like "SAV: Savery Hall"
+            endSearchBar.setText(CampusPresenter.getClosestBuilding(x, y));
         }
     }
 
