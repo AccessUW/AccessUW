@@ -1,6 +1,7 @@
 package models;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Environment;
 
 import com.example.accessUWMap.R;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,12 +44,14 @@ public class CampusModel {
 
         InputStream entranceInputStream;
         InputStream pathInputStream;
+        InputStream buildingInputStream;
         try {
             entranceInputStream = context.getResources().openRawResource(R.raw.campus_entrance_data);
             pathInputStream = context.getResources().openRawResource(R.raw.campus_path_data);
+            buildingInputStream = context.getResources().openRawResource(R.raw.campus_descriptions_data);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("CampusModel init -- given filepath does not " +
+            throw new IllegalArgumentException("CampusModel init -- given resource context does not " +
                     "contain necessary entrance or path csv files");
         }
 
@@ -55,7 +59,76 @@ public class CampusModel {
         Set<Place> allPlaces = new HashSet<>();
         Map<String, String> shortToLongName = new HashMap<>();
         Map<String, String> longToShortName = new HashMap<>();
+        Map<String, String> longToGNFloors = new HashMap<>();
+        Map<String, String> longToAccFloors = new HashMap<>();
+        Map<String, Float> longToX = new HashMap<>();
+        Map<String, Float> longToY = new HashMap<>();
+
         Map<String, Building> shortToBuilding = new HashMap<>();
+
+        // Add the building data
+        BufferedReader buildingReader = new BufferedReader(new InputStreamReader(buildingInputStream));
+        buildingReader.readLine(); // Skip column titles
+        while (true) {
+            String row = buildingReader.readLine();
+            if (row == null) {
+                break;
+            }
+
+            String[] data = row.split(",");
+            // 0 : long name
+            // 1 : x
+            // 2 : y
+            // 3 : gn restroom floors (separated by ' ')
+            // 4 : accessible restroom floors (separated by ' ')
+            // 5 : elevator access to all floors? (All if yes)
+            if (data.length == 6) {
+                boolean incomplete = false;
+                for (int i = 0; i < 6; i++) {
+                    if (data[i].equals("")) {
+                        incomplete = true;
+                        break;
+                    }
+                }
+
+                if (incomplete) {
+                    continue;
+                }
+
+                String longName = data[0];
+                float x;
+                try {
+                    x = Float.parseFloat(data[1]);
+                } catch (NumberFormatException e) {
+                    x = 0;
+                }
+
+                float y;
+                try {
+                    y = Float.parseFloat(data[2]);
+                } catch (NumberFormatException e) {
+                    y = 0;
+                }
+
+                String gnFloors = data[3];
+                String accFloors = data[4];
+
+                // no need to check the last data point for elevator access, because all are true
+                /*
+                boolean elevator = true;
+                if (!data[5].equals("All")) {
+                    elevator = false;
+                }*/
+
+                longToAccFloors.put(longName, accFloors);
+                longToGNFloors.put(longName, gnFloors);
+                longToX.put(longName, x);
+                longToY.put(longName, y);
+            }
+
+        }
+        buildingReader.close();
+        buildingInputStream.close();
 
         // Add the entrance data
         BufferedReader entranceReader = new BufferedReader(new InputStreamReader(entranceInputStream));
@@ -73,24 +146,23 @@ public class CampusModel {
             // 3 : y
             // 4 : type of entrance (M = manual, A = assisted, U = unaccessible)
             if (data.length == 5) {
-                String shortName = data[0];
-                if (shortName.equals("")) { // Skip over incomplete data for now
+                boolean incomplete = false;
+                for (int i = 0; i < 5; i++) {
+                    if (data[i].equals("")) {
+                        incomplete = true;
+                        break;
+                    }
+                }
+
+                if (incomplete) {
                     continue;
                 }
-                // Remove the parentheses from short names
+
+                // Get the short name of the building
+                String shortName = data[0];
                 int parenIdx = shortName.indexOf('(');
                 if (parenIdx != -1) {
                     shortName = shortName.substring(0, parenIdx - 1);
-                }
-
-                if (!shortToBuilding.containsKey(shortName)) {
-                    // TODO: add correct restroom, elevator, and description when building data is done
-                    shortToBuilding.put(shortName, new Building(shortName, true, true, ""));
-                }
-
-                Building building = shortToBuilding.get(shortName);
-                if (building == null) {
-                    continue;
                 }
 
                 // Get the long name of the building
@@ -99,11 +171,30 @@ public class CampusModel {
                 if (parenIdx != -1) {
                     longName = longName.substring(0, parenIdx - 1);
                 }
+
+                if (!shortToBuilding.containsKey(shortName)) {
+                    // Add the building if we have all info on it, otherwise add a simple version of it
+                    if (longToX.containsKey(longName) && longToY.containsKey(longName) &&
+                            longToGNFloors.containsKey(longName) && longToAccFloors.containsKey(longName)) {
+                        shortToBuilding.put(shortName, new Building(shortName, longToX.get(longName),
+                                longToY.get(longName), longToGNFloors.get(longName),
+                                longToAccFloors.get(longName), true));
+                    } else {
+                        System.out.println("Adding placeholder building for: " + shortName);
+                        shortToBuilding.put(shortName, new Building(shortName, 0, 0, "", "", true));
+                    }
+                }
+
+                Building building = shortToBuilding.get(shortName);
+                if (building == null) {
+                    continue;
+                }
+
                 shortToLongName.put(shortName, longName);
                 longToShortName.put(longName, shortName);
 
                 // Add the entrance for this building
-                if (data[2].equals("") || data[3].equals("")) {
+                if (data[2].equals("0") || data[3].equals("0")) {
                     continue; // continue if there is no entrance coordinates
                 }
                 float x = Float.parseFloat(data[2]);
@@ -240,7 +331,7 @@ public class CampusModel {
      * @throws IllegalArgumentException if the given short name is invalid
      */
     public static String getBuildingDescription(String shortName) throws IllegalArgumentException {
-        return buildingInfoModel.getBuildingDescription(shortName);
+        return "";
     }
 
     /**
@@ -295,6 +386,38 @@ public class CampusModel {
      */
     public static boolean hasGenderNeutralRestroom(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.hasGenderNeutralRestroom(shortName);
+    }
+
+    /**
+     * Gets the floor numbers of all floors with a gender neutral restroom in this building
+     * @param shortName short name identifier of the building
+     * @return Space separated string of floors with gender neutral restroom, with the empty string
+     * meaning there are no floors and 'All' meaning there are on all floors
+     * @throws IllegalArgumentException if the given shortname is not valid
+     */
+    public String getGenderNeutralRestroomFloors(String shortName) throws IllegalArgumentException {
+        return buildingInfoModel.getGenderNeutralRestroomFloors(shortName);
+    }
+
+    /**
+     * Get whether or not the given building has an accessible restroom
+     * @param shortName short name identifier of the building
+     * @return true if the building has an accessible restroom, otherwise false
+     * @throws IllegalArgumentException if the given shortname is not valid
+     */
+    public boolean hasAccessibleRestroom(String shortName) throws IllegalArgumentException {
+        return buildingInfoModel.hasAccessibleRestroom(shortName);
+    }
+
+    /**
+     * Gets the floor numbers of all floors with an accessible restroom in this building
+     * @param shortName short name identifier of the building
+     * @return Space separated string of floors with an accessible restroom, with the empty string
+     * meaning there are no floors and 'All' meaning there are on all floors
+     * @throws IllegalArgumentException if the given shortname is not valid
+     */
+    public String getAccessibleRestroomFloors(String shortName) throws IllegalArgumentException {
+        return buildingInfoModel.getAccessibleRestroomFloors(shortName);
     }
 
     /**

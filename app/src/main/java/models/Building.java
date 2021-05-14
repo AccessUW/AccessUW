@@ -3,6 +3,8 @@ package models;
 import android.os.Build;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,30 +13,34 @@ import java.util.Set;
  * assisted entrances and gender neutral restrooms
  */
 public class Building {
-    private float x;
-    private float y;
-    private String shortName;
-    private boolean genderNeutralRestroom;
-    private boolean elevator;
-    private Set<Place> entrances;
-    private Set<Place> accessibleEntrances;
-    private String description;
+    private final float x;
+    private final float y;
+    private final String shortName;
+    private final String genderNeutralRestrooms;
+    private final String accessibleRestrooms;
+    private final boolean elevator;
+    private final Set<Place> entrances;
+    private final Set<Place> accessibleEntrances;
 
     /**
      * Creates a new Building object
      * @param shortName short name identifier of the building
-     * @param restroom true if the building has gender neutral restrooms
+     * @param x x coordinate of the building
+     * @param y y coordinate of the building
+     * @param gNRestroomFloors space separated string of floors with gender neutral restrooms
+     * @param accessibleRestroomFloors space separated string of floors with accessible restrooms
      * @param elevator true if the building has an elevator
-     * @param description description of this building
      */
-    public Building(String shortName, boolean restroom, boolean elevator,
-                    String description) {
+    public Building(String shortName, float x, float y, String gNRestroomFloors,
+                    String accessibleRestroomFloors, boolean elevator) {
         this.shortName = shortName;
-        this.genderNeutralRestroom = restroom;
+        this.genderNeutralRestrooms = gNRestroomFloors;
+        this.accessibleRestrooms = accessibleRestroomFloors;
         this.elevator = elevator;
-        this.description = description;
         this.entrances = new HashSet<>();
         this.accessibleEntrances = new HashSet<>();
+        this.x = x;
+        this.y = y;
     }
 
     /**
@@ -66,7 +72,33 @@ public class Building {
      * @return true if the building has a gender neutral restroom, false otherwise
      */
     public boolean hasGenderNeutralRestroom() {
-        return genderNeutralRestroom;
+        return !this.genderNeutralRestrooms.equals("None");
+    }
+
+    /**
+     * Gets the floor numbers of all floors with a gender neutral restroom in this building
+     * @return Space separated string of floors with gender neutral restroom, with "None"
+     * meaning there are no floors and 'All' meaning there are on all floors
+     */
+    public String getGenderNeutralRestroomFloors() {
+        return this.genderNeutralRestrooms;
+    }
+
+    /**
+     * Returns whether the building has an accessible restroom or not
+     * @return true if the building has an accessible restroom, false otherwise
+     */
+    public boolean hasAccessibleRestroom() {
+        return !this.accessibleRestrooms.equals("None");
+    }
+
+    /**
+     * Gets the floor numbers of all floors with an accessible restroom in this building
+     * @return Space separated string of floors with an accessible restroom, with "None"
+     * meaning there are no floors and 'All' meaning there are on all floors
+     */
+    public String getAccessibleRestroomFloors() {
+        return this.accessibleRestrooms;
     }
 
     /**
@@ -94,14 +126,6 @@ public class Building {
     }
 
     /**
-     * Get the description of this building
-     * @return short description of this building
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
      * Adds an entrance to this building, updating this building's x, y position
      * @param entrance Place of the entrance we want to add to this building
      * @param assisted true if the entrance is assisted, false otherwise
@@ -112,12 +136,6 @@ public class Building {
             if (assisted) {
                 accessibleEntrances.add(entrance);
             }
-
-            // Recalculate Building's x, y by averaging entrances
-            float xSum = (x * entrances.size() - 1) + entrance.getX();
-            float ySum = (y * entrances.size() - 1) + entrance.getY();
-            x = xSum / entrances.size();
-            y = ySum / entrances.size();
         }
     }
 
@@ -138,9 +156,11 @@ public class Building {
 
         Building other = (Building) o;
 
-        return this.shortName.equals(other.shortName) && this.description.equals(other.description)
-                && this.genderNeutralRestroom == other.genderNeutralRestroom && this.elevator ==
-                other.elevator;
+        return this.shortName.equals(other.shortName) &&
+                this.genderNeutralRestrooms.equals(other.genderNeutralRestrooms) &&
+                this.accessibleRestrooms.equals(other.accessibleRestrooms) &&
+                this.entrances.equals(other.entrances) &&
+                this.elevator == other.elevator;
     }
 
     /**
@@ -149,7 +169,7 @@ public class Building {
      */
     @Override
     public int hashCode() {
-        return this.shortName.length() + this.description.length() + (genderNeutralRestroom ? 1 : 0) +
-                (elevator ? 3 : 0);
+        return this.shortName.length() + this.genderNeutralRestrooms.length() +
+                this.accessibleRestrooms.length() + this.entrances.size() + (elevator ? 3 : 0);
     }
 }
