@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
     // List of buildings on campus
     private Map<String, String> longToShortAndLong; // Long names of buildings mapped to their short and long names (e.g. Savery Hall -> SAV: Savery Hall)
     private Map<String, String> shortAndLongToLong; // Short and long building names mapped to their long names
-    private List<LocationSearchResult> searchableLocations; // Set of search result objects
+    private List<LocationSearchResult> searchableStartLocations; // Set of start location search result objects
+    private List<LocationSearchResult> searchableEndLocations; // Set of end location search result objects
 
     ////////////////////////////////////////////////////////////
     ///     Methods
@@ -142,13 +143,15 @@ public class MainActivity extends AppCompatActivity {
         routeFilterLayout = findViewById(R.id.routeFilterButtonsLayout);
 
         // Set up search bars' auto-complete functionality for start and end locations
-        AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
-                this, android.R.layout.select_dialog_item, searchableLocations);
+        AutoCompleteSearchAdapter startSearchAdapter = new AutoCompleteSearchAdapter(
+                this, android.R.layout.select_dialog_item, searchableStartLocations);
         startSearchBar = findViewById(R.id.searchStartView);
-        startSearchBar.setAdapter(adapter);
+        startSearchBar.setAdapter(startSearchAdapter);
         startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
+        AutoCompleteSearchAdapter endSearchAdapter = new AutoCompleteSearchAdapter(
+                this, android.R.layout.select_dialog_item, searchableEndLocations);
         endSearchBar = findViewById(R.id.searchEndView);
-        endSearchBar.setAdapter(adapter);
+        endSearchBar.setAdapter(endSearchAdapter);
         endSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
 
         // Set up start and end search bar listeners for when user selects an option
@@ -247,7 +250,8 @@ public class MainActivity extends AppCompatActivity {
      * search bars.
      */
     private void initSearchResults() {
-        searchableLocations = new ArrayList<>();
+        searchableStartLocations = new ArrayList<>();
+        searchableEndLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
         Map<String, String> shortToLongBuildingNames = CampusPresenter.getAllBuildingNames();
@@ -259,8 +263,12 @@ public class MainActivity extends AppCompatActivity {
             String shortAndLongName = currShortName + ": " + currLongName;
             longToShortAndLong.put(currLongName, shortAndLongName);
             shortAndLongToLong.put(shortAndLongName, currLongName);
-            searchableLocations.add(new LocationSearchResult(shortAndLongName));
+            searchableStartLocations.add(new LocationSearchResult(shortAndLongName));
+            searchableEndLocations.add(new LocationSearchResult(shortAndLongName));
         }
+
+        // Add gender-neutral restroom as one of the end locations
+        searchableEndLocations.add(new LocationSearchResult(getString(R.string.gender_neutral_restroom_search_result)));
     }
 
     /**
@@ -300,8 +308,6 @@ public class MainActivity extends AppCompatActivity {
      * @param newStartShortAndLong is the new start location for the user's route
      */
     public void updateStartLocation(String newStartShortAndLong) {
-        System.out.println("START: " + newStartShortAndLong);
-        System.out.println("LONG: " + shortAndLongToLong.get(newStartShortAndLong));
         // Ensure valid start input to send to presenter
         if (shortAndLongToLong.containsKey(newStartShortAndLong)) {
             CampusPresenter.updateStart(shortAndLongToLong.get(newStartShortAndLong));
@@ -320,11 +326,21 @@ public class MainActivity extends AppCompatActivity {
      * @param newEndShortAndLong is the new end location for the user's route
      */
     public void updateEndLocation(String newEndShortAndLong) {
-        // Ensure valid end input to send to presenter
-        if (shortAndLongToLong.containsKey(newEndShortAndLong)) {
-            CampusPresenter.updateEnd(shortAndLongToLong.get(newEndShortAndLong));
+        // Check if the result is for the nearest gender-neutral restroom or specific location
+        if (newEndShortAndLong.equals(getString(R.string.gender_neutral_restroom_search_result))) { // Nearest gender-neutral bathroom
+            String startLocation = CampusPresenter.getCurrentStart();
+            Point startPoint = CampusPresenter.getBuildingCoordinates(startLocation);
+            String gnrrDestination = CampusPresenter.getClosestGNBathroom(startPoint.x, startPoint.y);
+            CampusPresenter.updateEnd(gnrrDestination);
+            moveMapToBuilding(gnrrDestination);
+        } else { // Specific location
+            // Ensure valid end input to send to presenter
+            if (shortAndLongToLong.containsKey(newEndShortAndLong)) {
+                String longNameDestination = shortAndLongToLong.get(newEndShortAndLong);
+                CampusPresenter.updateEnd(longNameDestination);
+                moveMapToBuilding(longNameDestination);
+            }
         }
-        moveMapToBuilding(CampusPresenter.getCurrentEnd());
     }
 
     /**
