@@ -475,17 +475,11 @@ public class MainActivity extends AppCompatActivity {
      * @param longBuildingName is the long version of the desired building name to center the map on.
      */
     private void moveMapToBuilding(String longBuildingName) {
-        // Get coordinate of roughly the center of the start building
-        //TODO: Utilize x,y of building in description data and get rid of this getRoughCenterOfBuilding method
-        Point roughCenter = new Point(0, 0);
-        try {
-            roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
-        } catch(IllegalArgumentException e) {
-            System.out.println(longBuildingName);
-        }
+        // Get coordinates of the given building
+        Point buildingCoords = CampusPresenter.getBuildingCoordinates(longBuildingName);
         // Convert roughCenter coordinates from px to dp
-        float centerX = pxToDP(roughCenter.x);
-        float centerY = pxToDP(roughCenter.y);
+        float centerX = pxToDP(buildingCoords.x);
+        float centerY = pxToDP(buildingCoords.y);
         // Calculate offsets of screen width/height to center start building in view
         //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
         //        user sets the end location takes up more space at the top

@@ -119,48 +119,6 @@ public class CampusPresenter {
     }
 
     /**
-     * Get coordinates (as a point) of roughly the center of the given building.
-     *
-     * @param longBuildingName is the long version of the desired building name
-     * @throws IllegalArgumentException if longBuildingName is not a valid building name
-     * @return point representing coordinates of roughly the center of the given building
-     */
-    public static Point getRoughCenterOfBuilding(String longBuildingName) {
-        if (!buildingShortToLong.containsValue(longBuildingName)) {
-            throw new IllegalArgumentException();
-        }
-
-        Set<Place> buildingEntrances = CampusModel.getEntrances(CampusModel.getShortName(longBuildingName), false);
-
-        // Get top-left-most and bottom-right-most entrances
-        Place topLeftPlace = null;
-        Place botRightPlace = null;
-        for (Place currPlace : buildingEntrances) {
-            if (topLeftPlace == null || (currPlace.getX() + currPlace.getY()) < (topLeftPlace.getX() + topLeftPlace.getY())) {
-                topLeftPlace = currPlace;
-            }
-            if (botRightPlace == null || (currPlace.getX() + currPlace.getY()) > (botRightPlace.getX() + botRightPlace.getY())) {
-                botRightPlace = currPlace;
-            }
-        }
-
-        // If only 1 entrance, return that entrance's coordinates. Otherwise, return average of topLeft and botRight entrance's
-        // coordinates.
-        try {
-            if (topLeftPlace.equals(botRightPlace)) {
-                return new Point((int) topLeftPlace.getX(), (int) topLeftPlace.getY());
-            } else {
-                int roughX = (int) (topLeftPlace.getX() + botRightPlace.getX()) / 2;
-                int roughY = (int) (topLeftPlace.getY() + botRightPlace.getY()) / 2;
-                return new Point(roughX, roughY);
-            }
-        } catch (NullPointerException e) {
-            System.out.println(longBuildingName);
-            return new Point(0,0);
-        }
-    }
-
-    /**
      * Takes a long building name and updates currentStart.
      *
      * @param startBuildingName is long building name for start location
@@ -362,5 +320,17 @@ public class CampusPresenter {
      */
     public static Map<String, String> getAllBuildingNames() {
         return buildingShortToLong;
+    }
+
+    /**
+     * Returns x,y coordinates of the given building as a point.
+     *
+     * @param longName is long building name for given location
+     * @throws IllegalArgumentException if longName is not valid
+     *
+     * @return coordinates of building with the given long name as a point
+     */
+    public static Point getBuildingCoordinates(String longName) {
+        return CampusModel.getBuildingCoordinates(longName);
     }
 }

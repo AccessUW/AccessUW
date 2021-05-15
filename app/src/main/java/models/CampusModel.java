@@ -26,6 +26,7 @@ public class CampusModel {
     private static CampusTreeModel campusTreeModel;
     private static RouteFinderModel routeFinderModel;
     private static BuildingInfoModel buildingInfoModel;
+    private static Map<String, Point> longNameToPoint;
 
     /**
      * This method initializes a CampusModel program if it hasn't been initialized already
@@ -65,6 +66,7 @@ public class CampusModel {
         Map<String, Float> longToY = new HashMap<>();
 
         Map<String, Building> shortToBuilding = new HashMap<>();
+        longNameToPoint = new HashMap<>();
 
         // Add the building data
         BufferedReader buildingReader = new BufferedReader(new InputStreamReader(buildingInputStream));
@@ -120,6 +122,9 @@ public class CampusModel {
                     elevator = false;
                 }*/
 
+                // Populate map of short name -> point data
+                longNameToPoint.put(longName, new Point((int) x, (int) y));
+                // Store relevant building info
                 longToAccFloors.put(longName, accFloors);
                 longToGNFloors.put(longName, gnFloors);
                 longToX.put(longName, x);
@@ -418,6 +423,16 @@ public class CampusModel {
      */
     public static String getAccessibleRestroomFloors(String shortName) throws IllegalArgumentException {
         return buildingInfoModel.getAccessibleRestroomFloors(shortName);
+    }
+
+    /**
+     * Gets the coordinates of the given building.
+     * @param longName long name identifier of the building
+     * @return Point representing x,y coordinates of the given building
+     * @throws IllegalArgumentException if the given longName is not valid
+     */
+    public static Point getBuildingCoordinates(String longName) throws IllegalArgumentException {
+        return longNameToPoint.get(longName);
     }
 
     /**
