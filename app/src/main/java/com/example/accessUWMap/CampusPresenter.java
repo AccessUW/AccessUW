@@ -6,7 +6,9 @@ import android.graphics.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import models.CampusModel;
@@ -34,7 +36,7 @@ public class CampusPresenter {
     private static boolean noStairs; // Toggle whether route can have stairs
     private static boolean assistedEntrance; // Toggle whether an assisted entrance is required
     private static List<String> recentLocations; // Recently searched locations
-    private static Set<String> buildingNames; // List of all building long names
+    private static Map<String, String> buildingShortToLong; // List of all building long names
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -49,11 +51,16 @@ public class CampusPresenter {
         CampusModel.init(context);
 
         // Init Presenter variables
-        buildingNames = CampusModel.getAllBuildingNames();
         recentLocations = new ArrayList<>();
         wheelchair = false;
         noStairs = false;
         assistedEntrance = false;
+
+        // Initialize map of short to long names
+        buildingShortToLong = new HashMap<>();
+        for (String currBuilding : CampusModel.getAllBuildingNames()) {
+            buildingShortToLong.put(CampusModel.getShortName(currBuilding), currBuilding);
+        }
     }
 
     /**
@@ -119,7 +126,7 @@ public class CampusPresenter {
      * @return point representing coordinates of roughly the center of the given building
      */
     public static Point getRoughCenterOfBuilding(String longBuildingName) {
-        if (!buildingNames.contains(longBuildingName)) {
+        if (!buildingShortToLong.containsValue(longBuildingName)) {
             throw new IllegalArgumentException();
         }
 
@@ -162,7 +169,7 @@ public class CampusPresenter {
      */
     public static void updateStart(String startBuildingName) {
         if (startBuildingName == null || startBuildingName.length() < 1 ||
-            !buildingNames.contains(startBuildingName)) {
+            !buildingShortToLong.containsValue(startBuildingName)) {
             throw new IllegalArgumentException();
         }
         currentStart = startBuildingName;
@@ -177,7 +184,7 @@ public class CampusPresenter {
      */
     public static void updateEnd(String endBuildingName) {
         if (endBuildingName == null || endBuildingName.length() < 1 ||
-                !buildingNames.contains(endBuildingName)) {
+                !buildingShortToLong.containsValue(endBuildingName)) {
             throw new IllegalArgumentException();
         }
         currentEnd = endBuildingName;
@@ -353,7 +360,7 @@ public class CampusPresenter {
      * Gets the long names of all buildings on the UW campus
      * @return all long names of UW campus buildings
      */
-    public static Set<String> getAllBuildingNames() {
-        return CampusModel.getAllBuildingNames();
+    public static Map<String, String> getAllBuildingNames() {
+        return buildingShortToLong;
     }
 }

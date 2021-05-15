@@ -27,9 +27,10 @@ import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
+import java.util.Map;
 
 import models.Place;
 
@@ -96,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
     private Canvas routeCanvas;
 
     // List of buildings on campus
-    private Set<String> allBuildingNames; // Names of buildings
+    private Map<String, String> longToShortAndLong; // Long names of buildings mapped to their short and long names (e.g. Savery Hall -> SAV: Savery Hall)
+    private Map<String, String> shortAndLongToLong; // Short and long building names mapped to their long names
     private List<LocationSearchResult> searchableLocations; // Set of search result objects
 
     ////////////////////////////////////////////////////////////
@@ -245,17 +247,19 @@ public class MainActivity extends AppCompatActivity {
      * search bars.
      */
     private void initSearchResults() {
-        // TODO: Map short + long names to long names so that you can display "CDH: Condon Hall" so people
-        // can search for either one (the short or long name) and that result will come up, but then use
-        // the map to get just the long name to pass that into the updateStart() and updateEnd() functions
-
         searchableLocations = new ArrayList<>();
 
         // Acquire list of all buildings on campus
-        allBuildingNames = CampusPresenter.getAllBuildingNames();
+        Map<String, String> shortToLongBuildingNames = CampusPresenter.getAllBuildingNames();
+        longToShortAndLong = new HashMap<>();
+        shortAndLongToLong = new HashMap<>();
 
-        for (String currLocation : allBuildingNames) {
-            searchableLocations.add(new LocationSearchResult(currLocation));
+        for (String currShortName : shortToLongBuildingNames.keySet()) {
+            String currLongName = shortToLongBuildingNames.get(currShortName);
+            String shortAndLongName = currShortName + ": " + currLongName;
+            longToShortAndLong.put(currLongName, shortAndLongName);
+            shortAndLongToLong.put(shortAndLongName, currLongName);
+            searchableLocations.add(new LocationSearchResult(shortAndLongName));
         }
     }
 
@@ -281,25 +285,26 @@ public class MainActivity extends AppCompatActivity {
 
         // Selects nearest start or end building (depending on current app state) based on where the user clicked
         String selectedBuilding = CampusPresenter.getClosestBuilding(x, y);
+        String selectedBuildingShortAndLongName = longToShortAndLong.get(selectedBuilding);
         if (mState == AppStates.SEARCH || mState == AppStates.FOUND_START) {
-            updateStartLocation(selectedBuilding);
-            // TODO: Set to SHORT: LONG instead of just long, like "SAV: Savery Hall"
-            startSearchBar.setText(CampusPresenter.getClosestBuilding(x, y));
+            updateStartLocation(selectedBuildingShortAndLongName);
+            startSearchBar.setText(selectedBuildingShortAndLongName);
         } else if (mState == AppStates.BUILD_ROUTE) {
-            updateEndLocation(selectedBuilding);
-            // TODO: Set to SHORT: LONG instead of just long, like "SAV: Savery Hall"
-            endSearchBar.setText(CampusPresenter.getClosestBuilding(x, y));
+            updateEndLocation(selectedBuildingShortAndLongName);
+            endSearchBar.setText(selectedBuildingShortAndLongName);
         }
     }
 
     /**
      * Updater method that controls the current start location of the user's selected route
-     * @param newStart is the new start location for the user's route
+     * @param newStartShortAndLong is the new start location for the user's route
      */
-    public void updateStartLocation(String newStart) {
+    public void updateStartLocation(String newStartShortAndLong) {
+        System.out.println("START: " + newStartShortAndLong);
+        System.out.println("LONG: " + shortAndLongToLong.get(newStartShortAndLong));
         // Ensure valid start input to send to presenter
-        if (allBuildingNames.contains(newStart)) {
-            CampusPresenter.updateStart(newStart);
+        if (shortAndLongToLong.containsKey(newStartShortAndLong)) {
+            CampusPresenter.updateStart(shortAndLongToLong.get(newStartShortAndLong));
         }
 
         // Update state to FOUND_START if currently in START state
@@ -312,12 +317,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Updater method that controls the current end location of the user's selected route
-     * @param newEnd is the new end location for the user's route
+     * @param newEndShortAndLong is the new end location for the user's route
      */
-    public void updateEndLocation(String newEnd) {
+    public void updateEndLocation(String newEndShortAndLong) {
         // Ensure valid end input to send to presenter
-        if (allBuildingNames.contains(newEnd)) {
-            CampusPresenter.updateEnd(newEnd);
+        if (shortAndLongToLong.containsKey(newEndShortAndLong)) {
+            CampusPresenter.updateEnd(shortAndLongToLong.get(newEndShortAndLong));
         }
         moveMapToBuilding(CampusPresenter.getCurrentEnd());
     }
@@ -472,7 +477,12 @@ public class MainActivity extends AppCompatActivity {
     private void moveMapToBuilding(String longBuildingName) {
         // Get coordinate of roughly the center of the start building
         //TODO: Utilize x,y of building in description data and get rid of this getRoughCenterOfBuilding method
-        Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
+        Point roughCenter = new Point(0, 0);
+        try {
+            roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
+        } catch(IllegalArgumentException e) {
+            System.out.println(longBuildingName);
+        }
         // Convert roughCenter coordinates from px to dp
         float centerX = pxToDP(roughCenter.x);
         float centerY = pxToDP(roughCenter.y);
