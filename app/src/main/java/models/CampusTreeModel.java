@@ -114,7 +114,7 @@ public class CampusTreeModel {
         if (buildingRoot == null) {
             throw new IllegalStateException("findClosestBuilding -- building tree is empty");
         }
-        BuildingTreeNode closestNode = (BuildingTreeNode) getClosestNode(x, y, buildingRoot, null, true);
+        BuildingTreeNode closestNode = (BuildingTreeNode) getClosestNode(x, y, buildingRoot, genderNeutralRestroom, null, true);
         Building closest = closestNode.getBuilding();
         return closest.getShortName();
     }
@@ -130,7 +130,7 @@ public class CampusTreeModel {
         if (placeRoot == null) {
             throw new IllegalStateException("findClosestPlace -- place tree is empty");
         }
-        PlaceTreeNode closestNode = (PlaceTreeNode) getClosestNode(x, y, placeRoot, null, true);
+        PlaceTreeNode closestNode = (PlaceTreeNode) getClosestNode(x, y, placeRoot, false, null, true);
         return closestNode.getPlace();
     }
 
@@ -139,21 +139,34 @@ public class CampusTreeModel {
      * @param x x position we want to find closest to
      * @param y y position we want to find closest to
      * @param curr current node we are examining
+     * @param genderNeutralRestroom whether we are looking for a building with a genderNeutralRestroom or not
      * @param best current best node we have encountered
      * @return TreeNode closest to the given x, y coordinates
      */
-    private TreeNode getClosestNode(float x, float y, TreeNode curr, TreeNode best, boolean searchX) {
+    private TreeNode getClosestNode(float x, float y, TreeNode curr, boolean genderNeutralRestroom, TreeNode best, boolean searchX) {
         if (curr == null) {
             return best;
         }
 
         if (best == null) {
-            best = curr;
+            if (genderNeutralRestroom) { // Only update best if curr has genderNeutralRestroom
+                if (((BuildingTreeNode) curr).getBuilding().hasGenderNeutralRestroom()) {
+                    best = curr;
+                }
+            } else { // If not looking for genderNeutralRestroom, just update best with curr
+                best = curr;
+            }
         }
 
         // if current node is better than out current best, update it
         if (distanceTo(curr, x, y) < distanceTo(best, x, y)) {
-            best = curr;
+            if (genderNeutralRestroom) { // Only update best if curr has genderNeutralRestroom
+                if (((BuildingTreeNode) curr).getBuilding().hasGenderNeutralRestroom()) {
+                    best = curr;
+                }
+            } else { // If not looking for genderNeutralRestroom, just update best with curr
+                best = curr;
+            }
         }
         // good side is defined as the side we would place (x, y) if adding it to the tree
         TreeNode goodSide;
@@ -174,13 +187,13 @@ public class CampusTreeModel {
         }
 
         // Update our best by searching through the good side of the tree
-        best = getClosestNode(x, y, goodSide, best, !searchX);
+        best = getClosestNode(x, y, goodSide, genderNeutralRestroom, best, !searchX);
 
         // Check if the bad side has a potentially closer match
         if (searchX && distanceTo(best, x, y) > distanceToCoordinates(x, y, curr.getX(), y)) {
-            best = getClosestNode(x, y, badSide, best, false);
+            best = getClosestNode(x, y, badSide, genderNeutralRestroom, best, false);
         } else if (!searchX && distanceTo(best, x, y) > distanceToCoordinates(x, y, x, curr.getY())) {
-            best = getClosestNode(x, y, badSide, best, true);
+            best = getClosestNode(x, y, badSide, genderNeutralRestroom, best, true);
         }
 
         return best;
