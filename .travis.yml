@@ -45,7 +45,7 @@ before-script:
   - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis -c 50M
   - adb devices
   - emulator -avd test -no-audio -no-window -verbose &
-  - android-wait-for-emulator
+  - sleep 300
   - adb shell input keyevent 82 &
 
 script:
