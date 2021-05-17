@@ -151,11 +151,7 @@ public class RouteFinderModel {
                         distTo.put(q, thisDistance);
 
                         // Change or add q to the fringe
-                        if (fringe.contains(q)) {
-                            fringe.updatePriority(q, thisDistance + heuristic(q, ends));
-                        } else {
-                            fringe.add(q, thisDistance + heuristic(q, ends));
-                        }
+                        fringe.updatePriority(q, thisDistance + heuristic(q, ends));
                     }
                 }
             }

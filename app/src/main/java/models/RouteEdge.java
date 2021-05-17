@@ -74,6 +74,6 @@ public class RouteEdge {
         for (Place end : this.ends) {
             code += end.hashCode();
         }
-        return (int) (this.distance + code);
+        return code;
     }
 }
