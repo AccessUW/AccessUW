@@ -24,12 +24,16 @@ public class PlacePriorityQueueTest {
         assertEquals(p, ppq.getMin());
         assertFalse(ppq.isEmpty());
         assertEquals(1, ppq.getSize());
+        assertTrue(ppq.contains(p));
+        assertFalse(ppq.contains(q));
 
         ppq.add(q, 1);
 
         assertEquals(q, ppq.getMin());
         assertFalse(ppq.isEmpty());
         assertEquals(2, ppq.getSize());
+        assertTrue(ppq.contains(p));
+        assertTrue(ppq.contains(q));
 
         Place q1 = ppq.popMin();
 
@@ -37,12 +41,32 @@ public class PlacePriorityQueueTest {
         assertFalse(ppq.isEmpty());
         assertEquals(1, ppq.getSize());
         assertEquals(p, ppq.getMin());
+        assertTrue(ppq.contains(p));
+        assertFalse(ppq.contains(q));
 
         Place p1 = ppq.popMin();
 
         assertEquals(p, p1);
         assertTrue(ppq.isEmpty());
         assertEquals(0, ppq.getSize());
+        assertFalse(ppq.contains(p));
+        assertFalse(ppq.contains(q));
+    }
+
+    @Test
+    public void testMedium() {
+        PlacePriorityQueue ppq = new PlacePriorityQueue();
+
+        for (int i = 1; i < 10; i++) {
+            ppq.add(new Place(i, i), i);
+        }
+
+        for (int i = 1; i < 10; i++) {
+            Place p = new Place(i, i);
+            assertEquals(p, ppq.popMin());
+        }
+
+        assertTrue(ppq.isEmpty());
     }
 
     @Test
