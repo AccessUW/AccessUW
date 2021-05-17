@@ -27,9 +27,10 @@ import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
+import java.util.Map;
 
 import models.Place;
 
@@ -40,9 +41,11 @@ public class MainActivity extends AppCompatActivity {
     ////////////////////////////////////////////////////////////
     ///     Constants
     ////////////////////////////////////////////////////////////
-    private static final int CAMPUS_MAP_IMAGE_WIDTH = 4330;
-    private static final int CAMPUS_MAP_IMAGE_HEIGHT = 2964;
+    private static final int CAMPUS_MAP_IMAGE_WIDTH_PX = 4330;
+    private static final int CAMPUS_MAP_IMAGE_HEIGHT_PX = 2964;
     private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
+    private static final int CLICK_NEAREST_MOVEMENT_THRESHOLD = 20;
+    private static final int VERTICAL_OFFSET_CLICK_ON_MAP = 30;
 
 
     ////////////////////////////////////////////////////////////
@@ -61,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     // Scroll views for moving on the map
     private ScrollView vScroll;
     private HorizontalScrollView hScroll;
+    // Track where and for how long user has been pressing to see if they're doing a long press
+    private int pressDownX;
+    private int pressDownY;
 
     // Views for displaying search bars and route filters
     private LinearLayout startSearchBarLayout;
@@ -71,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
+    private TextView descBuildingName;
+    private TextView descShortBuildingName;
+    private TextView descElevatorInfo;
+    private TextView descAccessibleRestroomInfo;
+    private TextView descGenderNeutralRestroomInfo;
 
     // Button for building the route
     private Button startNavRouteButton;
@@ -86,8 +97,10 @@ public class MainActivity extends AppCompatActivity {
     private Canvas routeCanvas;
 
     // List of buildings on campus
-    private Set<String> allBuildingNames; // Names of buildings
-    private List<LocationSearchResult> searchableLocations; // Set of search result objects
+    private Map<String, String> longToShortAndLong; // Long names of buildings mapped to their short and long names (e.g. Savery Hall -> SAV: Savery Hall)
+    private Map<String, String> shortAndLongToLong; // Short and long building names mapped to their long names
+    private List<LocationSearchResult> searchableStartLocations; // Set of start location search result objects
+    private List<LocationSearchResult> searchableEndLocations; // Set of end location search result objects
 
     ////////////////////////////////////////////////////////////
     ///     Methods
@@ -130,13 +143,15 @@ public class MainActivity extends AppCompatActivity {
         routeFilterLayout = findViewById(R.id.routeFilterButtonsLayout);
 
         // Set up search bars' auto-complete functionality for start and end locations
-        AutoCompleteSearchAdapter adapter = new AutoCompleteSearchAdapter(
-                this, android.R.layout.select_dialog_item, searchableLocations);
+        AutoCompleteSearchAdapter startSearchAdapter = new AutoCompleteSearchAdapter(
+                this, android.R.layout.select_dialog_item, searchableStartLocations);
         startSearchBar = findViewById(R.id.searchStartView);
-        startSearchBar.setAdapter(adapter);
+        startSearchBar.setAdapter(startSearchAdapter);
         startSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
+        AutoCompleteSearchAdapter endSearchAdapter = new AutoCompleteSearchAdapter(
+                this, android.R.layout.select_dialog_item, searchableEndLocations);
         endSearchBar = findViewById(R.id.searchEndView);
-        endSearchBar.setAdapter(adapter);
+        endSearchBar.setAdapter(endSearchAdapter);
         endSearchBar.setThreshold(AUTO_COMPLETE_FILTER_THRESHOLD);
 
         // Set up start and end search bar listeners for when user selects an option
@@ -159,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
         // Set up building description layout and listeners
         buildDescLayout = findViewById(R.id.building_description_layout);
         findViewById(R.id.findRouteButton).setOnClickListener(view -> updateState(AppStates.BUILD_ROUTE));
+        descBuildingName = findViewById(R.id.buildingNameTextView);
+        descShortBuildingName = findViewById(R.id.buildingShortName);
+        descElevatorInfo = findViewById(R.id.elevatorInfoTextView);
+        descAccessibleRestroomInfo = findViewById(R.id.accRRTextView);
+        descGenderNeutralRestroomInfo = findViewById(R.id.gendNeuRRTextView);
 
         // Set up route-making layout
         startNavRouteButton = findViewById(R.id.startRouteButton);
@@ -174,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         // Get routeView
         routeView = (ImageView) findViewById(R.id.routeView);
         // Initialize bitmap
-        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH, CAMPUS_MAP_IMAGE_HEIGHT,
+        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX, CAMPUS_MAP_IMAGE_HEIGHT_PX,
                 Bitmap.Config.ARGB_8888);
         routeView.setImageBitmap(routeBitmap);
         // Initialize canvas from bitmap
@@ -192,6 +212,9 @@ public class MainActivity extends AppCompatActivity {
                 // Get current x,y on screen of where user clicks
                 mx = event.getX();
                 my = event.getY();
+                // Track where user first clicks down
+                pressDownX = (int) mx;
+                pressDownY = (int) my;
                 break;
             case MotionEvent.ACTION_MOVE:
                 // Scroll on the map based on user's finger movement
@@ -208,38 +231,116 @@ public class MainActivity extends AppCompatActivity {
                 curY = event.getY();
                 vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
                 hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                // If minimal x,y movement, trigger click choose building on map
+                if ((Math.abs((event.getX() - pressDownX)) <= CLICK_NEAREST_MOVEMENT_THRESHOLD) &&
+                        (Math.abs((event.getY() - pressDownY)) <= CLICK_NEAREST_MOVEMENT_THRESHOLD)) {
+                    // Get coordinates of where the user pressed in terms of pixels then pass it to select
+                    // the nearest building
+                    int mapClickX = (int) (dpToPX(hScroll.getScrollX() + mx));
+                    int mapClickY = (int) (dpToPX(vScroll.getScrollY() + my) - VERTICAL_OFFSET_CLICK_ON_MAP);
+                    clickChooseBuilding(mapClickX, mapClickY);
+                }
                 break;
         }
         return true;
     }
 
     /**
-     * Updater method that controls the current start location of the user's selected route
-     * @param newStart is the new start location for the user's route
+     * Initialize the search results to populate the AutoCompleteTextView start and end location
+     * search bars.
      */
-    public void updateStartLocation(String newStart) {
+    private void initSearchResults() {
+        searchableStartLocations = new ArrayList<>();
+        searchableEndLocations = new ArrayList<>();
+
+        // Acquire list of all buildings on campus
+        Map<String, String> shortToLongBuildingNames = CampusPresenter.getAllBuildingNames();
+        longToShortAndLong = new HashMap<>();
+        shortAndLongToLong = new HashMap<>();
+
+        for (String currShortName : shortToLongBuildingNames.keySet()) {
+            String currLongName = shortToLongBuildingNames.get(currShortName);
+            String shortAndLongName = currShortName + ": " + currLongName;
+            longToShortAndLong.put(currLongName, shortAndLongName);
+            shortAndLongToLong.put(shortAndLongName, currLongName);
+            searchableStartLocations.add(new LocationSearchResult(shortAndLongName));
+            searchableEndLocations.add(new LocationSearchResult(shortAndLongName));
+        }
+
+        // Add gender-neutral restroom as one of the end locations
+        searchableEndLocations.add(new LocationSearchResult(getString(R.string.gender_neutral_restroom_search_result)));
+    }
+
+    /**
+     * Select closest building to where the user touched as the start location (if in SEARCH or
+     * FOUND_START states) or the end location (if in BUILD_ROUTE state)
+     *
+     * @param x is the x coordinate (in pixels) on the map of where the user pressed
+     * @param y is the y coordinate (in pixels) on the map of where the user pressed
+     */
+    private void clickChooseBuilding(int x, int y) {
+        // Adjusts invalid input
+        if (x < 0) {
+            x = 0;
+        } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
+            x = CAMPUS_MAP_IMAGE_WIDTH_PX;
+        }
+        if (y < 0) {
+            y = 0;
+        } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
+            y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
+        }
+
+        // Selects nearest start or end building (depending on current app state) based on where the user clicked
+        String selectedBuilding = CampusPresenter.getClosestBuilding(x, y);
+        String selectedBuildingShortAndLongName = longToShortAndLong.get(selectedBuilding);
+        if (mState == AppStates.SEARCH || mState == AppStates.FOUND_START) {
+            updateStartLocation(selectedBuildingShortAndLongName);
+            startSearchBar.setText(selectedBuildingShortAndLongName);
+        } else if (mState == AppStates.BUILD_ROUTE) {
+            updateEndLocation(selectedBuildingShortAndLongName);
+            endSearchBar.setText(selectedBuildingShortAndLongName);
+        }
+    }
+
+    /**
+     * Updater method that controls the current start location of the user's selected route
+     * @param newStartShortAndLong is the new start location for the user's route
+     */
+    public void updateStartLocation(String newStartShortAndLong) {
         // Ensure valid start input to send to presenter
-        if (allBuildingNames.contains(newStart)) {
-            CampusPresenter.updateStart(newStart);
+        if (shortAndLongToLong.containsKey(newStartShortAndLong)) {
+            CampusPresenter.updateStart(shortAndLongToLong.get(newStartShortAndLong));
         }
 
         // Update state to FOUND_START if currently in START state
         if (mState == AppStates.SEARCH) {
             updateState(AppStates.FOUND_START);
         }
+        buildBuildingDesc();
         moveMapToBuilding(CampusPresenter.getCurrentStart());
     }
 
     /**
      * Updater method that controls the current end location of the user's selected route
-     * @param newEnd is the new end location for the user's route
+     * @param newEndShortAndLong is the new end location for the user's route
      */
-    public void updateEndLocation(String newEnd) {
-        // Ensure valid end input to send to presenter
-        if (allBuildingNames.contains(newEnd)) {
-            CampusPresenter.updateEnd(newEnd);
+    public void updateEndLocation(String newEndShortAndLong) {
+        // Check if the result is for the nearest gender-neutral restroom or specific location
+        if (newEndShortAndLong.equals(getString(R.string.gender_neutral_restroom_search_result))) { // Nearest gender-neutral bathroom
+            String startLocation = CampusPresenter.getCurrentStart();
+            Point startPoint = CampusPresenter.getBuildingCoordinates(startLocation);
+            String gnrrDestination = CampusPresenter.getClosestGNBathroom(startPoint.x, startPoint.y);
+            CampusPresenter.updateEnd(gnrrDestination);
+            moveMapToBuilding(gnrrDestination);
+        } else { // Specific location
+            // Ensure valid end input to send to presenter
+            if (shortAndLongToLong.containsKey(newEndShortAndLong)) {
+                String longNameDestination = shortAndLongToLong.get(newEndShortAndLong);
+                CampusPresenter.updateEnd(longNameDestination);
+                moveMapToBuilding(longNameDestination);
+            }
         }
-        moveMapToBuilding(CampusPresenter.getCurrentEnd());
     }
 
     /**
@@ -281,21 +382,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize the search results to populate the AutoCompleteTextView start and end location
-     * search bars.
-     */
-    private void initSearchResults() {
-        searchableLocations = new ArrayList<>();
-
-        // Acquire list of all buildings on campus
-        allBuildingNames = CampusPresenter.getAllBuildingNames();
-
-        for (String currLocation : allBuildingNames) {
-            searchableLocations.add(new LocationSearchResult(currLocation));
-        }
-    }
-
-    /**
      * Updates the state of the app based on user activity so that the appropriate components
      * are (in)visible.
      *
@@ -309,7 +395,6 @@ public class MainActivity extends AppCompatActivity {
             case SEARCH:
                 // Going forward through route-building steps
                 if (newState == AppStates.FOUND_START) {
-                    buildBuildingDesc();
                     buildDescLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -381,7 +466,23 @@ public class MainActivity extends AppCompatActivity {
      * at.
      */
     private void buildBuildingDesc() {
+        // Get start building
         String building = CampusPresenter.getCurrentStart();
+        // Get description of start building
+        String[] buildDesc = CampusPresenter.getDesc(building);
+
+        // Build strings for description
+        String descShortBuildingNameText = "Building code: " + buildDesc[0];
+        String descElevatorText = "Elevator access: " + buildDesc[1];
+        String descAccRestroomText = "Accessible restroom: " + buildDesc[2];
+        String descGenderNeutralRestroomText = "Gender-neutral restroom: " + buildDesc[3];
+
+        // Set text views
+        descBuildingName.setText(building);
+        descShortBuildingName.setText(descShortBuildingNameText);
+        descElevatorInfo.setText(descElevatorText);
+        descAccessibleRestroomInfo.setText(descAccRestroomText);
+        descGenderNeutralRestroomInfo.setText(descGenderNeutralRestroomText);
     }
 
     /**
@@ -390,11 +491,11 @@ public class MainActivity extends AppCompatActivity {
      * @param longBuildingName is the long version of the desired building name to center the map on.
      */
     private void moveMapToBuilding(String longBuildingName) {
-        // Get coordinate of roughly the center of the start building
-        Point roughCenter = CampusPresenter.getRoughCenterOfBuilding(longBuildingName);
+        // Get coordinates of the given building
+        Point buildingCoords = CampusPresenter.getBuildingCoordinates(longBuildingName);
         // Convert roughCenter coordinates from px to dp
-        float centerX = roughCenter.x * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        float centerY = roughCenter.y * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float centerX = pxToDP(buildingCoords.x);
+        float centerY = pxToDP(buildingCoords.y);
         // Calculate offsets of screen width/height to center start building in view
         //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
         //        user sets the end location takes up more space at the top
@@ -450,5 +551,25 @@ public class MainActivity extends AppCompatActivity {
         routeCanvas.drawPath(path, paint);
         // Invalidate view so that next draw clears view
         routeView.invalidate();
+    }
+
+    /**
+     * Convert the given number in pixels to dp.
+     *
+     * @param px value to be converted
+     * @return converted px value in terms of dp
+     */
+    private float pxToDP(float px) {
+        return px * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    /**
+     * Convert the given number in dp to pixels.
+     *
+     * @param dp value to be converted
+     * @return converted dp value in terms of px
+     */
+    private float dpToPX(float dp) {
+        return dp / ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
