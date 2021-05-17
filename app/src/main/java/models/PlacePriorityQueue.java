@@ -69,7 +69,7 @@ public class PlacePriorityQueue {
     }
 
     /**
-     * Updates the given place's priority
+     * Updates the given place's priority, only if it is lower than the place's current priority
      * @param place place whose priority we want to change
      * @param priority priority we want to set
      * @throws IllegalArgumentException if place is not in the priority queue
@@ -80,6 +80,10 @@ public class PlacePriorityQueue {
         }
 
         Float oldPriority = priorities.get(place);
+        if (oldPriority != null && oldPriority < priority) {
+            return;
+        }
+
         priorities.put(place, priority);
         Integer idx = indices.get(place);
 
