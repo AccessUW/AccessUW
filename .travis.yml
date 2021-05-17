@@ -1,5 +1,6 @@
 language: android
 dist: trusty
+sudo: false
 android:
   components:
     # Uncomment the lines below if you want to
