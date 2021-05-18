@@ -1,11 +1,12 @@
 language: android
 dist: trusty
+sudo: false
 android:
   components:
     # Uncomment the lines below if you want to
     # use the latest revision of Android SDK Tools
-    # - tools
-    # - platform-tools
+    - tools
+#    - platform-tools
 
     # The BuildTools version used by your project
     - build-tools-30.0.3
@@ -21,9 +22,12 @@ android:
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-x86-android-26
-    - sys-img-armeabi-v7a-google_apis-25
-
+    - sys-img-x86-android-30
+#    - sys-img-x86-android-28
+#    - sys-img-x86-android-29
+    - sys-img-armeabi-v7a-google_apis-26
+#    - sys-img-x86-android-25
+#    - sys-img-armeabi-v7a-android-22
   licenses:
       - 'android-sdk-preview-license-52d11cd2'
       - 'android-sdk-license-.+'
@@ -33,6 +37,7 @@ before-install:
   - chmod +x gradlew
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30"
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3"
+#  - yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-30;default;x86"
 before-script:
   # help for listing the possible sdks for system images
   - sdkmanager --list --verbose
@@ -42,9 +47,13 @@ before-script:
 #  - echo yes | android update sdk -a --no-ui --filter sys-img-armebi-v7a-android-30,sys-img-x86-android-30
 
 # disabled for beta release purposes
-  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis -c 50M
-  - emulator -avd test -noaudio -no-window -verbose -no-boot-anim &
-  - travis_wait android-wait-for-emulator
+#  - echo no | android create avd --force -n test -t android-26 --abi x86
+  - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a --tag google_apis
+#  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+  - adb devices
+  - emulator -avd test -no-audio -no-window -verbose &
+  - android-wait-for-emulator
+  - adb devices
   - adb shell input keyevent 82 &
 
 script:

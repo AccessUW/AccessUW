@@ -1,5 +1,5 @@
 import org.junit.Test;
-
+import static org.junit.Assert.*;
 
 import models.Building;
 
@@ -15,35 +15,39 @@ public class BuildingTest {
 
         Building b = new Building("A", 1, 1, gn, acc, true);
 
-        assert b.getShortName().equals("A");
-        assert b.getX() == 1 && b.getY() == 1;
-        assert b.hasGenderNeutralRestroom();
-        assert b.hasAccessibleRestroom();
-        assert b.hasElevator();
+        assertEquals("A", b.getShortName());
+        assertEquals(1, b.getX(), 0.01);
+        assertEquals(1, b.getY(), 0.01);
+        assertTrue(b.hasGenderNeutralRestroom());
+        assertTrue(b.hasAccessibleRestroom());
+        assertTrue(b.hasElevator());
 
         Building b1 = new Building("B", 2, 2, gn, accEmpty, false);
 
-        assert b1.getShortName().equals("B");
-        assert b1.getX() == 2 && b1.getY() == 2;
-        assert b1.hasGenderNeutralRestroom();
-        assert !b1.hasAccessibleRestroom();
-        assert !b1.hasElevator();
+        assertEquals("B", b1.getShortName());
+        assertEquals(2, b1.getX(), 0.01);
+        assertEquals(2, b1.getY(), 0.01);
+        assertTrue(b1.hasGenderNeutralRestroom());
+        assertFalse(b1.hasAccessibleRestroom());
+        assertFalse(b1.hasElevator());
 
         Building b2 = new Building("C", 3, 3, gnEmpty, acc, true);
 
-        assert b2.getShortName().equals("C");
-        assert b2.getX() == 3 && b2.getY() == 3;
-        assert !b2.hasGenderNeutralRestroom();
-        assert b2.hasAccessibleRestroom();
-        assert b2.hasElevator();
+        assertEquals("C", b2.getShortName());
+        assertEquals(3, b2.getX(), 0.01);
+        assertEquals(3, b2.getY(), 0.01);
+        assertFalse(b2.hasGenderNeutralRestroom());
+        assertTrue(b2.hasAccessibleRestroom());
+        assertTrue(b2.hasElevator());
 
         Building b3 = new Building("D", 4, 4, gnEmpty, accEmpty, false);
 
-        assert b3.getShortName().equals("D");
-        assert b3.getX() == 4 && b3.getY() == 4;
-        assert !b3.hasGenderNeutralRestroom();
-        assert !b3.hasAccessibleRestroom();
-        assert !b3.hasElevator();
+        assertEquals("D", b3.getShortName());
+        assertEquals(4, b3.getX(), 0.01);
+        assertEquals(4, b3.getY(), 0.01);
+        assertFalse(b3.hasGenderNeutralRestroom());
+        assertFalse(b3.hasAccessibleRestroom());
+        assertFalse(b3.hasElevator());
     }
 
     @Test
@@ -58,21 +62,22 @@ public class BuildingTest {
         Building a = new Building("A", 1, 1, gn, acc, true);
         Building a2 = new Building("A", 1, 1, gn, acc, true);
 
-        assert a.equals(a2);
+        assertEquals(a, a2);
 
         Building b = new Building("B", 1, 2, gn, acc, true);
 
-        assert !a.equals(b);
-        assert !a2.equals(b);
+        assertNotEquals(a, b);
+        assertNotEquals(a2, b);
 
         Building c = new Building("C", 1, 1, gn, accEmpty, true);
 
-        assert !a.equals(c);
-        assert !c.equals(a2);
-        assert !b.equals(c);
+        assertNotEquals(a, c);
+        assertNotEquals(a2, c);
+        assertNotEquals(b, c);
 
         Building d = new Building("D", 1, 1, gn, acc, false);
-        assert !a.equals(d);
-        assert !c.equals(d);
+
+        assertNotEquals(a, d);
+        assertNotEquals(c, d);
     }
 }

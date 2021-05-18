@@ -69,17 +69,24 @@ public class PlacePriorityQueue {
     }
 
     /**
-     * Updates the given place's priority
+     * Updates the given place's priority, only if it is lower than the place's current priority. If
+     * the given place isn't already in the queue, it is added.
      * @param place place whose priority we want to change
      * @param priority priority we want to set
-     * @throws IllegalArgumentException if place is not in the priority queue
+     * @throws IllegalArgumentException if place is null
      */
     public void updatePriority(Place place, float priority) {
-        if (place == null || !items.contains(place)) {
-            throw new IllegalArgumentException("updatePriority - given place is not in the queue");
+        if (place == null) {
+            throw new IllegalArgumentException("updatePriority - given place is null");
+        } else if (!items.contains(place)) {
+            this.add(place, priority);
         }
 
         Float oldPriority = priorities.get(place);
+        if (oldPriority != null && oldPriority < priority) {
+            return;
+        }
+
         priorities.put(place, priority);
         Integer idx = indices.get(place);
 

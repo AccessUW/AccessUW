@@ -61,8 +61,11 @@ features, etc.)
     - /app/src/main/java/.../accessUWMap contains the View of our MVP framework (with the main app front-end functionality (e.g. viewing the
         map, setting destinations, etc.))
     - /app/src/main/java/CampusPresenter.java contains the Presenter of our MVP framework
-- /app/src/main/res contains most of the app's resources (e.g. the map image and string names)
+- /app/src/main/res contains most of the app's resources and data (e.g. the map image and string names)
+- /app/src/test/java contains JUnit tests, with all class names ending in Test (e.g. PlaceTest) and all methods starting with test (e.g. testSimple())
+- /app/src/androidTest/java contains instrumented tests interacting with an emulator
 - /Reports contains our team's weekly progress reports
+- Documentation is found in the comments of java src files
 
 ## Building & Testing the system
 Building & testing the system is relatively automatic, with Travis CI automatically running our current script on each commit.
@@ -72,3 +75,11 @@ For manual building/testing, you can perform `./gradlew build` to build the syst
 Instrumentation tests can be performed by starting up an emulator and then running `./gradlew cAT`.
 
 For all steps at once, one can start up an emulator and then run `./gradlew build cC`.
+
+## Bug reporting for the users
+Users are able to report the bugs in the spreadsheet, followed by the link under.
+https://docs.google.com/spreadsheets/d/1Afv3kSqC3Bg_IEs7vqW1ajjeVEligyM9pQl7dC6dgJ8/edit?usp=sharing
+
+## Known Bugs
+all the known bugs and limitation will be reported in AccessUW Github issues.
+https://github.com/AccessUW/AccessUW/issues
