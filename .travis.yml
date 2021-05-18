@@ -25,8 +25,8 @@ android:
     - sys-img-x86-android-30
 #    - sys-img-x86-android-28
 #    - sys-img-x86-android-29
-#    - sys-img-armeabi-v7a-google_apis-25
-    - sys-img-x86-android-25
+    - sys-img-armeabi-v7a-google_apis-26
+#    - sys-img-x86-android-25
 #    - sys-img-armeabi-v7a-android-22
   licenses:
       - 'android-sdk-preview-license-52d11cd2'
@@ -47,8 +47,8 @@ before-script:
 #  - echo yes | android update sdk -a --no-ui --filter sys-img-armebi-v7a-android-30,sys-img-x86-android-30
 
 # disabled for beta release purposes
-  - echo no | android create avd --force -n test -t android-25 --abi x86
-#  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
+#  - echo no | android create avd --force -n test -t android-26 --abi x86
+  - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a --tag google_apis
 #  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - adb devices
   - emulator -avd test -no-audio -no-window -verbose &
