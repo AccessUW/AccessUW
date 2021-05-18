@@ -72,3 +72,11 @@ For manual building/testing, you can perform `./gradlew build` to build the syst
 Instrumentation tests can be performed by starting up an emulator and then running `./gradlew cAT`.
 
 For all steps at once, one can start up an emulator and then run `./gradlew build cC`.
+
+## Bug reporting for the users
+Users are able to report the bugs in the spreadsheet, followed by the link under.
+https://docs.google.com/spreadsheets/d/1Afv3kSqC3Bg_IEs7vqW1ajjeVEligyM9pQl7dC6dgJ8/edit?usp=sharing
+
+## Known Bugs
+all the known bugs and limitation will be reported in AccessUW Github issues.
+https://github.com/AccessUW/AccessUW/issues
