@@ -61,8 +61,11 @@ features, etc.)
     - /app/src/main/java/.../accessUWMap contains the View of our MVP framework (with the main app front-end functionality (e.g. viewing the
         map, setting destinations, etc.))
     - /app/src/main/java/CampusPresenter.java contains the Presenter of our MVP framework
-- /app/src/main/res contains most of the app's resources (e.g. the map image and string names)
+- /app/src/main/res contains most of the app's resources and data (e.g. the map image and string names)
+- /app/src/test/java contains JUnit tests, with all class names ending in Test (e.g. PlaceTest) and all methods starting with test (e.g. testSimple())
+- /app/src/androidTest/java contains instrumented tests interacting with an emulator
 - /Reports contains our team's weekly progress reports
+- Documentation is found in the comments of java src files
 
 ## Building & Testing the system
 Building & testing the system is relatively automatic, with Travis CI automatically running our current script on each commit.
