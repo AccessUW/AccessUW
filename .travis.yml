@@ -36,6 +36,7 @@ before-install:
   - chmod +x gradlew
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30"
   - yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3"
+  - yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-30;default;x86"
 before-script:
   # help for listing the possible sdks for system images
   - sdkmanager --list --verbose
