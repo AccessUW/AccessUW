@@ -32,6 +32,7 @@ person instruction this coming Autumn.
 ## Operational use cases:
 - Use case 1: User finds shortest route between two buildings on campus is mostly operational (some
     buildings don't work but the app can generate shortest routes between two working buildings)
+- Use case 2: When user searches the specific building, the map moves to that location and shows that location
 - Use case 3: The user wants to search for a building on the UW Campus by name is partially operational
     (nearly all UW campus buildings are present in the autocomplete feature and all building descriptions
     are present in the data, however the app does not currently query the description of the given building)
@@ -45,15 +46,16 @@ the name of it
 - Any issues with path or start/end buildings are showed to the user and visualized on the route (in 
 a different color to show contrast) such as doors that are not very accessible or a lack of ramps 
 somewhere
-- Ability to add multi-stop routes through various locations on the UW campus
 - When clicking on a building, it can show you a brief description (i.e. name, accessibility 
 features, etc.)
+- Autocomplete when searching for buildings/on-campus locations
 
 ## Stretch goals:
 - Option to choose between inputting your own starting destination or using phone’s location
 - Phone’s location shows your progress on the route and shows your current position on the map
 - Zoom feature on map
-- Autocomplete when searching for buildings/on-campus locations
+- Ability to add multi-stop routes through various locations on the UW campus
+
 
 ## General repository layout:
 - Model-View-Presenter:
