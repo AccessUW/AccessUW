@@ -59,9 +59,12 @@
 * help out the front-end implementation
 * write user documentation
 ### Progress and Issues
-*
+* wrote user documentation
+* got some feedback on the design 
+* researched the user bug reporting system
 ### Plans and Goals
-*
+* frontend visual improvement(icons and fonts)
+* get more feedbacks
 ## Kevin's Report
 ### Last Week
 * Get some external feedback on the design
