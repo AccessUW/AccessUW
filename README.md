@@ -56,6 +56,8 @@ features, etc.)
 - Zoom feature on map
 - Ability to add multi-stop routes through various locations on the UW campus
 
+## How to obtain the source code
+All code that is required to run the project is found in this repository and in Android Studio.
 
 ## General repository layout:
 - Model-View-Presenter:
@@ -70,13 +72,23 @@ features, etc.)
 - Documentation is found in the comments of java src files
 
 ## Building & Testing the system
-Building & testing the system is relatively automatic, with Travis CI automatically running our current script on each commit.
+Building & testing the system is relatively automatic, with Travis CI automatically running our current unit testing scripts on each commit.
 
 For manual building/testing, you can perform `./gradlew build` to build the system, and then `./gradlew test` to run unit tests.
 
 Instrumentation tests can be performed by starting up an emulator and then running `./gradlew cAT`.
 
 For all steps at once, one can start up an emulator and then run `./gradlew build cC`.
+
+## How to Add New Tests
+Adding new unit tests can be done by adding JUnit test Java files to /app/src/test/java. They will be automatically tested through `./gradlew test`.
+
+Instrumentation tests can be added at /app/src/androidTest/java/ instead to be run automatically through `./gradlew cAT`.
+
+## Currently Unautomated Tasks
+The only thing that is currently unautomated is setting up an emulator (lots has been tried on Travis CI, to no avail). Android Studio can be used to set up an emulator instead in order for `./gradlew cAT` and `./gradlew build cC` to be run.
+
+Builds currently run/take place on android API version 30. Be sure that scrolling and the keyboard automatically hiding after typing is complete is functional on non-emulator devices.
 
 ## Bug reporting for the users
 Users are able to report the bugs in the spreadsheet, followed by the link under.
