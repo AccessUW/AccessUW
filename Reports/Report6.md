@@ -28,9 +28,11 @@
 * Test CampusTree component
 * Debug high memory usage and explore possible changes for some models
 ### Progress and Issues
-*
+* Completed necessary tests for all back-end components
+* Found high memory is likely due to many data structures present at a time
 ### Plans and Goals
-*
+* Explore other approaches for BuildingInfoModel
+* Find internal data structures to eliminate/reduce for lower memory usage
 ## Judas' Report
 ### Last Week
 * Focus on finishing updated map
