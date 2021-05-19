@@ -72,6 +72,8 @@
 * Get some external feedback on the design
 * Fix instrumentation testing setup
 ### Progress and Issues
-*
+* Hours of Travis CI fixes have been going swimmingly, have tried a lot to no avail so far.
 ### Plans and Goals
-*
+* Get some external feedback on the design
+* Fix instrumentation testing setup
+* Add some instrumentation testing
