@@ -36,9 +36,11 @@
 * Focus on finishing updated map
 * Help out with polishing front-end features
 ### Progress and Issues
-*
+* Updated map almost finished
 ### Plans and Goals
-*
+* Add last few buildings to updated map
+* Start working on visual improvements for UI
+* Research how to add user location/GPS feature
 ## Turner's Report
 ### Last Week
 * Figure out how zoom feature will be implemented
