@@ -16,7 +16,7 @@
                     android:id="@+id/mapView"
                     android:layout_width="@dimen/map_width"
                     android:layout_height="@dimen/map_height"
-                    android:src="@drawable/old_uw_campus_map"
+                    android:src="@drawable/campus_map_image"
                     android:contentDescription="@string/main_campus_map_desc" />
 
                 <ImageView
