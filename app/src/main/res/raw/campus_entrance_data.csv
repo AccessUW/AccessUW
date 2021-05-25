@@ -1,20 +1,4 @@
 Short Name,Long Name,x,y,Type of entrance? (Unaccessible or Assisted or Manual)
-FLK,Fluke Hall,2533,1256,A
-WIL,Wilcox Hall,2351,1983,M
-WIL (NW),Wilcox Hall (NW),2372,1985,U
-WIL (S),Wilcox Hall (S),2368.4,2051.8,U
-,Population Health Building,0,0,A
-LNDMK-2,Red Square,1783,1302,A
-MNY (E lower),Meany Hall (E lower),1697,1380,M
-MNY (NE upper),Meany Hall (NE upper),1692,1304,A
-HST (S),Magnuson Health Science Center (S),1893,2252,A
-HST (SE),Magnuson Health Science Center (SE),1942,2255,M
-MNY (E upper),Meany Hall (E upper),1702,1380,M
-EGL,Eagleson Hall,1473,930,A
-EGL (S),Eagleson Hall (S),1455,937,A
-HUB (E),HUB: Husky Union Building (E),2350,1435,A
-HUB (S),HUB: Husky Union Building (S),2307,1474,A
-HUB (SE),HUB: Husky Union Building (SE),2329,1458,M
 ACC,Wallace Hall,1178,1790,M
 ACC (W),Wallace Hall (W),1142,1805,M
 ADL,Aerodynamics Laboratory,2263,1594,M
@@ -23,13 +7,13 @@ AERB (N),Aerospace Engineering Research (N),2218,1615,M
 AERB (NE),Aerospace Engineering Research (NE),2244,1619,A
 AERB (SE),Aerospace Engineering Research (SE),2257,1647,U
 AERB (SW),Aerospace Engineering Research (SW),2227,1660,U
-AHC,Alder Commons,1250,1381,A
+AHC,Alder Commons,1250,1379,A
 ALB North,Allen Library North,2072,1352,A
 ALB North (N),Allen Library North (N),2048,1313,A
 ALB South,Allen Library,2080,1367,A
 ALD,Alder Hall,1283,1320,A
-AND,Anderson Hall,2020.2,2027.3,M
-AND (E),Anderson Hall (E),2062,2048.2,M
+AND,Anderson Hall,2020.2,2027.3,U
+AND (E),Anderson Hall (E),2062,2048.2,U
 AR01,Area 01,1057,1344,A
 AR01 (S),Area 01 (S),1042,1385,A
 ARC,Architecture Hall,1654,1536,U
@@ -43,6 +27,8 @@ ATG (E),Atmospheric Sciences and Geophysics (E),1909,1595,A
 ATG (N),Atmospheric Sciences and Geophysics (N),1881,1595,A
 ATG (S),Atmospheric Sciences and Geophysics (W),1805,1632,M
 ATG (SW),Atmospheric Sciences and Geophysics (SW),1799,1664,A
+BAEEC,Bank of America Executive Education Center,1988,653,M
+BAEEC (S),Bank of America Executive Education Center (S),1998,686,A
 BAG,Bagley Hall,1914.5,1709.8,A
 BAG (NE),Bagley Hall (Northeast Entrance),1878.3,1661.4,U
 BAG (S),Bagley Hall (S),1878,1770,M
@@ -55,6 +41,7 @@ BLD (S),Bloedel Hall (S),1998,2128,M
 BLD (SW),Bloedel Hall (SW),1970,2139,A
 BNS,Benson Hall,1796,1832,A
 BNS (SW),Benson Hall (SW),1765,1833,M
+BRK,Burke museum,1583,549,M
 CCC,Child Care Center,1095,1461,M
 CDB,Community Design Center,1288,1431,M
 CDB (E),Community Design Center (E),1322,1433,M
@@ -93,8 +80,18 @@ CRB,Cultivate Restaurant,1164,1184,M
 CSE,Paul G. Allen Center for CSE,2259.7,1715.5,A
 CSE (NW),Paul G. Allen Center for CSE (NW),2172,1698,A
 CSE (W),Paul G. Allen Center for CSE (W),2186,1738,A
-CSH,Conibear Shellhouse,2929,1845,M
+CSE2,Bill & Melinda Gates Center for CSE,2339,1787,A
+CSE2 (E),Bill & Melinda Gates Center for CSE (E),2439,1838,A
+CSE2 (NE),Bill & Melinda Gates Center for CSE (NE),2403,1846,A
+CSE2 (SE),Bill & Melinda Gates Center for CSE (SE),2453,1854,A
+CSE2 (W),Bill & Melinda Gates Center for CSE (W),2314,1826,A
+CSH,Conibear Shellhouse,2929,1843,M
 CSH (S),Conibear Shellhouse (S),2942,1866,A
+CTB,Center Table,2383,609,A
+CTB (S),Center Table (S),2410,642,A
+DEM,Dempsey Hall,2028,738,A
+DEM (N),Dempsey Hall (N),2004,709,M
+DEM (W),Dempsey Hall (W),1964,755,A
 DEN,Denny Hall,1890,892.5,U
 DEN (W),Denny Hall (W),1845,914,A
 DM,District Market,1323,1321,A
@@ -112,10 +109,18 @@ EEB,Electrical Engineering,2154,1699,A
 EEB (S),Electrical Engineering (S),2135.2,1741.5,M
 EGA,Mechanical Engineering Annex,2406,1626,M
 EGA (W),Mechanical Engineering Annex (W),2390,1690,U
+EGL,Eagleson Hall,1473,930,A
+EGL (S),Eagleson Hall (S),1455,937,A
 ELB,Engineering Library,2360.2,1549.1,A
 ELM,Elm Hall,1125,1229,A
 ELM (E),Elm Hall (NE),1137,1190,A
+FAB,Facilities Services Administration Building,2407,1446,M
+FAB (S),Facilities Services Administration Building (S),2410,1476,M
 FAC,UW Club,2404.2,1356.7,A
+FLK,Fluke Hall,2537,1272,A
+FLK (E),Fluke Hall (E),2564,1326,U
+FLK (NE),Fluke Hall (NE),2569,1295,U
+FLK (SE),Fluke Hall (SE),2557,1362,U
 FSH,Fishery Science,1048,1773,U
 FSH (E),Fisheries Science (E),991,1781,A
 FSH (S),Fisheries Science (S),971,1845,M
@@ -134,12 +139,14 @@ GNOM (W),Foege Genome Sciences (W),1327,2019,A
 GRB,Gerberding Hall,1800,1390,M
 GRB (S),Gerberding Hall (S),1828.3,1434.6,A
 GTH,Guthrie Hall,1657.5,1656.1,A
+GUA,Guggenheim Annex,2150,1531,U
+GUA (W),Guggenheim Annex (W),2134,1549,M
 GUG,Guggenheim Hall,2142,1601,U
 GUG (E),Guggenheim Hall (E),2207,1597,A
 GUG (SW),Guggenheim Hall (SW),2151,1625,A
 GWN,Gowen Hall,2011,1212,M
 GWN (S),Gowen Hall (S),2027,1250,A
-GWN (W),Gowen Hall (W),1973,1215,M
+GWN (W),Gowen Hall (W),1977,1219,U
 HAG,Henry Art Gallery,1536,1226,A
 HCK,Hitchcock Hall,1577.7,2020.2,M
 HCK (N),Hitchcock Hall (N),1543.2,1979.9,M
@@ -155,18 +162,29 @@ HND,Henderson Hall,953,1431,A
 HND,Henderson Hall (W),871,1426,A
 HNS,Hansee Hall,2145,451,A
 HPT,Hughes Penthouse Theatre,1947,438,A
+HRC,Population Health Building,1542,1499,A
+HRC (E),Population Health Building (E),1545,1587,A
+HRC (NW),Population Health Building (NW),1513,1488,A
+HRC (S),Population Health Building (S),1509,1627,A
 HSBB,UW Medical Center,1995,2369,A
 HSBB (NE),UW Medical Center (NE),2123,2447,A
 HST,Magnuson Health Science Center,1846.1,2163.9,A
 HST (NW),Magnuson Health Science Center (NW),1711.2,2148,A
+HST (S),Magnuson Health Science Center (S),1893,2252,A
+HST (SE),Magnuson Health Science Center (SE),1942,2255,M
 HUB,HUB: Husky Union Building,2269.7,1364.3,A
+HUB (E),HUB: Husky Union Building (E),2350,1435,A
 HUB (N),HUB: Husky Union Building (N),2302.2,1316.7,A
+HUB (S),HUB: Husky Union Building (S),2307,1474,A
+HUB (SE),HUB: Husky Union Building (SE),2329,1458,M
 HUB (SW),HUB: Husky Union Building (SW),2263.2,1470.4,A
 HUB (W),HUB: Husky Union Building (W),2254,1440.1,U
-HUT,Hutchinson Hall,0,0,U
+HUT,Hutchinson Hall,2123.5,679.7,U
 HUT (E),Hutchinson Hall (E),2169,662,M
 HUT (NW),Hutchinson Hall (NW),2088,624,A
 IMA,Intramural Activities,2722.3,1710.2,A
+INT,Intellectual House,2349,878,A
+IPF,Dempsey Indoor Center,2923,2113,A
 JHN,Johnson Hall,1844,1491,A
 JHN (W),Johnson Hall (W),1832,1527,A
 KIN,Kincaid Hall,1693,1858,U
@@ -189,14 +207,20 @@ LEW,Lewis Hall,2278.6,801,U
 LEW (E),Lewis Hall (E),2297,794,A
 LNDMK-0,Drumheller Fountain,1974.3,1625.3,A
 LNDMK-1,The Quad,2065.7,1067.7,A
+LNDMK-2,Red Square,1783,1302,A
 LOW,Loew Hall,2375.6,1576.1,A
 LOW (S),Loew Hall (S),2374,1618,U
+LSB,Life Sciences Building,1716,1900,A
+LSB (W),Life Sciences Building (W),1698,1924,A
 MAH,Maple Hall,1036,1304,A
 MAH (NW),Maple Hall (NW),972,1304,A
 MAH (SW),Maple Hall (SW),961,1385,A
 MAH (W),Maple Hall (W),949,1330,A
 MAR,Marine Studies,1164,1938,M
+MCC,McCarty Hall,2288,493,A
+MCC (S),McCarty Hall (S),2352,498,A
 MCM,McMahon,2444,918,A
+MDR,Madrona Hall,2303,592,A
 MEB,Mechanical Engineering,2355,1626,A
 MEB (E),Mechanical Engineering (E),2380,1735,A
 MEB (S),Mechanical Engineering (S),2352,1743,U
@@ -210,7 +234,10 @@ MLR (E),Miller Hall (E),2200,1069,U
 MLR (S),Miller Hall (S),2150,1119,U
 MLR (SW),Miller Hall (SW),2130.1,1121.8,U
 MNY,Meany Hall (N),1658.9,1295.8,M
+MNY (E lower),Meany Hall (E lower),1697,1380,M
+MNY (E upper),Meany Hall (E upper),1702,1380,M
 MNY (NE lower),Meany Hall (NE lower),1684.1,1297,M
+MNY (NE upper),Meany Hall (NE upper),1692,1304,A
 MNY (W),Meany Hall (W),1632.4,1398.6,A
 MOL,Molecular ES,1713,1566,A
 MOR,More Hall,2317.1,1859.5,A
@@ -252,6 +279,10 @@ PAR (N),Parrington Hall (N),1699,1023,A
 PAT,Physics/Astronomy Tower,1538.4,1761.1,A
 PBB,Portage Bay Building,1762,2543,A
 PBB (W),Portage Bay Building (W),1737,2523,M
+PCAR,Paccar Hall,1943,786,A
+PCAR (E),Paccar Hall (E),1916,723,A
+PCAR (N),Paccar Hall (N),1856,698,A
+PCAR (SE),Paccar Hall (SE),1957,763,A
 PCH,Purchasing and Accounting Building,1325,1558,A
 PDL,Padelford,2408,1103.7,A
 PDL (N),Padelford (N),2436.3,1064.7,M
@@ -288,6 +319,7 @@ SMZ (N),Schmitz Hall (N),1409,1159,A
 SOCC,South Campus Center,1578,2430,U
 SOCC (E),South Campus Center (E),1699,2457,A
 SOCC (N),South Campus Center (N),1629,2396,M
+SSB,Brooklyn Trail Building,1186,1523,M
 STD,Husky Stadium,2574,2151,A
 STD (N),Husky Stadium (N),2798,2126,A
 STD (S),Husky Stadium Sports Medical Clinic,2670,2443,A
@@ -317,33 +349,10 @@ WCUP,West Campus Utility Plant,1361,1631,U
 WFS,Winkenwerder,2087.4,2055.2,U
 WFS (S),Winkenwerder (S),2119,2119,M
 WFS (W),Winkenwerder (W),2073,2066,M
+WIL,Wilcox Hall,2351,1983,M
+WIL (E lower),Wilcox Hall (E lower),2375.1,1989.1,M
+WIL (E upper),Wilcox Hall (E upper),2372,1985,U
+WIL (S),Wilcox Hall (S),2368.4,2051.8,U
+WIL (W),Wilcox Hall (W),2364,2026,U
 WLA,Wilson Annex,2309,2084,A
-BAEEC,Bank of America Executive Education Center,1988,653,M
-BAEEC (S),Bank of America Executive Education Center (S),1998,686,A
-CSE2,Bill & Melinda Gates Center for CSE,2339,1787,A
-CSE2 (E),Bill & Melinda Gates Center for CSE (E),2439,1838,A
-CSE2 (NE),Bill & Melinda Gates Center for CSE (NE),2403,1846,A
-CSE2 (SE),Bill & Melinda Gates Center for CSE (SE),2453,1854,A
-CSE2 (W),Bill & Melinda Gates Center for CSE (W),2314,1826,A
-SSB,Brooklyn Trail Building,1186,1523,M
-BRK,Burke museum,1583,549,M
-CTB,Center Table,2383,609,A
-CTB (S),Center Table (S),2410,642,A
-DEM,Dempsey Hall,2028,738,A
-DEM (W),Dempsey Hall (W),1964,755,A
-DEM (N),Dempsey Hall (N),2004,709,M
-IPF,Dempsey Indoor Center,2923,2113,A
-FAB,Facilities Services Administration Building,2407,1446,M
-FAB (S),Facilities Services Administration Building (S),2410,1476,M
-GUA,Guggenheim Annex,2134,1549,M
-INT,Intellectual House,2349,878,A
-LSB,Life Sciences Building,1716,1900,A
-LSB (W),Life Sciences Building (W),1698,1924,A
-MDR,Madrona Hall,2303,592,A
-MCC,McCarty Hall,2288,493,A
-MCC (S),McCarty Hall (S),2352,498,A
-PCAR,Paccar Hall,1943,786,A
-PCAR (E),Paccar Hall (E),1916,723,A
-PCAR (N),Paccar Hall (N),1856,698,A
-PCAR (SE),Paccar Hall (SE),1957,763,A
 WLW,Willow Hall,2350,637,A
