@@ -54,9 +54,9 @@
 * frontend visual improvement(icons and fonts)
 * get more feedbacks
 ### Progress and Issues
-*
+* tried to find the new icons for the visual change
 ### Plans and Goals
-*
+* try to help frontend to fix visual features
 ## Kevin's Report
 ### Last Week
 * Get some external feedback on the design
