@@ -21,9 +21,12 @@
 * Explore other approaches for BuildingInfoModel
 * Find internal data structures to eliminate/reduce for lower memory usage
 ### Progress and Issues
-*
+* Brainstormed ideas for eliminating memory usage
+* Completed peer review for assigned team
 ### Plans and Goals
-*
+* Read feedback from peer review and debug any problems users encountered
+* Apply the changes to memory usage if any peer reviews mention high memory usage
+* Polish/Finalize the backend and fix any last minute bugs before final release
 ## Judas' Report
 ### Last Week
 * Add last few buildings to updated map
