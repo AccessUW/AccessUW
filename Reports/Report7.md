@@ -30,9 +30,10 @@
 * Start working on visual improvements for UI
 * Research how to add user location/GPS feature
 ### Progress and Issues
-*
+* Updated map completed
 ### Plans and Goals
-*
+* Implement visual improvements for UI
+* Research how to add user location/GPS feature, implement if we have time
 ## Turner's Report
 ### Last Week
 * Try to finish zoom functionality
