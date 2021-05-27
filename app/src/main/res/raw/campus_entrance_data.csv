@@ -10,7 +10,7 @@ AERB (SW),Aerospace Engineering Research (SW),2227,1660,U
 AHC,Alder Commons,1250,1379,A
 ALB North,Allen Library North,2072,1352,A
 ALB North (N),Allen Library North (N),2048,1313,A
-ALB South,Allen Library,2080,1367,A
+ALB South,Allen Library South,2080,1367,A
 ALD,Alder Hall,1283,1320,A
 AND,Anderson Hall,2020.2,2027.3,U
 AND (E),Anderson Hall (E),2062,2048.2,U
@@ -98,9 +98,9 @@ DM,District Market,1323,1321,A
 DM (W),District Market (W),1297.7,1319,M
 DSC,Drama Scene Shop,1326,1472,M
 ECC,Ethnic Cultural Center,1179,1418,A
-ECT,Ethnic Cultural Center Theatre Main Entrance,1223,1432,A
-ECT (N),Ethnic Cultural Center Theatre Side Entrance (N),1250,1421,A
-ECT (S),Ethnic Cultural Center Annex,1223,1460,A
+ECT,Ethnic Cultural Center Theatre,1223,1432,A
+ECT (N),Ethnic Cultural Center Theatre (N),1250,1421,A
+ECT (S),Ethnic Cultural Center Theatre (S),1223,1460,A
 EDP,Alaska Airlines Arena at HEC Edmundson Pavilion,2574,2007,A
 EDP (E),Alaska Airlines Arena at HEC Edmundson Pavilion (E),2715,1932.4,U
 EDP (N),Alaska Airlines Arena at HEC Edmundson Pavilion (N),2621,1904,M
@@ -150,7 +150,7 @@ GWN (W),Gowen Hall (W),1977,1219,U
 HAG,Henry Art Gallery,1536,1226,A
 HCK,Hitchcock Hall,1577.7,2020.2,M
 HCK (N),Hitchcock Hall (N),1543.2,1979.9,M
-HFS,HFS: Housing and Food Services,913,1344,A
+HFS,Housing and Food Services,913,1344,A
 HGT,Haggett Hall,2464.7,702,A
 HGT (NE),Haggett Hall (NE),2501.4,703.4,M
 HGT (SE),Haggett Hall (SE),2501.4,732.6,M
@@ -172,13 +172,13 @@ HST,Magnuson Health Science Center,1846.1,2163.9,A
 HST (NW),Magnuson Health Science Center (NW),1711.2,2148,A
 HST (S),Magnuson Health Science Center (S),1893,2252,A
 HST (SE),Magnuson Health Science Center (SE),1942,2255,M
-HUB,HUB: Husky Union Building,2269.7,1364.3,A
-HUB (E),HUB: Husky Union Building (E),2350,1435,A
-HUB (N),HUB: Husky Union Building (N),2302.2,1316.7,A
-HUB (S),HUB: Husky Union Building (S),2307,1474,A
-HUB (SE),HUB: Husky Union Building (SE),2329,1458,M
-HUB (SW),HUB: Husky Union Building (SW),2263.2,1470.4,A
-HUB (W),HUB: Husky Union Building (W),2254,1440.1,U
+HUB,Husky Union Building,2269.7,1364.3,A
+HUB (E),Husky Union Building (E),2350,1435,A
+HUB (N),Husky Union Building (N),2302.2,1316.7,A
+HUB (S),Husky Union Building (S),2307,1474,A
+HUB (SE),Husky Union Building (SE),2329,1458,M
+HUB (SW),Husky Union Building (SW),2263.2,1470.4,A
+HUB (W),Husky Union Building (W),2254,1440.1,U
 HUT,Hutchinson Hall,2123.5,679.7,U
 HUT (E),Hutchinson Hall (E),2169,662,M
 HUT (NW),Hutchinson Hall (NW),2088,624,A
