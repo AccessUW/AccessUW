@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
     private static final int CLICK_NEAREST_MOVEMENT_THRESHOLD = 20;
     private static final int VERTICAL_OFFSET_CLICK_ON_MAP = 30;
+    private static final int MOST_ZOOMED_IN_LEVEL = 2;
 
 
     ////////////////////////////////////////////////////////////
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
     // Track where and for how long user has been pressing to see if they're doing a long press
     private int pressDownX;
     private int pressDownY;
+
+    // Zoom function
+    private int zoomLevel;
 
     // Views for displaying search bars and route filters
     private LinearLayout startSearchBarLayout;
@@ -136,6 +140,10 @@ public class MainActivity extends AppCompatActivity {
         hScroll = findViewById(R.id.hScroll);
         mx = 0;
         my = 0;
+
+        // Set up zoom functionality
+        zoomLevel = MOST_ZOOMED_IN_LEVEL;
+        findViewById(R.id.zoom_out).setOnClickListener(view -> zoom(zoomLevel - 1));
 
         // Set up search bar layout and listeners
         startSearchBarLayout = findViewById(R.id.startSearchBarLayout);
@@ -271,6 +279,26 @@ public class MainActivity extends AppCompatActivity {
         searchableEndLocations.add(new LocationSearchResult(getString(R.string.gender_neutral_restroom_search_result)));
     }
 
+    private void zoom(int levelToZoom) {
+        if (levelToZoom >= 0 && levelToZoom <= MOST_ZOOMED_IN_LEVEL) {
+            ImageView mapViewImage = findViewById(R.id.mapView);
+            int width = mapViewImage.getMeasuredWidth();
+            int height = mapViewImage.getMeasuredHeight();
+            mapViewImage.getLayoutParams().width = width/2;
+            mapViewImage.getLayoutParams().height = height/2;
+            mapViewImage.requestLayout();
+
+            ImageView drawViewImage = findViewById(R.id.routeView);
+            int routeWidth = drawViewImage.getMeasuredWidth();
+            int routeHeight = drawViewImage.getMeasuredHeight();
+            drawViewImage.getLayoutParams().width = routeWidth/2;
+            drawViewImage.getLayoutParams().height = routeHeight/2;
+            drawViewImage.requestLayout();
+
+            zoomLevel = levelToZoom;
+        }
+    }
+
     /**
      * Select closest building to where the user touched as the start location (if in SEARCH or
      * FOUND_START states) or the end location (if in BUILD_ROUTE state)
@@ -280,15 +308,44 @@ public class MainActivity extends AppCompatActivity {
      */
     private void clickChooseBuilding(int x, int y) {
         // Adjusts invalid input
-        if (x < 0) {
-            x = 0;
-        } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
-            x = CAMPUS_MAP_IMAGE_WIDTH_PX;
-        }
-        if (y < 0) {
-            y = 0;
-        } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
-            y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
+        switch (zoomLevel) {
+            case 2:
+                if (x < 0) {
+                    x = 0;
+                } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
+                    x = CAMPUS_MAP_IMAGE_WIDTH_PX;
+                }
+                if (y < 0) {
+                    y = 0;
+                } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
+                    y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
+                }
+            case 1:
+                if (x < 0) {
+                    x = 0;
+                } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX/2) {
+                    x = CAMPUS_MAP_IMAGE_WIDTH_PX/2;
+                }
+                if (y < 0) {
+                    y = 0;
+                } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX/2) {
+                    y = CAMPUS_MAP_IMAGE_HEIGHT_PX/2;
+                }
+                x *= 2;
+                y *= 2;
+            case 0:
+                if (x < 0) {
+                    x = 0;
+                } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX/4) {
+                    x = CAMPUS_MAP_IMAGE_WIDTH_PX/4;
+                }
+                if (y < 0) {
+                    y = 0;
+                } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX/4) {
+                    y = CAMPUS_MAP_IMAGE_HEIGHT_PX/4;
+                }
+                x *= 4;
+                y *= 4;
         }
 
         // Selects nearest start or end building (depending on current app state) based on where the user clicked
@@ -493,9 +550,7 @@ public class MainActivity extends AppCompatActivity {
     private void moveMapToBuilding(String longBuildingName) {
         // Get coordinates of the given building
         Point buildingCoords = CampusPresenter.getBuildingCoordinates(longBuildingName);
-        // Convert roughCenter coordinates from px to dp
-        float centerX = pxToDP(buildingCoords.x);
-        float centerY = pxToDP(buildingCoords.y);
+
         // Calculate offsets of screen width/height to center start building in view
         //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
         //        user sets the end location takes up more space at the top
@@ -505,9 +560,33 @@ public class MainActivity extends AppCompatActivity {
         if (mState == AppStates.BUILD_ROUTE) {
             verticalOffset = screenHeight / 2f;
         }
+
         // Calculate coordinates for the map view to scroll to
-        int scrollX = (int) (centerX - horizontalOffset);
-        int scrollY = (int) (centerY - verticalOffset);
+        int scrollX = 0;
+        int scrollY = 0;
+        if (zoomLevel == 2) {
+            // Convert center of building coordinates from px to dp
+            float centerX = pxToDP(buildingCoords.x);
+            float centerY = pxToDP(buildingCoords.y);
+
+            scrollX = (int) (centerX - horizontalOffset);
+            scrollY = (int) (centerY - verticalOffset);
+        } else if (zoomLevel == 1) {
+            // Convert center of building coordinates from px to dp
+            float centerX = pxToDP(buildingCoords.x)/2;
+            float centerY = pxToDP(buildingCoords.y)/2;
+
+            scrollX = (int) (centerX - horizontalOffset);
+            scrollY = (int) (centerY - verticalOffset);
+        } else if (zoomLevel == 0) {
+            // Convert center of building coordinates from px to dp
+            float centerX = pxToDP(buildingCoords.x)/4;
+            float centerY = pxToDP(buildingCoords.y)/4;
+
+            scrollX = (int) (centerX - horizontalOffset);
+            scrollY = (int) (centerY - verticalOffset);
+        }
+
         // Scroll map views
         hScroll.scrollTo(scrollX, scrollY);
         vScroll.scrollTo(scrollX, scrollY);
@@ -560,7 +639,8 @@ public class MainActivity extends AppCompatActivity {
      * @return converted px value in terms of dp
      */
     private float pxToDP(float px) {
-        return px * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float dp = px * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp;
     }
 
     /**
@@ -570,6 +650,7 @@ public class MainActivity extends AppCompatActivity {
      * @return converted dp value in terms of px
      */
     private float dpToPX(float dp) {
-        return dp / ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float px = dp / ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
     }
 }
