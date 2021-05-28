@@ -2,12 +2,12 @@
 
 ## Table of Contents
 - [Downloading the App](#installing/running-the-app)
-    - [Using a Physical Android Device](#using-a-physical-android-device:)
-    - [Using an Emulated Android Device](#using-an-emulated-android-device:)
+    - [Using a Physical Android Device]
+    - [Using an Emulated Android Device]
 - [How to Use](#how-to-use)
 - [Bugs & Issues](#bugs-&-issues)
-    - [Bug reporting for the users](#bug-reporting-for-the-users:)
-    - [Known Bugs](#known-bugs)
+    - [Bug reporting for the users]
+    - [Known Bugs]
 
 ## Downloading the App
 
