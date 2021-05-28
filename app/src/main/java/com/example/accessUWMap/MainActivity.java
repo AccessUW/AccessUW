@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int CLICK_NEAREST_MOVEMENT_THRESHOLD = 20;
     private static final int VERTICAL_OFFSET_CLICK_ON_MAP = 30;
     private static final int MOST_ZOOMED_IN_LEVEL = 2;
-
+    private static final int SCALE_ZOOM_LEVEL_ONE = 2;
+    private static final int SCALE_ZOOM_LEVEL_ZERO = 4;
 
     ////////////////////////////////////////////////////////////
     ///     Fields
@@ -60,6 +61,17 @@ public class MainActivity extends AppCompatActivity {
     // Current state app is in
     private AppStates mState;
 
+    // Map view
+    private ImageView mapViewImage;
+
+    // Map zoom variables
+    private int zoomLevel;
+    private boolean initZoom;
+    private static float map_image_height_to_width_ratio;
+    private static int scale_zoom_level_2_width;
+    private static int scale_zoom_level_1_width;
+    private static int scale_zoom_level_0_width;
+
     // Coords for scrolling in map view
     private float mx, my;
     // Scroll views for moving on the map
@@ -68,9 +80,6 @@ public class MainActivity extends AppCompatActivity {
     // Track where and for how long user has been pressing to see if they're doing a long press
     private int pressDownX;
     private int pressDownY;
-
-    // Zoom function
-    private int zoomLevel;
 
     // Views for displaying search bars and route filters
     private LinearLayout startSearchBarLayout;
@@ -142,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         my = 0;
 
         // Set up zoom functionality
+        initZoom = false;
         zoomLevel = MOST_ZOOMED_IN_LEVEL;
         findViewById(R.id.zoom_out).setOnClickListener(view -> zoom(zoomLevel - 1));
 
@@ -279,24 +289,87 @@ public class MainActivity extends AppCompatActivity {
         searchableEndLocations.add(new LocationSearchResult(getString(R.string.gender_neutral_restroom_search_result)));
     }
 
+    /**
+     * Zoom the map to the given zoom level
+     *
+     * @param levelToZoom is the level of zoom
+     */
     private void zoom(int levelToZoom) {
-        if (levelToZoom >= 0 && levelToZoom <= MOST_ZOOMED_IN_LEVEL) {
-            ImageView mapViewImage = findViewById(R.id.mapView);
-            int width = mapViewImage.getMeasuredWidth();
-            int height = mapViewImage.getMeasuredHeight();
-            mapViewImage.getLayoutParams().width = width/2;
-            mapViewImage.getLayoutParams().height = height/2;
-            mapViewImage.requestLayout();
+        // Init zoom numbers (now that all views are set up)
+        if (!initZoom) {
+            // Set up zoom sizes
+            mapViewImage = findViewById(R.id.mapView);
+            int mapWidth = mapViewImage.getMeasuredWidth();
+            int mapHeight = mapViewImage.getMeasuredHeight();
+            map_image_height_to_width_ratio = (float) (mapHeight * 1.0) / mapWidth;
+            scale_zoom_level_2_width = mapWidth;
+            scale_zoom_level_1_width = mapWidth / SCALE_ZOOM_LEVEL_ONE;
+            scale_zoom_level_0_width = mapWidth / SCALE_ZOOM_LEVEL_ZERO;
 
-            ImageView drawViewImage = findViewById(R.id.routeView);
-            int routeWidth = drawViewImage.getMeasuredWidth();
-            int routeHeight = drawViewImage.getMeasuredHeight();
-            drawViewImage.getLayoutParams().width = routeWidth/2;
-            drawViewImage.getLayoutParams().height = routeHeight/2;
-            drawViewImage.requestLayout();
-
-            zoomLevel = levelToZoom;
+            initZoom = true;
         }
+
+        // If it is possible to zoom in the given direction (in or out), then scale map to do so
+        if (levelToZoom >= 0 && levelToZoom <= MOST_ZOOMED_IN_LEVEL) {
+            if (levelToZoom == 2) {
+                mapViewImage.getLayoutParams().width = scale_zoom_level_2_width;
+                mapViewImage.getLayoutParams().height = (int) (scale_zoom_level_2_width * map_image_height_to_width_ratio);
+                mapViewImage.requestLayout();
+            } else if (levelToZoom == 1) {
+                mapViewImage.getLayoutParams().width = scale_zoom_level_1_width;
+                mapViewImage.getLayoutParams().height = (int) (scale_zoom_level_1_width * map_image_height_to_width_ratio);
+                mapViewImage.requestLayout();
+            } else if (levelToZoom == 0) {
+                mapViewImage.getLayoutParams().width = scale_zoom_level_0_width;
+                mapViewImage.getLayoutParams().height = (int) (scale_zoom_level_0_width * map_image_height_to_width_ratio);
+                mapViewImage.requestLayout();
+            }
+            zoomLevel = levelToZoom;
+            adjustRouteViewSize();
+        }
+    }
+
+    /**
+     * Adjusts the size of the route view to only limit the user to scrolling around the map image
+     * (and not farther into the grey space that surrounds). It includes a buffer for menus and views
+     * that could cover up large parts of the map so that the user can still see all of the map.
+     */
+    private void adjustRouteViewSize() {
+        // Calculate amount needed to buffer route view so that description view doesn't cover up the map
+        int heightBuffer = 0;
+        if (mState == AppStates.FOUND_START) {
+            heightBuffer = findViewById(R.id.building_description_layout).getMeasuredHeight();
+        } else if (mState == AppStates.NAV) {
+            heightBuffer = findViewById(R.id.nav_layout).getMeasuredHeight();
+        }
+
+        // Adjust size of route view
+        Bitmap routeBitmap;
+        if (zoomLevel == 2) {
+            routeView.getLayoutParams().width = scale_zoom_level_2_width;
+            routeView.getLayoutParams().height = heightBuffer + ((int) (scale_zoom_level_2_width * map_image_height_to_width_ratio));
+            routeView.requestLayout();
+            routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX, CAMPUS_MAP_IMAGE_HEIGHT_PX,
+                    Bitmap.Config.ARGB_8888);
+
+        } else if (zoomLevel == 1) {
+            routeView.getLayoutParams().width = scale_zoom_level_1_width;
+            routeView.getLayoutParams().height = heightBuffer + ((int) (scale_zoom_level_1_width * map_image_height_to_width_ratio));
+            routeView.requestLayout();
+            routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX/SCALE_ZOOM_LEVEL_ONE, CAMPUS_MAP_IMAGE_HEIGHT_PX/SCALE_ZOOM_LEVEL_ONE,
+                    Bitmap.Config.ARGB_8888);
+        } else {
+            routeView.getLayoutParams().width = scale_zoom_level_0_width;
+            routeView.getLayoutParams().height = heightBuffer + ((int) (scale_zoom_level_0_width * map_image_height_to_width_ratio));
+            routeView.requestLayout();
+            routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX/SCALE_ZOOM_LEVEL_ZERO, CAMPUS_MAP_IMAGE_HEIGHT_PX/SCALE_ZOOM_LEVEL_ZERO,
+                    Bitmap.Config.ARGB_8888);
+        }
+        // Update bitmap and canvas for route view
+        routeView.requestLayout();
+        routeView.setImageBitmap(routeBitmap);
+        routeCanvas = new Canvas(routeBitmap);
+        System.out.println("W/H: " + routeView.getWidth() + ", " + routeView.getHeight());
     }
 
     /**
@@ -308,44 +381,43 @@ public class MainActivity extends AppCompatActivity {
      */
     private void clickChooseBuilding(int x, int y) {
         // Adjusts invalid input
-        switch (zoomLevel) {
-            case 2:
-                if (x < 0) {
-                    x = 0;
-                } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
-                    x = CAMPUS_MAP_IMAGE_WIDTH_PX;
-                }
-                if (y < 0) {
-                    y = 0;
-                } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
-                    y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
-                }
-            case 1:
-                if (x < 0) {
-                    x = 0;
-                } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX/2) {
-                    x = CAMPUS_MAP_IMAGE_WIDTH_PX/2;
-                }
-                if (y < 0) {
-                    y = 0;
-                } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX/2) {
-                    y = CAMPUS_MAP_IMAGE_HEIGHT_PX/2;
-                }
-                x *= 2;
-                y *= 2;
-            case 0:
-                if (x < 0) {
-                    x = 0;
-                } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX/4) {
-                    x = CAMPUS_MAP_IMAGE_WIDTH_PX/4;
-                }
-                if (y < 0) {
-                    y = 0;
-                } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX/4) {
-                    y = CAMPUS_MAP_IMAGE_HEIGHT_PX/4;
-                }
-                x *= 4;
-                y *= 4;
+        if (zoomLevel == 2) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
+                x = CAMPUS_MAP_IMAGE_WIDTH_PX;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
+                y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
+            }
+        } else if (zoomLevel == 1) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ONE) {
+                x = CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ONE;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ONE) {
+                y = CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ONE;
+            }
+            x *= SCALE_ZOOM_LEVEL_ONE;
+            y *= SCALE_ZOOM_LEVEL_ONE;
+        } else if (zoomLevel == 0) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ZERO) {
+                x = CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ZERO;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ZERO) {
+                y = CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ZERO;
+            }
+            x *= SCALE_ZOOM_LEVEL_ZERO;
+            y *= SCALE_ZOOM_LEVEL_ZERO;
         }
 
         // Selects nearest start or end building (depending on current app state) based on where the user clicked
@@ -503,6 +575,7 @@ public class MainActivity extends AppCompatActivity {
                     startNavRouteButton.setVisibility(View.VISIBLE);
                 }
         }
+        adjustRouteViewSize();
     }
 
     /**
@@ -573,15 +646,15 @@ public class MainActivity extends AppCompatActivity {
             scrollY = (int) (centerY - verticalOffset);
         } else if (zoomLevel == 1) {
             // Convert center of building coordinates from px to dp
-            float centerX = pxToDP(buildingCoords.x)/2;
-            float centerY = pxToDP(buildingCoords.y)/2;
+            float centerX = pxToDP(buildingCoords.x) / SCALE_ZOOM_LEVEL_ONE;
+            float centerY = pxToDP(buildingCoords.y) / SCALE_ZOOM_LEVEL_ONE;
 
             scrollX = (int) (centerX - horizontalOffset);
             scrollY = (int) (centerY - verticalOffset);
         } else if (zoomLevel == 0) {
             // Convert center of building coordinates from px to dp
-            float centerX = pxToDP(buildingCoords.x)/4;
-            float centerY = pxToDP(buildingCoords.y)/4;
+            float centerX = pxToDP(buildingCoords.x)/SCALE_ZOOM_LEVEL_ZERO;
+            float centerY = pxToDP(buildingCoords.y)/SCALE_ZOOM_LEVEL_ZERO;
 
             scrollX = (int) (centerX - horizontalOffset);
             scrollY = (int) (centerY - verticalOffset);
@@ -615,13 +688,36 @@ public class MainActivity extends AppCompatActivity {
 
         if (it.hasNext()) {
             Place p = it.next();
-            path.moveTo(p.getX(), p.getY());
+            float scaledX = p.getX();
+            float scaledY = p.getY();
+            if (zoomLevel == 1) {
+                scaledX /= SCALE_ZOOM_LEVEL_ONE;
+                scaledY /= SCALE_ZOOM_LEVEL_ONE;
+            } else if (zoomLevel == 0) {
+                scaledX /= SCALE_ZOOM_LEVEL_ZERO;
+                scaledY /= SCALE_ZOOM_LEVEL_ZERO;
+            }
+            path.moveTo(scaledX, scaledY);
+            System.out.println("START: \n" + scaledX + ", " + scaledY);
         }
         // Set rest of path
         while (it.hasNext()) {
             Place p = it.next();
-            path.lineTo(p.getX(), p.getY());
-            path.moveTo(p.getX(), p.getY());
+
+            // Scale point and path based on zoom level
+            float scaledX = p.getX();
+            float scaledY = p.getY();
+            if (zoomLevel == 1) {
+                scaledX /= SCALE_ZOOM_LEVEL_ONE;
+                scaledY /= SCALE_ZOOM_LEVEL_ONE;
+            } else if (zoomLevel == 0) {
+                scaledX /= SCALE_ZOOM_LEVEL_ZERO;
+                scaledY /= SCALE_ZOOM_LEVEL_ZERO;
+            }
+
+            path.lineTo(scaledX, scaledY);
+            path.moveTo(scaledX, scaledY);
+            System.out.println(scaledX + ", " + scaledY);
         }
         // Close path
         path.close();
@@ -639,8 +735,7 @@ public class MainActivity extends AppCompatActivity {
      * @return converted px value in terms of dp
      */
     private float pxToDP(float px) {
-        float dp = px * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return dp;
+        return px * ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     /**
@@ -650,7 +745,6 @@ public class MainActivity extends AppCompatActivity {
      * @return converted dp value in terms of px
      */
     private float dpToPX(float dp) {
-        float px = dp / ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return px;
+        return dp / ((float) getApplicationContext().getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }

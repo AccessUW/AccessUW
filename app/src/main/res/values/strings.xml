@@ -4,7 +4,7 @@
     <string name="main_campus_map_desc">Main campus map</string>
     <string name="search_start_hint">Enter a start location…</string>
     <string name="search_end_hint">Enter an end location…</string>
-    <string name="button_toggle_wheel_chair">Wheel-chair</string>
+    <string name="button_toggle_wheel_chair">Wheelchair</string>
     <string name="button_toggle_no_stairs">No stairs</string>
     <string name="desc_building_name_view_default">The Hub</string>
     <string name="desc_building_short_name_view_default">Building code: HUB</string>
