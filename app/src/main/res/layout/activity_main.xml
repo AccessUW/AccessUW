@@ -123,9 +123,10 @@
         <LinearLayout
             android:id="@+id/routeFilterButtonsLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/search_bar_height"
+            android:layout_height="wrap_content"
             android:background="@color/purple_700"
             android:orientation="horizontal"
+            android:padding="@dimen/filter_button_margin"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -134,9 +135,10 @@
             <ToggleButton
                 android:id="@+id/filterWheelchair"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:textColor="@color/purple_700"
+                android:layout_height="@dimen/filter_button_height"
+                android:layout_marginEnd="@dimen/filter_button_margin"
+                android:layout_weight="1"
+                android:padding="-10dp"
                 android:textOff="@string/button_toggle_wheel_chair"
                 android:textOn="@string/button_toggle_wheel_chair"
                 android:textSize="@dimen/search_bar_text_size" />
@@ -144,9 +146,8 @@
             <ToggleButton
                 android:id="@+id/filterNoStairs"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/search_bar_height"
-                android:layout_weight="2"
-                android:textColor="@color/purple_700"
+                android:layout_height="@dimen/filter_button_height"
+                android:layout_weight="1"
                 android:textOff="@string/button_toggle_no_stairs"
                 android:textOn="@string/button_toggle_no_stairs"
                 android:textSize="@dimen/search_bar_text_size" />
@@ -253,7 +254,7 @@
         <LinearLayout
             android:id="@+id/nav_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/purple_700"
             android:orientation="horizontal"
             android:visibility="invisible"
@@ -276,7 +277,7 @@
             <TextView
                 android:id="@+id/destinationTextView"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/search_bar_height"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/search_bar_text_padding_side"
                 android:layout_marginBottom="@dimen/search_bar_text_padding_side"
                 android:layout_weight="7"

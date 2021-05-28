@@ -9,4 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFFF0000</color>
     <color name="dodger_blue">#1E90FF</color>
+    <color name="filter_button_background_off">#FF03B8A3</color>
+    <color name="filter_button_text_off">#FFFFFFFF</color>
+    <color name="filter_button_background_on">#FFDDDDEE</color>
+    <color name="filter_button_text_on">#FF03B8A3</color>
 </resources>

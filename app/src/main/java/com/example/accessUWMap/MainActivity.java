@@ -7,8 +7,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.DisplayMetrics;
@@ -17,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -87,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout routeFilterLayout;
     private AutoCompleteTextView startSearchBar;
     private AutoCompleteTextView endSearchBar;
+    private ToggleButton wheelchairToggleButton;
+    private ToggleButton noStairsToggleButton;
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
@@ -183,11 +188,19 @@ public class MainActivity extends AppCompatActivity {
         // Set up back-arrow button listener
         findViewById(R.id.backArrowButton).setOnClickListener(view -> goBack());
 
-        // Set up toggle button filter listeners for when user filters their route for accessibility
-        ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
-                (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
-        ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
-                (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
+        // Set up toggle button filter listeners and colors for when user filters their route for accessibility
+        wheelchairToggleButton = findViewById(R.id.filterWheelchair);
+        wheelchairToggleButton.setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> updateWheelchairFilter(isChecked));
+        wheelchairToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
+        wheelchairToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
+        noStairsToggleButton = findViewById(R.id.filterNoStairs);
+        noStairsToggleButton.setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> updateNoStairsFilter(isChecked));
+        noStairsToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
+        noStairsToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
+
+
 
         // Set up building description layout and listeners
         buildDescLayout = findViewById(R.id.building_description_layout);
@@ -290,8 +303,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Zoom the map to the given zoom level
-     *
+     * Zoom the map to the given zoom level.
      * @param levelToZoom is the level of zoom
      */
     private void zoom(int levelToZoom) {
@@ -374,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Select closest building to where the user touched as the start location (if in SEARCH or
-     * FOUND_START states) or the end location (if in BUILD_ROUTE state)
+     * FOUND_START states) or the end location (if in BUILD_ROUTE state).
      *
      * @param x is the x coordinate (in pixels) on the map of where the user pressed
      * @param y is the y coordinate (in pixels) on the map of where the user pressed
@@ -433,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Updater method that controls the current start location of the user's selected route
+     * Updates the current start location of the user's selected route.
      * @param newStartShortAndLong is the new start location for the user's route
      */
     public void updateStartLocation(String newStartShortAndLong) {
@@ -451,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Updater method that controls the current end location of the user's selected route
+     * Updates the current end location of the user's selected route.
      * @param newEndShortAndLong is the new end location for the user's route
      */
     public void updateEndLocation(String newEndShortAndLong) {
@@ -481,6 +493,42 @@ public class MainActivity extends AppCompatActivity {
         CampusPresenter.swapStartAndEnd();
         startSearchBar.setText(end);
         endSearchBar.setText(start);
+    }
+
+    /**
+     * Updates the current state of the wheelchair-accessible route filter button.
+     * @param isChecked is whether the wheelchair-accessible filter is toggled or not
+     */
+    public void updateWheelchairFilter(boolean isChecked) {
+        // Update the presenter in MVP
+        CampusPresenter.updateWheelchair(isChecked);
+
+        // Update button display to visually show whether it is toggled or not
+        if (isChecked) {
+            wheelchairToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_on));
+            wheelchairToggleButton.setTextColor(getColor(R.color.filter_button_text_on));
+        } else {
+            wheelchairToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
+            wheelchairToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
+        }
+    }
+
+    /**
+     * Updates the current state of the no-stairs route filter button.
+     * @param isChecked is whether the noStairs filter is toggled or not
+     */
+    public void updateNoStairsFilter(boolean isChecked) {
+        // Update the presenter in MVP
+        CampusPresenter.updateNoStairs(isChecked);
+
+        // Update button display to visually show whether it is toggled or not
+        if (isChecked) {
+            noStairsToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_on));
+            noStairsToggleButton.setTextColor(getColor(R.color.filter_button_text_on));
+        } else {
+            noStairsToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
+            noStairsToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
+        }
     }
 
     /**
@@ -693,9 +741,11 @@ public class MainActivity extends AppCompatActivity {
             if (zoomLevel == 1) {
                 scaledX /= SCALE_ZOOM_LEVEL_ONE;
                 scaledY /= SCALE_ZOOM_LEVEL_ONE;
+                paint.setStrokeWidth(5);
             } else if (zoomLevel == 0) {
                 scaledX /= SCALE_ZOOM_LEVEL_ZERO;
                 scaledY /= SCALE_ZOOM_LEVEL_ZERO;
+                paint.setStrokeWidth(2);
             }
             path.moveTo(scaledX, scaledY);
             System.out.println("START: \n" + scaledX + ", " + scaledY);
