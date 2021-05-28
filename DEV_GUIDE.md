@@ -2,11 +2,12 @@
 
 ## Table of Contents
 - [Installing/Running the App](#installing/running-the-app)
+    - [Get Set Up with Android Studio](#get-set-up-with-android-studio)
     - [Get Source Code](#get-source-code)
-- [How to Use](#how-to-use)
-- [Bugs & Issues](#bugs-&-issues)
-    - [Bug reporting for the users](#bug-reporting-for-the-users:)
-    - [Known Bugs](#known-bugs)
+    - [Build/Run](#build/run)
+- [Building & Testing the System](#building-&-testing-the-system)
+    - [How to Add New Tests](#how-to-add-new-tests)
+    - [Currently Un-automated Tasks](#currently-un-automated-tasks)
 
 ## Installing/Running the App
 ### Get Set Up with Android Studio
@@ -46,7 +47,7 @@
 - Click the green hammer icon at the top of Android Studio to build
 - Click the green arrow icon at the top of Android Studio to run
 
-## Building & Testing the system
+## Building & Testing the System
 Building & testing the system is relatively automatic, with Travis CI automatically running our current unit testing scripts on each commit.
 
 For manual building/testing, you can perform `./gradlew build` to build the system, and then `./gradlew test` to run unit tests.
@@ -55,12 +56,12 @@ Instrumentation tests can be performed by starting up an emulator and then runni
 
 For all steps at once, one can start up an emulator and then run `./gradlew build cC`.
 
-## How to Add New Tests
+### How to Add New Tests
 Adding new unit tests can be done by adding JUnit test Java files to /app/src/test/java. They will be automatically tested through `./gradlew test`.
 
 Instrumentation tests can be added at /app/src/androidTest/java/ instead to be run automatically through `./gradlew cAT`.
 
-## Currently Unautomated Tasks
+### Currently Un-automated Tasks
 The only thing that is currently unautomated is setting up an emulator (lots has been tried on Travis CI, to no avail). Android Studio can be used to set up an emulator instead in order for `./gradlew cAT` and `./gradlew build cC` to be run.
 
 Builds currently run/take place on android API version 30. Be sure that scrolling and the keyboard automatically hiding after typing is complete is functional on non-emulator devices.
