@@ -25,9 +25,9 @@ android:
     - sys-img-x86-android-30
 #    - sys-img-x86-android-28
 #    - sys-img-x86-android-29
-    - sys-img-armeabi-v7a-google_apis-26
+#    - sys-img-armeabi-v7a-google_apis-25
 #    - sys-img-x86-android-25
-#    - sys-img-armeabi-v7a-android-22
+    - sys-img-armeabi-v7a-android-26
   licenses:
       - 'android-sdk-preview-license-52d11cd2'
       - 'android-sdk-license-.+'
@@ -59,7 +59,7 @@ before-script:
 script:
   - ./gradlew clean build
   - ./gradlew test
-  - ./gradlew build cC
+#  - ./gradlew build cC
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
