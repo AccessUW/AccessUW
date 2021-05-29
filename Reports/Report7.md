@@ -63,6 +63,8 @@
 * Fix instrumentation testing setup
 * Add some instrumentation testing
 ### Progress and Issues
-*
+* Got external feedback!
+* Instrumentation testing setup is still bugged, will probably have to jettison before release.
 ### Plans and Goals
-*
+* Add instrumentation testing
+* (stretch goal) fix instrumentation testing setup (maybe use another CI tool?)
