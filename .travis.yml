@@ -48,13 +48,13 @@ before-script:
 
 # disabled for beta release purposes
 #  - echo no | android create avd --force -n test -t android-26 --abi x86
-  - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a --tag google_apis
+#  - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a --tag google_apis
 #  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-  - adb devices
-  - emulator -avd test -no-audio -no-window -verbose &
-  - android-wait-for-emulator
-  - adb devices
-  - adb shell input keyevent 82 &
+#  - adb devices
+#  - emulator -avd test -no-audio -no-window -verbose &
+#  - android-wait-for-emulator
+#  - adb devices
+#  - adb shell input keyevent 82 &
 
 script:
   - ./gradlew clean build
