@@ -13,7 +13,7 @@
 ### Get Set Up with Android Studio
 - (General steps listed below, follow [Android Developer's guide](https://developer.android.com/studio/run/emulator) for more detailed steps and troubleshooting)
 - Download Android Studio (version 4.1 or newer)
-- Download SDK Tools 26.1.1 or higher
+- Download SDK Tools 26.1.1 or higher, preferably the most updated version
 - Set up an Android environment:
     - If you have an Android phone operating at 9.0 or newer:
         - Open Settings > Developer options
@@ -46,15 +46,19 @@
 ### Build/Run
 - Click the green hammer icon at the top of Android Studio to build
 - Click the green arrow icon at the top of Android Studio to run
+- Building an .apk can be accomplished by going to the Build menu, choosing Build Bundle(s)/APK(s), and choosing Build APK(s). The resulting output apk can be found at directory app/build/outputs/apk/debug.
 
 ## Building & Testing the System
-Building & testing the system is relatively automatic, with Travis CI automatically running our current unit testing scripts on each commit.
+Building & testing the system is relatively automatic, with [Travis CI](https://travis-ci.com/github/AccessUW/AccessUW) automatically running our current unit testing scripts on each commit.
 
-For manual building/testing, you can perform `./gradlew build` to build the system, and then `./gradlew test` to run unit tests.
+For manual building/testing, it's advised to use a Unix terminal.
+When run in the project's root directory, `./gradlew build` builds the system and `./gradlew test` runs unit tests.
 
-Instrumentation tests can be performed by starting up an emulator and then running `./gradlew cAT`.
+If successful, `./gradlew build` should build successfully, with 61 actionable tasks. Likewise, `./gradlew test` should have 32 actionable tasks.
 
-For all steps at once, one can start up an emulator and then run `./gradlew build cC`.
+Instrumentation tests can be performed by starting an emulator using Android Studio and then running `./gradlew cAT` in the project's root directory.
+
+Building an APK is accomplishable using gradle task `./gradlew :app:assembleDebug`.
 
 ### How to Add New Tests
 Adding new unit tests can be done by adding JUnit test Java files to /app/src/test/java. They will be automatically tested through `./gradlew test`.
