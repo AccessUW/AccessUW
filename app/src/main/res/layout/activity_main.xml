@@ -135,21 +135,19 @@
                 android:id="@+id/filterWheelchair"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/wheelchair_accessible"
                 android:layout_weight="3"
-                android:textColor="@color/purple_700"
-                android:textOff="@string/button_toggle_wheel_chair"
-                android:textOn="@string/button_toggle_wheel_chair"
-                android:textSize="@dimen/search_bar_text_size" />
+                android:textOff=""
+                android:textOn=""/>
 
             <ToggleButton
                 android:id="@+id/filterNoStairs"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/search_bar_height"
+                android:background="@drawable/no_stairs"
                 android:layout_weight="2"
-                android:textColor="@color/purple_700"
-                android:textOff="@string/button_toggle_no_stairs"
-                android:textOn="@string/button_toggle_no_stairs"
-                android:textSize="@dimen/search_bar_text_size" />
+                android:textOff=""
+                android:textOn="" />
         </LinearLayout>
 
 <!--        </LinearLayout>-->
