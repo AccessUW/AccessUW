@@ -523,8 +523,8 @@ public class MainActivity extends AppCompatActivity {
         routeCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
         // Initialize paint and set paint settings
         Paint paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(getColor(R.color.dodger_blue));
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(getColor(R.color.white));
         paint.setStrokeWidth(10);
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
@@ -537,6 +537,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (it.hasNext()) {
             Place p = it.next();
+            // Draw circle at start
+            routeCanvas.drawCircle(p.getX(), p.getY(), 15, paint);
+            paint.setColor(getColor(R.color.dodger_blue));
+            routeCanvas.drawCircle(p.getX(), p.getY(), 11, paint);
             path.moveTo(p.getX(), p.getY());
         }
         // Set rest of path
@@ -544,14 +548,20 @@ public class MainActivity extends AppCompatActivity {
             Place p = it.next();
             path.lineTo(p.getX(), p.getY());
             path.moveTo(p.getX(), p.getY());
+            if (!it.hasNext()) {
+                // Draw circle at destination
+                paint.setColor(getColor(R.color.white));
+                routeCanvas.drawCircle(p.getX(), p.getY(), 15, paint);
+                paint.setColor(getColor(R.color.dodger_blue));
+                routeCanvas.drawCircle(p.getX(), p.getY(), 11, paint);
+                paint.setStyle(Paint.Style.STROKE);
+            }
         }
         // Close path
         path.close();
 
         // Draw path
         routeCanvas.drawPath(path, paint);
-        // Invalidate view so that next draw clears view
-        routeView.invalidate();
     }
 
     /**

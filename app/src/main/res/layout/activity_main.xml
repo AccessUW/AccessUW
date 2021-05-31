@@ -223,8 +223,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/search_bar_margin"
-                android:backgroundTint="@color/purple_200"
-                android:text="@string/button_find_route" />
+                android:backgroundTint="@color/white"
+                android:text="@string/button_find_route"
+                android:textColor="@color/purple_700"/>
         </LinearLayout>
 
 <!--        <LinearLayout-->
@@ -262,19 +263,19 @@
             <ImageView
                 android:id="@+id/cancelRouteButton"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/search_bar_height"
+                android:layout_height="@dimen/destination_bar_height"
                 android:layout_marginStart="@dimen/search_bar_text_padding_side"
                 android:layout_marginTop="@dimen/search_bar_text_padding_side"
                 android:layout_marginEnd="@dimen/search_bar_text_padding_side"
                 android:layout_marginBottom="@dimen/search_bar_text_padding_side"
-                android:layout_weight="1"
+                android:layout_weight="1.75"
                 android:contentDescription="@android:string/cancel"
                 app:srcCompat="@drawable/cancel_icon" />
 
             <TextView
                 android:id="@+id/destinationTextView"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/search_bar_height"
+                android:layout_height="@dimen/destination_bar_height"
                 android:layout_marginTop="@dimen/search_bar_text_padding_side"
                 android:layout_marginBottom="@dimen/search_bar_text_padding_side"
                 android:layout_weight="7"
