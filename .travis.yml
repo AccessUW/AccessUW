@@ -25,9 +25,9 @@ android:
     - sys-img-x86-android-30
 #    - sys-img-x86-android-28
 #    - sys-img-x86-android-29
-    - sys-img-armeabi-v7a-google_apis-26
+#    - sys-img-armeabi-v7a-google_apis-25
 #    - sys-img-x86-android-25
-#    - sys-img-armeabi-v7a-android-22
+    - sys-img-armeabi-v7a-android-26
   licenses:
       - 'android-sdk-preview-license-52d11cd2'
       - 'android-sdk-license-.+'
@@ -48,18 +48,18 @@ before-script:
 
 # disabled for beta release purposes
 #  - echo no | android create avd --force -n test -t android-26 --abi x86
-  - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a --tag google_apis
+#  - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a --tag google_apis
 #  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-  - adb devices
-  - emulator -avd test -no-audio -no-window -verbose &
-  - android-wait-for-emulator
-  - adb devices
-  - adb shell input keyevent 82 &
+#  - adb devices
+#  - emulator -avd test -no-audio -no-window -verbose &
+#  - android-wait-for-emulator
+#  - adb devices
+#  - adb shell input keyevent 82 &
 
 script:
   - ./gradlew clean build
   - ./gradlew test
-  - ./gradlew build cC
+#  - ./gradlew build cC
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock

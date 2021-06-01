@@ -3,6 +3,7 @@ package com.example.accessUWMap;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -10,7 +11,6 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.DisplayMetrics;
@@ -793,8 +793,8 @@ public class MainActivity extends AppCompatActivity {
         routeCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
         // Initialize paint and set paint settings
         Paint paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(getColor(R.color.dodger_blue));
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(getColor(R.color.white));
         paint.setStrokeWidth(10);
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
@@ -809,6 +809,7 @@ public class MainActivity extends AppCompatActivity {
             Place p = it.next();
             float scaledX = p.getX();
             float scaledY = p.getY();
+            // Scale first point to zoom level
             if (zoomLevel == 2) {
                 scaledX /= SCALE_ZOOM_LEVEL_TWO;
                 scaledY = (scaledY / SCALE_ZOOM_LEVEL_TWO) - VERTICAL_OFFSET_ZOOM_LEVEL_TWO;
@@ -822,13 +823,16 @@ public class MainActivity extends AppCompatActivity {
                 scaledY = (scaledY / SCALE_ZOOM_LEVEL_ZERO) - VERTICAL_OFFSET_ZOOM_LEVEL_ZERO;
                 paint.setStrokeWidth(2);
             }
+            // Draw circle at start
+            routeCanvas.drawCircle(scaledX, scaledY, 15, paint);
+            paint.setColor(getColor(R.color.dodger_blue));
+            routeCanvas.drawCircle(scaledX, scaledY, 11, paint);
             path.moveTo(scaledX, scaledY);
         }
         // Set rest of path
         while (it.hasNext()) {
             Place p = it.next();
-
-            // Scale point and path based on zoom level
+            // Scale next line and point to zoom level
             float scaledX = p.getX();
             float scaledY = p.getY();
             if (zoomLevel == 2) {
@@ -844,14 +848,20 @@ public class MainActivity extends AppCompatActivity {
 
             path.lineTo(scaledX, scaledY);
             path.moveTo(scaledX, scaledY);
+            if (!it.hasNext()) {
+                // Draw circle at destination
+                paint.setColor(getColor(R.color.white));
+                routeCanvas.drawCircle(scaledX, scaledY, 15, paint);
+                paint.setColor(getColor(R.color.dodger_blue));
+                routeCanvas.drawCircle(scaledX, scaledY, 11, paint);
+                paint.setStyle(Paint.Style.STROKE);
+            }
         }
         // Close path
         path.close();
 
         // Draw path
         routeCanvas.drawPath(path, paint);
-        // Invalidate view so that next draw clears view
-        routeView.invalidate();
     }
 
     /**
