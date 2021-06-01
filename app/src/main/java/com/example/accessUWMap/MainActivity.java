@@ -3,12 +3,10 @@ package com.example.accessUWMap;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +17,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -103,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout routeFilterLayout;
     private AutoCompleteTextView startSearchBar;
     private AutoCompleteTextView endSearchBar;
-    private ToggleButton wheelchairToggleButton;
-    private ToggleButton noStairsToggleButton;
 
     // Views for displaying building description
     private LinearLayout buildDescLayout;
@@ -204,16 +199,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.backArrowButton).setOnClickListener(view -> goBack());
 
         // Set up toggle button filter listeners and colors for when user filters their route for accessibility
-        wheelchairToggleButton = findViewById(R.id.filterWheelchair);
-        wheelchairToggleButton.setOnCheckedChangeListener(
-                (toggleButtonView, isChecked) -> updateWheelchairFilter(isChecked));
-        wheelchairToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
-        wheelchairToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
-        noStairsToggleButton = findViewById(R.id.filterNoStairs);
-        noStairsToggleButton.setOnCheckedChangeListener(
-                (toggleButtonView, isChecked) -> updateNoStairsFilter(isChecked));
-        noStairsToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
-        noStairsToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
+        ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
+        ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
+                (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
 
 
 
@@ -526,42 +515,6 @@ public class MainActivity extends AppCompatActivity {
         CampusPresenter.swapStartAndEnd();
         startSearchBar.setText(end);
         endSearchBar.setText(start);
-    }
-
-    /**
-     * Updates the current state of the wheelchair-accessible route filter button.
-     * @param isChecked is whether the wheelchair-accessible filter is toggled or not
-     */
-    public void updateWheelchairFilter(boolean isChecked) {
-        // Update the presenter in MVP
-        CampusPresenter.updateWheelchair(isChecked);
-
-        // Update button display to visually show whether it is toggled or not
-        if (isChecked) {
-            wheelchairToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_on));
-            wheelchairToggleButton.setTextColor(getColor(R.color.filter_button_text_on));
-        } else {
-            wheelchairToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
-            wheelchairToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
-        }
-    }
-
-    /**
-     * Updates the current state of the no-stairs route filter button.
-     * @param isChecked is whether the noStairs filter is toggled or not
-     */
-    public void updateNoStairsFilter(boolean isChecked) {
-        // Update the presenter in MVP
-        CampusPresenter.updateNoStairs(isChecked);
-
-        // Update button display to visually show whether it is toggled or not
-        if (isChecked) {
-            noStairsToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_on));
-            noStairsToggleButton.setTextColor(getColor(R.color.filter_button_text_on));
-        } else {
-            noStairsToggleButton.setBackgroundColor(getColor(R.color.filter_button_background_off));
-            noStairsToggleButton.setTextColor(getColor(R.color.filter_button_text_off));
-        }
     }
 
     /**
