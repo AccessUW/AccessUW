@@ -3,7 +3,6 @@ package com.example.accessUWMap;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -47,7 +46,21 @@ public class MainActivity extends AppCompatActivity {
     private static final int AUTO_COMPLETE_FILTER_THRESHOLD = 1;
     private static final int CLICK_NEAREST_MOVEMENT_THRESHOLD = 20;
     private static final int VERTICAL_OFFSET_CLICK_ON_MAP = 30;
-
+    private static final int VERTICAL_OFFSET_ZOOM_LEVEL_TWO = 30;
+    private static final int VERTICAL_OFFSET_ZOOM_LEVEL_ONE = 36;
+    private static final int VERTICAL_OFFSET_ZOOM_LEVEL_ZERO = 37;
+    private static final int MOST_ZOOMED_IN_LEVEL = 2;
+    private static final int SCALE_ZOOM_LEVEL_TWO = 1;
+    private static final int SCALE_ZOOM_LEVEL_ONE = 2;
+    private static final int SCALE_ZOOM_LEVEL_ZERO = 4;
+    private static final int ZOOM_LEVEL_TWO_CENTER_MAP_SHIFT_X = 800;
+    private static final int ZOOM_LEVEL_TWO_CENTER_MAP_SHIFT_Y = 1200;
+    private static final int ZOOM_IN_LEVEL_ONE_CENTER_MAP_SHIFT_X = 600;
+    private static final int ZOOM_IN_LEVEL_ONE_CENTER_MAP_SHIFT_Y = 400;
+    private static final int ZOOM_OUT_LEVEL_ONE_CENTER_MAP_SHIFT_X = -300;
+    private static final int ZOOM_OUT_LEVEL_ONE_CENTER_MAP_SHIFT_Y = -500;
+    private static final int ZOOM_LEVEL_ZERO_CENTER_MAP_SHIFT_X = -300;
+    private static final int ZOOM_LEVEL_ZERO_CENTER_MAP_SHIFT_Y = -500;
 
     ////////////////////////////////////////////////////////////
     ///     Fields
@@ -59,6 +72,18 @@ public class MainActivity extends AppCompatActivity {
 
     // Current state app is in
     private AppStates mState;
+
+    // Map view
+    private ImageView mapViewImage;
+
+    // Map zoom variables
+    private int zoomLevel;
+    private boolean initPrimaryZoom;
+    private boolean initZoom;
+    private static float map_image_height_to_width_ratio;
+    private static int scale_zoom_level_2_width;
+    private static int scale_zoom_level_1_width;
+    private static int scale_zoom_level_0_width;
 
     // Coords for scrolling in map view
     private float mx, my;
@@ -138,6 +163,13 @@ public class MainActivity extends AppCompatActivity {
         mx = 0;
         my = 0;
 
+        // Set up zoom functionality
+        initZoom = false;
+        initPrimaryZoom = false;
+        zoomLevel = MOST_ZOOMED_IN_LEVEL;
+        findViewById(R.id.zoom_in).setOnClickListener(view -> zoom(zoomLevel + 1));
+        findViewById(R.id.zoom_out).setOnClickListener(view -> zoom(zoomLevel - 1));
+
         // Set up search bar layout and listeners
         startSearchBarLayout = findViewById(R.id.startSearchBarLayout);
         endSearchBarAndSwapLayout = findViewById(R.id.endSearchBarAndSwapLayout);
@@ -166,11 +198,13 @@ public class MainActivity extends AppCompatActivity {
         // Set up back-arrow button listener
         findViewById(R.id.backArrowButton).setOnClickListener(view -> goBack());
 
-        // Set up toggle button filter listeners for when user filters their route for accessibility
+        // Set up toggle button filter listeners and colors for when user filters their route for accessibility
         ((ToggleButton) findViewById(R.id.filterWheelchair)).setOnCheckedChangeListener(
                 (toggleButtonView, isChecked) -> CampusPresenter.updateWheelchair(isChecked));
         ((ToggleButton) findViewById(R.id.filterNoStairs)).setOnCheckedChangeListener(
                 (toggleButtonView, isChecked) -> CampusPresenter.updateNoStairs(isChecked));
+
+
 
         // Set up building description layout and listeners
         buildDescLayout = findViewById(R.id.building_description_layout);
@@ -195,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         // Get routeView
         routeView = (ImageView) findViewById(R.id.routeView);
         // Initialize bitmap
-        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX, CAMPUS_MAP_IMAGE_HEIGHT_PX,
+        Bitmap routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX/SCALE_ZOOM_LEVEL_TWO, CAMPUS_MAP_IMAGE_HEIGHT_PX/SCALE_ZOOM_LEVEL_TWO,
                 Bitmap.Config.ARGB_8888);
         routeView.setImageBitmap(routeBitmap);
         // Initialize canvas from bitmap
@@ -204,6 +238,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // Set up map to the starting zoom level once the user is able to navigate the map
+        if (!initPrimaryZoom) {
+            zoom(2);
+            initPrimaryZoom = true;
+        }
+
         // Current x,y position on map that the user is looking at
         float curX, curY;
 
@@ -273,23 +313,145 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Zoom the map to the given zoom level.
+     * @param levelToZoom is the level of zoom
+     */
+    private void zoom(int levelToZoom) {
+        // Init zoom numbers (now that all views are set up)
+        if (!initZoom) {
+            // Set up zoom sizes
+            mapViewImage = findViewById(R.id.mapView);
+            int mapWidth = mapViewImage.getMeasuredWidth();
+            int mapHeight = mapViewImage.getMeasuredHeight();
+            map_image_height_to_width_ratio = (float) (mapHeight * 1.0) / mapWidth;
+            scale_zoom_level_2_width = mapWidth / SCALE_ZOOM_LEVEL_TWO;
+            scale_zoom_level_1_width = mapWidth / SCALE_ZOOM_LEVEL_ONE;
+            scale_zoom_level_0_width = mapWidth / SCALE_ZOOM_LEVEL_ZERO;
+
+            initZoom = true;
+        }
+
+        // If it is possible to zoom in the given direction (in or out), then scale map to do so
+        if (levelToZoom >= 0 && levelToZoom <= MOST_ZOOMED_IN_LEVEL) {
+            int prevLevel = zoomLevel;
+            zoomLevel = levelToZoom;
+            if (levelToZoom == 2) {
+                mapViewImage.getLayoutParams().width = scale_zoom_level_2_width;
+                mapViewImage.getLayoutParams().height = (int) (scale_zoom_level_2_width * map_image_height_to_width_ratio);
+                mapViewImage.requestLayout();
+                adjustRouteViewSize();
+                moveMapToPoint( hScroll.getScrollX()*2 + ZOOM_LEVEL_TWO_CENTER_MAP_SHIFT_X,  vScroll.getScrollY()*2 + ZOOM_LEVEL_TWO_CENTER_MAP_SHIFT_Y);
+            } else if (levelToZoom == 1) {
+                mapViewImage.getLayoutParams().width = scale_zoom_level_1_width;
+                mapViewImage.getLayoutParams().height = (int) (scale_zoom_level_1_width * map_image_height_to_width_ratio);
+                mapViewImage.requestLayout();
+                adjustRouteViewSize();
+                if (prevLevel == 2) { // If zooming out
+                    moveMapToPoint( hScroll.getScrollX()/2 + ZOOM_OUT_LEVEL_ONE_CENTER_MAP_SHIFT_X, vScroll.getScrollY()/2 + ZOOM_OUT_LEVEL_ONE_CENTER_MAP_SHIFT_Y);
+                } else { // If zooming in
+                    moveMapToPoint( hScroll.getScrollX()*2 + ZOOM_IN_LEVEL_ONE_CENTER_MAP_SHIFT_X,  vScroll.getScrollY()*2 + ZOOM_IN_LEVEL_ONE_CENTER_MAP_SHIFT_Y);
+                }
+            } else if (levelToZoom == 0) {
+                mapViewImage.getLayoutParams().width = scale_zoom_level_0_width;
+                mapViewImage.getLayoutParams().height = (int) (scale_zoom_level_0_width * map_image_height_to_width_ratio);
+                mapViewImage.requestLayout();
+                adjustRouteViewSize();
+                moveMapToPoint( hScroll.getScrollX()/2 + ZOOM_LEVEL_ZERO_CENTER_MAP_SHIFT_X,  vScroll.getScrollY()/2 + ZOOM_LEVEL_ZERO_CENTER_MAP_SHIFT_Y);
+            }
+
+            // Redraw the route if in the NAV state
+            if (mState == AppStates.NAV) {
+                drawRoute(CampusPresenter.getRoute());
+            }
+        }
+    }
+
+    /**
+     * Adjusts the size of the route view to only limit the user to scrolling around the map image
+     * (and not farther into the grey space that surrounds). It includes a buffer for menus and views
+     * that could cover up large parts of the map so that the user can still see all of the map.
+     */
+    private void adjustRouteViewSize() {
+        // Calculate amount needed to buffer route view so that description view doesn't cover up the map
+        int heightBuffer = 0;
+        if (mState == AppStates.FOUND_START) {
+            heightBuffer = findViewById(R.id.building_description_layout).getMeasuredHeight();
+        } else if (mState == AppStates.NAV) {
+            heightBuffer = findViewById(R.id.nav_layout).getMeasuredHeight();
+        }
+
+        // Adjust size of route view
+        Bitmap routeBitmap;
+        if (zoomLevel == 2) {
+            routeView.getLayoutParams().width = scale_zoom_level_2_width;
+            routeView.getLayoutParams().height = heightBuffer + ((int) (scale_zoom_level_2_width * map_image_height_to_width_ratio));
+            routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX/SCALE_ZOOM_LEVEL_TWO, CAMPUS_MAP_IMAGE_HEIGHT_PX/SCALE_ZOOM_LEVEL_TWO,
+                    Bitmap.Config.ARGB_8888);
+        } else if (zoomLevel == 1) {
+            routeView.getLayoutParams().width = scale_zoom_level_1_width;
+            routeView.getLayoutParams().height = heightBuffer + ((int) (scale_zoom_level_1_width * map_image_height_to_width_ratio));
+            routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX/SCALE_ZOOM_LEVEL_ONE, CAMPUS_MAP_IMAGE_HEIGHT_PX/SCALE_ZOOM_LEVEL_ONE,
+                    Bitmap.Config.ARGB_8888);
+        } else {
+            routeView.getLayoutParams().width = scale_zoom_level_0_width;
+            routeView.getLayoutParams().height = heightBuffer + ((int) (scale_zoom_level_0_width * map_image_height_to_width_ratio));
+            routeBitmap = Bitmap.createBitmap(CAMPUS_MAP_IMAGE_WIDTH_PX/SCALE_ZOOM_LEVEL_ZERO, CAMPUS_MAP_IMAGE_HEIGHT_PX/SCALE_ZOOM_LEVEL_ZERO,
+                    Bitmap.Config.ARGB_8888);
+        }
+        // Update bitmap and canvas for route view
+        routeView.requestLayout();
+        routeView.setImageBitmap(routeBitmap);
+        routeCanvas = new Canvas(routeBitmap);
+    }
+
+    /**
      * Select closest building to where the user touched as the start location (if in SEARCH or
-     * FOUND_START states) or the end location (if in BUILD_ROUTE state)
+     * FOUND_START states) or the end location (if in BUILD_ROUTE state).
      *
      * @param x is the x coordinate (in pixels) on the map of where the user pressed
      * @param y is the y coordinate (in pixels) on the map of where the user pressed
      */
     private void clickChooseBuilding(int x, int y) {
         // Adjusts invalid input
-        if (x < 0) {
-            x = 0;
-        } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX) {
-            x = CAMPUS_MAP_IMAGE_WIDTH_PX;
-        }
-        if (y < 0) {
-            y = 0;
-        } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX) {
-            y = CAMPUS_MAP_IMAGE_HEIGHT_PX;
+        if (zoomLevel == 2) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_TWO) {
+                x = CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_TWO;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_TWO) {
+                y = CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_TWO;
+            }
+            x *= SCALE_ZOOM_LEVEL_TWO;
+            y *= SCALE_ZOOM_LEVEL_TWO;
+        } else if (zoomLevel == 1) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ONE) {
+                x = CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ONE;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ONE) {
+                y = CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ONE;
+            }
+            x *= SCALE_ZOOM_LEVEL_ONE;
+            y *= SCALE_ZOOM_LEVEL_ONE;
+        } else if (zoomLevel == 0) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ZERO) {
+                x = CAMPUS_MAP_IMAGE_WIDTH_PX / SCALE_ZOOM_LEVEL_ZERO;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ZERO) {
+                y = CAMPUS_MAP_IMAGE_HEIGHT_PX / SCALE_ZOOM_LEVEL_ZERO;
+            }
+            x *= SCALE_ZOOM_LEVEL_ZERO;
+            y *= SCALE_ZOOM_LEVEL_ZERO;
         }
 
         // Selects nearest start or end building (depending on current app state) based on where the user clicked
@@ -305,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Updater method that controls the current start location of the user's selected route
+     * Updates the current start location of the user's selected route.
      * @param newStartShortAndLong is the new start location for the user's route
      */
     public void updateStartLocation(String newStartShortAndLong) {
@@ -323,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Updater method that controls the current end location of the user's selected route
+     * Updates the current end location of the user's selected route.
      * @param newEndShortAndLong is the new end location for the user's route
      */
     public void updateEndLocation(String newEndShortAndLong) {
@@ -447,6 +609,7 @@ public class MainActivity extends AppCompatActivity {
                     startNavRouteButton.setVisibility(View.VISIBLE);
                 }
         }
+        adjustRouteViewSize();
     }
 
     /**
@@ -494,9 +657,7 @@ public class MainActivity extends AppCompatActivity {
     private void moveMapToBuilding(String longBuildingName) {
         // Get coordinates of the given building
         Point buildingCoords = CampusPresenter.getBuildingCoordinates(longBuildingName);
-        // Convert roughCenter coordinates from px to dp
-        float centerX = pxToDP(buildingCoords.x);
-        float centerY = pxToDP(buildingCoords.y);
+
         // Calculate offsets of screen width/height to center start building in view
         //      - If in the BUILD_ROUTE state, center the building a bit lower since the top menu where
         //        user sets the end location takes up more space at the top
@@ -506,12 +667,74 @@ public class MainActivity extends AppCompatActivity {
         if (mState == AppStates.BUILD_ROUTE) {
             verticalOffset = screenHeight / 2f;
         }
+
         // Calculate coordinates for the map view to scroll to
-        int scrollX = (int) (centerX - horizontalOffset);
-        int scrollY = (int) (centerY - verticalOffset);
+        int scrollX = 0;
+        int scrollY = 0;
+        if (zoomLevel == 2) {
+            // Convert center of building coordinates from px to dp
+            float centerX = pxToDP(buildingCoords.x) / SCALE_ZOOM_LEVEL_TWO;
+            float centerY = pxToDP(buildingCoords.y) / SCALE_ZOOM_LEVEL_TWO;
+
+            scrollX = (int) (centerX - horizontalOffset);
+            scrollY = (int) (centerY - verticalOffset);
+        } else if (zoomLevel == 1) {
+            // Convert center of building coordinates from px to dp
+            float centerX = pxToDP(buildingCoords.x) / SCALE_ZOOM_LEVEL_ONE;
+            float centerY = pxToDP(buildingCoords.y) / SCALE_ZOOM_LEVEL_ONE;
+
+            scrollX = (int) (centerX - horizontalOffset);
+            scrollY = (int) (centerY - verticalOffset);
+        } else if (zoomLevel == 0) {
+            // Convert center of building coordinates from px to dp
+            float centerX = pxToDP(buildingCoords.x)/SCALE_ZOOM_LEVEL_ZERO;
+            float centerY = pxToDP(buildingCoords.y)/SCALE_ZOOM_LEVEL_ZERO;
+
+            scrollX = (int) (centerX - horizontalOffset);
+            scrollY = (int) (centerY - verticalOffset);
+        }
+
         // Scroll map views
         hScroll.scrollTo(scrollX, scrollY);
         vScroll.scrollTo(scrollX, scrollY);
+    }
+
+    /**
+     * Moves view of map to center on the given coordinates.
+     * @param x coordinate (in pixels on map image)
+     * @param y coordinate (in pixels on map image)
+     */
+    private void moveMapToPoint(int x, int y) {
+        // Ensure valid x value to scroll to
+        if (x < 0) {
+            x = 0;
+        } else {
+            if (zoomLevel == 2 && x > scale_zoom_level_2_width) {
+                x = scale_zoom_level_2_width;
+            } else if (zoomLevel == 1 && x > scale_zoom_level_1_width) {
+                x = scale_zoom_level_1_width;
+            } else if (zoomLevel == 0 && x > scale_zoom_level_0_width) {
+                x = scale_zoom_level_0_width;
+            }
+        }
+
+        // Ensure valid y value to scroll to
+        if (y < 0) {
+            y = 0;
+        } else {
+            if (zoomLevel == 2 && y > scale_zoom_level_2_width * map_image_height_to_width_ratio) {
+                y = (int) (scale_zoom_level_2_width * map_image_height_to_width_ratio);
+            } else if (zoomLevel == 1 && y > scale_zoom_level_1_width * map_image_height_to_width_ratio) {
+                y = (int) (scale_zoom_level_1_width * map_image_height_to_width_ratio);
+            } else if (zoomLevel == 0 && y > scale_zoom_level_0_width * map_image_height_to_width_ratio) {
+                y = (int) (scale_zoom_level_0_width * map_image_height_to_width_ratio);
+            }
+        }
+        System.out.println("REGULAR X,Y: " + hScroll.getScrollX() + ", " + vScroll.getScrollY());
+        // Move the map
+        hScroll.scrollTo(x, y);
+        vScroll.scrollTo(x, y);
+        System.out.println("SCALED X,Y: " + x + ", " + y);
     }
 
     /**
@@ -537,23 +760,77 @@ public class MainActivity extends AppCompatActivity {
 
         if (it.hasNext()) {
             Place p = it.next();
+            float scaledX = p.getX();
+            float scaledY = p.getY();
+            // Scale first point to zoom level
+            if (zoomLevel == 2) {
+                scaledX /= SCALE_ZOOM_LEVEL_TWO;
+                scaledY = (scaledY / SCALE_ZOOM_LEVEL_TWO) - VERTICAL_OFFSET_ZOOM_LEVEL_TWO;
+                paint.setStrokeWidth(10);
+            } else if (zoomLevel == 1) {
+                scaledX /= SCALE_ZOOM_LEVEL_ONE;
+                scaledY = (scaledY / SCALE_ZOOM_LEVEL_ONE) - VERTICAL_OFFSET_ZOOM_LEVEL_ONE;
+                paint.setStrokeWidth(5);
+            } else if (zoomLevel == 0) {
+                scaledX /= SCALE_ZOOM_LEVEL_ZERO;
+                scaledY = (scaledY / SCALE_ZOOM_LEVEL_ZERO) - VERTICAL_OFFSET_ZOOM_LEVEL_ZERO;
+                paint.setStrokeWidth(2);
+            }
             // Draw circle at start
-            routeCanvas.drawCircle(p.getX(), p.getY(), 15, paint);
+            int outerRadius;
+            int innerRadius;
+            if (zoomLevel == 2) {
+                outerRadius = 15;
+                innerRadius = 12;
+            } else if (zoomLevel == 1) {
+                outerRadius = 10;
+                innerRadius = 8;
+            } else {
+                outerRadius = 5;
+                innerRadius = 4;
+            }
+            routeCanvas.drawCircle(scaledX, scaledY, outerRadius, paint);
             paint.setColor(getColor(R.color.dodger_blue));
-            routeCanvas.drawCircle(p.getX(), p.getY(), 11, paint);
-            path.moveTo(p.getX(), p.getY());
+            routeCanvas.drawCircle(scaledX, scaledY, innerRadius, paint);
+            path.moveTo(scaledX, scaledY);
         }
         // Set rest of path
         while (it.hasNext()) {
             Place p = it.next();
-            path.lineTo(p.getX(), p.getY());
-            path.moveTo(p.getX(), p.getY());
+            // Scale next line and point to zoom level
+            float scaledX = p.getX();
+            float scaledY = p.getY();
+            if (zoomLevel == 2) {
+                scaledX /= SCALE_ZOOM_LEVEL_TWO;
+                scaledY = (scaledY / SCALE_ZOOM_LEVEL_TWO) - VERTICAL_OFFSET_ZOOM_LEVEL_TWO;
+            } else if (zoomLevel == 1) {
+                scaledX /= SCALE_ZOOM_LEVEL_ONE;
+                scaledY = (scaledY / SCALE_ZOOM_LEVEL_ONE) - VERTICAL_OFFSET_ZOOM_LEVEL_ONE;
+            } else if (zoomLevel == 0) {
+                scaledX /= SCALE_ZOOM_LEVEL_ZERO;
+                scaledY = (scaledY / SCALE_ZOOM_LEVEL_ZERO) - VERTICAL_OFFSET_ZOOM_LEVEL_ZERO;
+            }
+
+            path.lineTo(scaledX, scaledY);
+            path.moveTo(scaledX, scaledY);
             if (!it.hasNext()) {
+                int outerRadius;
+                int innerRadius;
+                if (zoomLevel == 2) {
+                    outerRadius = 15;
+                    innerRadius = 12;
+                } else if (zoomLevel == 1) {
+                    outerRadius = 10;
+                    innerRadius = 8;
+                } else {
+                    outerRadius = 5;
+                    innerRadius = 4;
+                }
                 // Draw circle at destination
                 paint.setColor(getColor(R.color.white));
-                routeCanvas.drawCircle(p.getX(), p.getY(), 15, paint);
+                routeCanvas.drawCircle(scaledX, scaledY, outerRadius, paint);
                 paint.setColor(getColor(R.color.dodger_blue));
-                routeCanvas.drawCircle(p.getX(), p.getY(), 11, paint);
+                routeCanvas.drawCircle(scaledX, scaledY, innerRadius, paint);
                 paint.setStyle(Paint.Style.STROKE);
             }
         }
