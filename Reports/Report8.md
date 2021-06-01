@@ -21,7 +21,7 @@
 * Implement visual improvements for UI
 * Research how to add user location/GPS feature, implement if we have time
 ### Progress and Issues
-* 
+* Visual improvements implemented
 ## Turner's Report
 ### Last Week
 * Fix route bugs and add last few data points
