@@ -15,7 +15,8 @@
 * Apply the changes to memory usage if any peer reviews mention high memory usage
 * Polish/Finalize the backend and fix any last minute bugs before final release
 ### Progress and Issues
-*
+* No mention of high memory issues, so back-end remains the same
+* Helped debug finalized dataset for inconsistent name locations between data files
 ## Judas' Report
 ### Last Week
 * Implement visual improvements for UI
