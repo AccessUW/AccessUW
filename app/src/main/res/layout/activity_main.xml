@@ -290,17 +290,30 @@
 
         </LinearLayout>
 
-        <Button
+        <ImageView
             android:id="@+id/zoom_out"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="86dp"
-            android:layout_marginEnd="86dp"
-            android:layout_marginBottom="16dp"
-            android:text="Button"
+            android:contentDescription="@string/zoom_out_desc"
+            android:src="@drawable/zoom_out_icon"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            android:text="@string/zoom_out_minus"
+            android:textAlignment="center"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/zoom_out_button_bottom_margin"
             app:layout_constraintBottom_toTopOf="@+id/building_description_layout"
-            app:layout_constraintEnd_toStartOf="@+id/include"
-            app:layout_constraintStart_toEndOf="@+id/include" />
+            app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+            android:id="@+id/zoom_in"
+            android:contentDescription="@string/zoom_in_desc"
+            android:src="@drawable/zoom_in_icon"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            android:text="@string/zoom_in_plus"
+            android:textAlignment="center"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/zoom_in_button_bottom_margin"
+            app:layout_constraintBottom_toTopOf="@+id/zoom_out"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

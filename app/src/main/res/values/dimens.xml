@@ -9,4 +9,6 @@
     <dimen name="filter_button_margin">10dp</dimen>
     <dimen name="map_width">4330dp</dimen>
     <dimen name="map_height">2964dp</dimen>
+    <dimen name="zoom_out_button_bottom_margin">90dp</dimen>
+    <dimen name="zoom_in_button_bottom_margin">10dp</dimen>
 </resources>

@@ -18,6 +18,10 @@
     <string name="swap_button_desc">Swap start and end locations</string>
     <string name="current_route">Current route</string>
     <string name="gender_neutral_restroom_search_result">Nearest gender-neutral restroom</string>
+    <string name="zoom_in_plus">+</string>
+    <string name="zoom_out_minus">-</string>
+    <string name="zoom_in_desc">Zoom in</string>
+    <string name="zoom_out_desc">Zoom out</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
