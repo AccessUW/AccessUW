@@ -777,9 +777,21 @@ public class MainActivity extends AppCompatActivity {
                 paint.setStrokeWidth(2);
             }
             // Draw circle at start
-            routeCanvas.drawCircle(scaledX, scaledY, 15, paint);
+            int outerRadius;
+            int innerRadius;
+            if (zoomLevel == 2) {
+                outerRadius = 15;
+                innerRadius = 12;
+            } else if (zoomLevel == 1) {
+                outerRadius = 10;
+                innerRadius = 8;
+            } else {
+                outerRadius = 5;
+                innerRadius = 4;
+            }
+            routeCanvas.drawCircle(scaledX, scaledY, outerRadius, paint);
             paint.setColor(getColor(R.color.dodger_blue));
-            routeCanvas.drawCircle(scaledX, scaledY, 11, paint);
+            routeCanvas.drawCircle(scaledX, scaledY, innerRadius, paint);
             path.moveTo(scaledX, scaledY);
         }
         // Set rest of path
@@ -802,11 +814,23 @@ public class MainActivity extends AppCompatActivity {
             path.lineTo(scaledX, scaledY);
             path.moveTo(scaledX, scaledY);
             if (!it.hasNext()) {
+                int outerRadius;
+                int innerRadius;
+                if (zoomLevel == 2) {
+                    outerRadius = 15;
+                    innerRadius = 12;
+                } else if (zoomLevel == 1) {
+                    outerRadius = 10;
+                    innerRadius = 8;
+                } else {
+                    outerRadius = 5;
+                    innerRadius = 4;
+                }
                 // Draw circle at destination
                 paint.setColor(getColor(R.color.white));
-                routeCanvas.drawCircle(scaledX, scaledY, 15, paint);
+                routeCanvas.drawCircle(scaledX, scaledY, outerRadius, paint);
                 paint.setColor(getColor(R.color.dodger_blue));
-                routeCanvas.drawCircle(scaledX, scaledY, 11, paint);
+                routeCanvas.drawCircle(scaledX, scaledY, innerRadius, paint);
                 paint.setStyle(Paint.Style.STROKE);
             }
         }
