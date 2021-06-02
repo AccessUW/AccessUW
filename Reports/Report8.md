@@ -37,7 +37,7 @@
 ### Last Week
 * try to help frontend to fix visual features
 ### Progress and Issues
-* 
+* presentation visual improvement
 ## Kevin's Report
 ### Last Week
 * Add instrumentation testing
