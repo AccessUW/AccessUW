@@ -43,4 +43,5 @@
 * Add instrumentation testing
 * (stretch goal) fix instrumentation testing setup (maybe use another CI tool?)
 ### Progress and Issues
-* 
+* Instrumentation testing scrapped
+* Edited testing documentation
